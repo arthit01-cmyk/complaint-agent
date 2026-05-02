@@ -1,0 +1,253 @@
+2026-05-02T04:50:10.264Z | {"to":"Alice","type":"reporter","complaintId":"f3d10c6f-08e3-4e8b-aed9-b1088b97ba0c","message":"Complaint received and routed to Water with urgency urgent."}
+2026-05-02T04:50:10.266Z | {"to":"Water","type":"department","complaintId":"f3d10c6f-08e3-4e8b-aed9-b1088b97ba0c","message":"New complaint assigned: f3d10c6f-08e3-4e8b-aed9-b1088b97ba0c. Urgency: urgent."}
+2026-05-02T04:50:10.276Z | {"to":"Bob","type":"reporter","complaintId":"39de3b6e-6dd5-4bd4-a1ae-6c109d435f80","message":"Complaint received and routed to Roads with urgency urgent."}
+2026-05-02T04:50:10.278Z | {"to":"Roads","type":"department","complaintId":"39de3b6e-6dd5-4bd4-a1ae-6c109d435f80","message":"New complaint assigned: 39de3b6e-6dd5-4bd4-a1ae-6c109d435f80. Urgency: urgent."}
+2026-05-02T04:50:10.285Z | {"to":"Water","type":"department","complaintId":"stale-urgent-001","message":"Urgent complaint has been automatically escalated for immediate attention."}
+2026-05-02T04:50:10.286Z | {"to":"Carol","type":"reporter","complaintId":"stale-urgent-001","message":"Your urgent complaint has been escalated to the department for faster handling."}
+2026-05-02T04:51:53.583Z | {"to":"Alice","type":"reporter","complaintId":"72f1ea3f-1585-48a1-b496-5e5059abb912","message":"Complaint received and routed to Water with urgency urgent."}
+2026-05-02T04:51:53.586Z | {"to":"Water","type":"department","complaintId":"72f1ea3f-1585-48a1-b496-5e5059abb912","message":"New complaint assigned: 72f1ea3f-1585-48a1-b496-5e5059abb912. Urgency: urgent."}
+2026-05-02T04:51:53.598Z | {"to":"Bob","type":"reporter","complaintId":"83f5e8c4-bb60-40c6-8d57-ee147b825fce","message":"Complaint received and routed to Roads with urgency urgent."}
+2026-05-02T04:51:53.600Z | {"to":"Roads","type":"department","complaintId":"83f5e8c4-bb60-40c6-8d57-ee147b825fce","message":"New complaint assigned: 83f5e8c4-bb60-40c6-8d57-ee147b825fce. Urgency: urgent."}
+2026-05-02T04:51:53.606Z | {"to":"Dana","type":"reporter","complaintId":"033b4d1f-82b0-4ab0-a363-ce28b616bf49","message":"Complaint received and routed to Sanitation with urgency routine."}
+2026-05-02T04:51:53.607Z | {"to":"Sanitation","type":"department","complaintId":"033b4d1f-82b0-4ab0-a363-ce28b616bf49","message":"New complaint assigned: 033b4d1f-82b0-4ab0-a363-ce28b616bf49. Urgency: routine."}
+2026-05-02T04:51:53.615Z | {"to":"Water","type":"department","complaintId":"stale-urgent-001","message":"Urgent complaint has been automatically escalated for immediate attention."}
+2026-05-02T04:51:53.616Z | {"to":"Carol","type":"reporter","complaintId":"stale-urgent-001","message":"Your urgent complaint has been escalated to the department for faster handling."}
+2026-05-02T04:53:18.041Z | {"to":"Alice","type":"reporter","complaintId":"f25886e6-b333-471b-b2af-a92d59e0ad78","message":"Complaint received and routed to Water with urgency urgent."}
+2026-05-02T04:53:18.042Z | {"to":"Water","type":"department","complaintId":"f25886e6-b333-471b-b2af-a92d59e0ad78","message":"New complaint assigned: f25886e6-b333-471b-b2af-a92d59e0ad78. Urgency: urgent."}
+2026-05-02T04:53:18.053Z | {"to":"Bob","type":"reporter","complaintId":"06d49642-0a13-4445-886e-bb81c74e9f7f","message":"Complaint received and routed to Roads with urgency urgent."}
+2026-05-02T04:53:18.054Z | {"to":"Roads","type":"department","complaintId":"06d49642-0a13-4445-886e-bb81c74e9f7f","message":"New complaint assigned: 06d49642-0a13-4445-886e-bb81c74e9f7f. Urgency: urgent."}
+2026-05-02T04:53:18.060Z | {"to":"Dana","type":"reporter","complaintId":"40ffcc4a-9047-4b06-aac5-88852f532518","message":"Complaint received and routed to Sanitation with urgency routine."}
+2026-05-02T04:53:18.061Z | {"to":"Sanitation","type":"department","complaintId":"40ffcc4a-9047-4b06-aac5-88852f532518","message":"New complaint assigned: 40ffcc4a-9047-4b06-aac5-88852f532518. Urgency: routine."}
+2026-05-02T04:53:18.067Z | {"to":"Water","type":"department","complaintId":"stale-urgent-001","message":"Urgent complaint has been automatically escalated for immediate attention."}
+2026-05-02T04:53:18.068Z | {"to":"Carol","type":"reporter","complaintId":"stale-urgent-001","message":"Your urgent complaint has been escalated to the department for faster handling."}
+2026-05-02T04:56:30.988Z | {"to":"S.Das","type":"reporter","complaintId":"8d626f1d-3a88-44e7-ad35-d77adc1b4352","message":"Complaint received and routed to Street Lights with urgency routine."}
+2026-05-02T04:56:30.988Z | {"to":"Street Lights","type":"department","complaintId":"8d626f1d-3a88-44e7-ad35-d77adc1b4352","message":"New complaint assigned: 8d626f1d-3a88-44e7-ad35-d77adc1b4352. Urgency: routine."}
+2026-05-02T04:57:37.110Z | {"to":"P.Das","type":"reporter","complaintId":"e4829354-b7ae-47cd-8115-94aab2bcf273","message":"Complaint received and routed to Roads with urgency routine."}
+2026-05-02T04:57:37.110Z | {"to":"Roads","type":"department","complaintId":"e4829354-b7ae-47cd-8115-94aab2bcf273","message":"New complaint assigned: e4829354-b7ae-47cd-8115-94aab2bcf273. Urgency: routine."}
+2026-05-02T05:01:08.596Z | {"to":"Alice","type":"reporter","complaintId":"d7096b03-386a-491e-9f11-5ed004c69b1b","message":"Complaint received and routed to Water with urgency urgent."}
+2026-05-02T05:01:08.598Z | {"to":"Water","type":"department","complaintId":"d7096b03-386a-491e-9f11-5ed004c69b1b","message":"New complaint assigned: d7096b03-386a-491e-9f11-5ed004c69b1b. Urgency: urgent."}
+2026-05-02T05:01:08.608Z | {"to":"Bob","type":"reporter","complaintId":"8370923a-8ab1-4133-854a-d85612e86104","message":"Complaint received and routed to Roads with urgency urgent."}
+2026-05-02T05:01:08.609Z | {"to":"Roads","type":"department","complaintId":"8370923a-8ab1-4133-854a-d85612e86104","message":"New complaint assigned: 8370923a-8ab1-4133-854a-d85612e86104. Urgency: urgent."}
+2026-05-02T05:01:08.615Z | {"to":"Dana","type":"reporter","complaintId":"55384ec3-0c7d-46da-8473-907e54058730","message":"Complaint received and routed to Sanitation with urgency routine."}
+2026-05-02T05:01:08.615Z | {"to":"Sanitation","type":"department","complaintId":"55384ec3-0c7d-46da-8473-907e54058730","message":"New complaint assigned: 55384ec3-0c7d-46da-8473-907e54058730. Urgency: routine."}
+2026-05-02T05:01:08.620Z | {"to":"Eli","type":"reporter","complaintId":"736a2841-7124-483e-be44-6f33dec05be9","message":"Complaint received and routed to Tax Office with urgency routine."}
+2026-05-02T05:01:08.621Z | {"to":"Tax Office","type":"department","complaintId":"736a2841-7124-483e-be44-6f33dec05be9","message":"New complaint assigned: 736a2841-7124-483e-be44-6f33dec05be9. Urgency: routine."}
+2026-05-02T05:01:08.630Z | {"to":"Fiona","type":"reporter","complaintId":"386cf1b3-b493-40f5-ae1e-01ed7367de35","message":"Complaint received and routed to Civil Registry with urgency urgent."}
+2026-05-02T05:01:08.631Z | {"to":"Civil Registry","type":"department","complaintId":"386cf1b3-b493-40f5-ae1e-01ed7367de35","message":"New complaint assigned: 386cf1b3-b493-40f5-ae1e-01ed7367de35. Urgency: urgent."}
+2026-05-02T05:01:08.636Z | {"to":"Water","type":"department","complaintId":"stale-urgent-001","message":"Urgent complaint has been automatically escalated for immediate attention."}
+2026-05-02T05:01:08.636Z | {"to":"Carol","type":"reporter","complaintId":"stale-urgent-001","message":"Your urgent complaint has been escalated to the department for faster handling."}
+2026-05-02T05:01:21.866Z | {"to":"Alice","type":"reporter","complaintId":"9db291ce-d51e-499d-bb85-3130d8ec9e4c","message":"Complaint received and routed to Water with urgency urgent."}
+2026-05-02T05:01:21.868Z | {"to":"Water","type":"department","complaintId":"9db291ce-d51e-499d-bb85-3130d8ec9e4c","message":"New complaint assigned: 9db291ce-d51e-499d-bb85-3130d8ec9e4c. Urgency: urgent."}
+2026-05-02T05:01:21.878Z | {"to":"Bob","type":"reporter","complaintId":"dc690465-4a3e-4181-a537-6296d8c0f121","message":"Complaint received and routed to Roads with urgency urgent."}
+2026-05-02T05:01:21.879Z | {"to":"Roads","type":"department","complaintId":"dc690465-4a3e-4181-a537-6296d8c0f121","message":"New complaint assigned: dc690465-4a3e-4181-a537-6296d8c0f121. Urgency: urgent."}
+2026-05-02T05:01:21.885Z | {"to":"Dana","type":"reporter","complaintId":"fbf104af-9f3a-4398-b470-f6c510c9572e","message":"Complaint received and routed to Sanitation with urgency routine."}
+2026-05-02T05:01:21.886Z | {"to":"Sanitation","type":"department","complaintId":"fbf104af-9f3a-4398-b470-f6c510c9572e","message":"New complaint assigned: fbf104af-9f3a-4398-b470-f6c510c9572e. Urgency: routine."}
+2026-05-02T05:01:21.890Z | {"to":"Eli","type":"reporter","complaintId":"7b1b5008-e55a-4b8e-af5a-d7e14e7ede4c","message":"Complaint received and routed to Tax Office with urgency urgent."}
+2026-05-02T05:01:21.891Z | {"to":"Tax Office","type":"department","complaintId":"7b1b5008-e55a-4b8e-af5a-d7e14e7ede4c","message":"New complaint assigned: 7b1b5008-e55a-4b8e-af5a-d7e14e7ede4c. Urgency: urgent."}
+2026-05-02T05:01:21.895Z | {"to":"Fiona","type":"reporter","complaintId":"60614d4f-3259-476a-a34a-6de7ca320926","message":"Complaint received and routed to Civil Registry with urgency urgent."}
+2026-05-02T05:01:21.896Z | {"to":"Civil Registry","type":"department","complaintId":"60614d4f-3259-476a-a34a-6de7ca320926","message":"New complaint assigned: 60614d4f-3259-476a-a34a-6de7ca320926. Urgency: urgent."}
+2026-05-02T05:01:21.899Z | {"to":"Water","type":"department","complaintId":"stale-urgent-001","message":"Urgent complaint has been automatically escalated for immediate attention."}
+2026-05-02T05:01:21.900Z | {"to":"Carol","type":"reporter","complaintId":"stale-urgent-001","message":"Your urgent complaint has been escalated to the department for faster handling."}
+2026-05-02T05:09:07.101Z | {"to":"Alice","type":"reporter","complaintId":"ec240efa-31a5-4063-abad-bdcedca1d121","message":"Complaint received and routed to Water with urgency urgent."}
+2026-05-02T05:09:07.102Z | {"to":"Water","type":"department","complaintId":"ec240efa-31a5-4063-abad-bdcedca1d121","message":"New complaint assigned: ec240efa-31a5-4063-abad-bdcedca1d121. Urgency: urgent."}
+2026-05-02T05:09:07.110Z | {"to":"Bob","type":"reporter","complaintId":"1b523c71-6803-45a6-b18d-ef3c42729325","message":"Complaint received and routed to Roads with urgency urgent."}
+2026-05-02T05:09:07.111Z | {"to":"Roads","type":"department","complaintId":"1b523c71-6803-45a6-b18d-ef3c42729325","message":"New complaint assigned: 1b523c71-6803-45a6-b18d-ef3c42729325. Urgency: urgent."}
+2026-05-02T05:09:07.116Z | {"to":"Dana","type":"reporter","complaintId":"bc036516-c4ba-4926-a296-417b07eb8e0b","message":"Complaint received and routed to Sanitation with urgency routine."}
+2026-05-02T05:09:07.117Z | {"to":"Sanitation","type":"department","complaintId":"bc036516-c4ba-4926-a296-417b07eb8e0b","message":"New complaint assigned: bc036516-c4ba-4926-a296-417b07eb8e0b. Urgency: routine."}
+2026-05-02T05:09:07.122Z | {"to":"Eli","type":"reporter","complaintId":"88fb5ee7-80aa-4525-a975-edf352f501d0","message":"Complaint received and routed to Tax Office with urgency urgent."}
+2026-05-02T05:09:07.122Z | {"to":"Tax Office","type":"department","complaintId":"88fb5ee7-80aa-4525-a975-edf352f501d0","message":"New complaint assigned: 88fb5ee7-80aa-4525-a975-edf352f501d0. Urgency: urgent."}
+2026-05-02T05:09:07.126Z | {"to":"Fiona","type":"reporter","complaintId":"d1ca0853-976e-44d7-b30f-495d3815c9be","message":"Complaint received and routed to Civil Registry with urgency urgent."}
+2026-05-02T05:09:07.126Z | {"to":"Civil Registry","type":"department","complaintId":"d1ca0853-976e-44d7-b30f-495d3815c9be","message":"New complaint assigned: d1ca0853-976e-44d7-b30f-495d3815c9be. Urgency: urgent."}
+2026-05-02T05:09:07.141Z | {"to":"Water","type":"department","complaintId":"stale-urgent-001","message":"Urgent complaint has been automatically escalated for immediate attention."}
+2026-05-02T05:09:07.142Z | {"to":"Carol","type":"reporter","complaintId":"stale-urgent-001","message":"Your urgent complaint has been escalated to the department for faster handling."}
+2026-05-02T05:12:43.181Z | {"to":"Alice","type":"reporter","complaintId":"22a0b751-cc6f-4bdc-87cf-a0ae33becac9","message":"Complaint received and routed to Water with urgency urgent."}
+2026-05-02T05:12:43.183Z | {"to":"Water","type":"department","complaintId":"22a0b751-cc6f-4bdc-87cf-a0ae33becac9","message":"New complaint assigned: 22a0b751-cc6f-4bdc-87cf-a0ae33becac9. Urgency: urgent."}
+2026-05-02T05:12:43.192Z | {"to":"Bob","type":"reporter","complaintId":"54c4c46d-ed9d-4756-939d-44233f22d756","message":"Complaint received and routed to Roads with urgency urgent."}
+2026-05-02T05:12:43.193Z | {"to":"Roads","type":"department","complaintId":"54c4c46d-ed9d-4756-939d-44233f22d756","message":"New complaint assigned: 54c4c46d-ed9d-4756-939d-44233f22d756. Urgency: urgent."}
+2026-05-02T05:12:43.198Z | {"to":"Dana","type":"reporter","complaintId":"c7adb822-92b9-4ccf-95cd-816ce9355cc2","message":"Complaint received and routed to Sanitation with urgency routine."}
+2026-05-02T05:12:43.199Z | {"to":"Sanitation","type":"department","complaintId":"c7adb822-92b9-4ccf-95cd-816ce9355cc2","message":"New complaint assigned: c7adb822-92b9-4ccf-95cd-816ce9355cc2. Urgency: routine."}
+2026-05-02T05:12:43.204Z | {"to":"Eli","type":"reporter","complaintId":"249dd9aa-d4f3-4f84-9bd0-94eb3db30b18","message":"Complaint received and routed to Tax Office with urgency urgent."}
+2026-05-02T05:12:43.205Z | {"to":"Tax Office","type":"department","complaintId":"249dd9aa-d4f3-4f84-9bd0-94eb3db30b18","message":"New complaint assigned: 249dd9aa-d4f3-4f84-9bd0-94eb3db30b18. Urgency: urgent."}
+2026-05-02T05:12:43.214Z | {"to":"Fiona","type":"reporter","complaintId":"cb1d538b-c571-4619-9c2f-8ccd7eae6c33","message":"Complaint received and routed to Civil Registry with urgency urgent."}
+2026-05-02T05:12:43.215Z | {"to":"Civil Registry","type":"department","complaintId":"cb1d538b-c571-4619-9c2f-8ccd7eae6c33","message":"New complaint assigned: cb1d538b-c571-4619-9c2f-8ccd7eae6c33. Urgency: urgent."}
+2026-05-02T05:12:43.230Z | {"to":"Water","type":"department","complaintId":"stale-urgent-001","message":"Urgent complaint has been automatically escalated for immediate attention."}
+2026-05-02T05:12:43.231Z | {"to":"Carol","type":"reporter","complaintId":"stale-urgent-001","message":"Your urgent complaint has been escalated to the department for faster handling."}
+2026-05-02T05:12:53.978Z | {"to":"Alice","type":"reporter","complaintId":"1f872ab6-98e9-40d9-a505-4be5c5dd254a","message":"Complaint received and routed to Water with urgency urgent."}
+2026-05-02T05:12:53.980Z | {"to":"Water","type":"department","complaintId":"1f872ab6-98e9-40d9-a505-4be5c5dd254a","message":"New complaint assigned: 1f872ab6-98e9-40d9-a505-4be5c5dd254a. Urgency: urgent."}
+2026-05-02T05:12:53.991Z | {"to":"Bob","type":"reporter","complaintId":"16fd7f29-dfdd-4ee5-8bf1-569d7e6ddcf0","message":"Complaint received and routed to Roads with urgency urgent."}
+2026-05-02T05:12:53.992Z | {"to":"Roads","type":"department","complaintId":"16fd7f29-dfdd-4ee5-8bf1-569d7e6ddcf0","message":"New complaint assigned: 16fd7f29-dfdd-4ee5-8bf1-569d7e6ddcf0. Urgency: urgent."}
+2026-05-02T05:12:53.998Z | {"to":"Dana","type":"reporter","complaintId":"4cfd5adf-d84e-4039-b871-873681823b29","message":"Complaint received and routed to Sanitation with urgency routine."}
+2026-05-02T05:12:53.998Z | {"to":"Sanitation","type":"department","complaintId":"4cfd5adf-d84e-4039-b871-873681823b29","message":"New complaint assigned: 4cfd5adf-d84e-4039-b871-873681823b29. Urgency: routine."}
+2026-05-02T05:12:54.004Z | {"to":"Eli","type":"reporter","complaintId":"c5077825-0691-4051-86f0-8e036b8e5286","message":"Complaint received and routed to Tax Office with urgency urgent."}
+2026-05-02T05:12:54.005Z | {"to":"Tax Office","type":"department","complaintId":"c5077825-0691-4051-86f0-8e036b8e5286","message":"New complaint assigned: c5077825-0691-4051-86f0-8e036b8e5286. Urgency: urgent."}
+2026-05-02T05:12:54.008Z | {"to":"Fiona","type":"reporter","complaintId":"225763d9-0247-4eb5-947f-d343e94f20e1","message":"Complaint received and routed to Civil Registry with urgency urgent."}
+2026-05-02T05:12:54.009Z | {"to":"Civil Registry","type":"department","complaintId":"225763d9-0247-4eb5-947f-d343e94f20e1","message":"New complaint assigned: 225763d9-0247-4eb5-947f-d343e94f20e1. Urgency: urgent."}
+2026-05-02T05:12:54.023Z | {"to":"Water","type":"department","complaintId":"stale-urgent-001","message":"Urgent complaint has been automatically escalated for immediate attention."}
+2026-05-02T05:12:54.024Z | {"to":"Carol","type":"reporter","complaintId":"stale-urgent-001","message":"Your urgent complaint has been escalated to the department for faster handling."}
+2026-05-02T05:14:32.197Z | {"to":"Alice","type":"reporter","complaintId":"7b650834-7a2c-4067-8a25-333639239064","message":"Complaint received and routed to Water with urgency urgent."}
+2026-05-02T05:14:32.198Z | {"to":"Water","type":"department","complaintId":"7b650834-7a2c-4067-8a25-333639239064","message":"New complaint assigned: 7b650834-7a2c-4067-8a25-333639239064. Urgency: urgent."}
+2026-05-02T05:14:32.209Z | {"to":"Bob","type":"reporter","complaintId":"3b49c85f-d5cf-4e0e-9ab5-42d94db2584e","message":"Complaint received and routed to Roads with urgency urgent."}
+2026-05-02T05:14:32.210Z | {"to":"Roads","type":"department","complaintId":"3b49c85f-d5cf-4e0e-9ab5-42d94db2584e","message":"New complaint assigned: 3b49c85f-d5cf-4e0e-9ab5-42d94db2584e. Urgency: urgent."}
+2026-05-02T05:14:32.215Z | {"to":"Dana","type":"reporter","complaintId":"22a064b1-ddbc-4517-bdcc-5837355b7d55","message":"Complaint received and routed to Sanitation with urgency routine."}
+2026-05-02T05:14:32.216Z | {"to":"Sanitation","type":"department","complaintId":"22a064b1-ddbc-4517-bdcc-5837355b7d55","message":"New complaint assigned: 22a064b1-ddbc-4517-bdcc-5837355b7d55. Urgency: routine."}
+2026-05-02T05:14:32.221Z | {"to":"Eli","type":"reporter","complaintId":"c8b86253-8f28-4ebe-8fb6-6a3b4126ec32","message":"Complaint received and routed to Tax Office with urgency urgent."}
+2026-05-02T05:14:32.222Z | {"to":"Tax Office","type":"department","complaintId":"c8b86253-8f28-4ebe-8fb6-6a3b4126ec32","message":"New complaint assigned: c8b86253-8f28-4ebe-8fb6-6a3b4126ec32. Urgency: urgent."}
+2026-05-02T05:14:32.226Z | {"to":"Fiona","type":"reporter","complaintId":"7bd5bace-42ed-4b5c-9220-f8b5a4fd6f72","message":"Complaint received and routed to Civil Registry with urgency urgent."}
+2026-05-02T05:14:32.227Z | {"to":"Civil Registry","type":"department","complaintId":"7bd5bace-42ed-4b5c-9220-f8b5a4fd6f72","message":"New complaint assigned: 7bd5bace-42ed-4b5c-9220-f8b5a4fd6f72. Urgency: urgent."}
+2026-05-02T05:14:32.241Z | {"to":"Water","type":"department","complaintId":"stale-urgent-001","message":"Urgent complaint has been automatically escalated for immediate attention."}
+2026-05-02T05:14:32.242Z | {"to":"Carol","type":"reporter","complaintId":"stale-urgent-001","message":"Your urgent complaint has been escalated to the department for faster handling."}
+2026-05-02T05:17:49.122Z | {"to":"Alice","type":"reporter","complaintId":"02e4663a-3bda-4ae3-8da8-4dd680ca42c5","message":"Complaint received and routed to Water with urgency urgent."}
+2026-05-02T05:17:49.123Z | {"to":"Water","type":"department","complaintId":"02e4663a-3bda-4ae3-8da8-4dd680ca42c5","message":"New complaint assigned: 02e4663a-3bda-4ae3-8da8-4dd680ca42c5. Urgency: urgent."}
+2026-05-02T05:17:49.133Z | {"to":"Bob","type":"reporter","complaintId":"9d076f48-f448-4dc1-b73e-df20ed5e385a","message":"Complaint received and routed to Roads with urgency urgent."}
+2026-05-02T05:17:49.134Z | {"to":"Roads","type":"department","complaintId":"9d076f48-f448-4dc1-b73e-df20ed5e385a","message":"New complaint assigned: 9d076f48-f448-4dc1-b73e-df20ed5e385a. Urgency: urgent."}
+2026-05-02T05:17:49.139Z | {"to":"Dana","type":"reporter","complaintId":"65d22e62-0768-4573-9659-c1d0fa52abd1","message":"Complaint received and routed to Sanitation with urgency routine."}
+2026-05-02T05:17:49.140Z | {"to":"Sanitation","type":"department","complaintId":"65d22e62-0768-4573-9659-c1d0fa52abd1","message":"New complaint assigned: 65d22e62-0768-4573-9659-c1d0fa52abd1. Urgency: routine."}
+2026-05-02T05:17:49.145Z | {"to":"Eli","type":"reporter","complaintId":"24de69d0-4abb-4155-b5ee-1495bea45d31","message":"Complaint received and routed to Tax Office with urgency urgent."}
+2026-05-02T05:17:49.146Z | {"to":"Tax Office","type":"department","complaintId":"24de69d0-4abb-4155-b5ee-1495bea45d31","message":"New complaint assigned: 24de69d0-4abb-4155-b5ee-1495bea45d31. Urgency: urgent."}
+2026-05-02T05:17:49.149Z | {"to":"Fiona","type":"reporter","complaintId":"0d49c7f7-b7f6-4b39-8737-380756d11603","message":"Complaint received and routed to Civil Registry with urgency urgent."}
+2026-05-02T05:17:49.150Z | {"to":"Civil Registry","type":"department","complaintId":"0d49c7f7-b7f6-4b39-8737-380756d11603","message":"New complaint assigned: 0d49c7f7-b7f6-4b39-8737-380756d11603. Urgency: urgent."}
+2026-05-02T05:17:49.165Z | {"to":"Water","type":"department","complaintId":"stale-urgent-001","message":"Urgent complaint has been automatically escalated for immediate attention."}
+2026-05-02T05:17:49.165Z | {"to":"Carol","type":"reporter","complaintId":"stale-urgent-001","message":"Your urgent complaint has been escalated to the department for faster handling."}
+2026-05-02T05:22:34.943Z | {"to":"Alice","type":"reporter","complaintId":"a9854249-cc88-4340-9b37-a0197a35ae49","message":"Complaint received and routed to Water with urgency urgent."}
+2026-05-02T05:22:34.944Z | {"to":"Water","type":"department","complaintId":"a9854249-cc88-4340-9b37-a0197a35ae49","message":"New complaint assigned: a9854249-cc88-4340-9b37-a0197a35ae49. Urgency: urgent."}
+2026-05-02T05:22:34.955Z | {"to":"Bob","type":"reporter","complaintId":"932d4a5e-0375-4dd7-9089-335b987d0762","message":"Complaint received and routed to Roads with urgency urgent."}
+2026-05-02T05:22:34.956Z | {"to":"Roads","type":"department","complaintId":"932d4a5e-0375-4dd7-9089-335b987d0762","message":"New complaint assigned: 932d4a5e-0375-4dd7-9089-335b987d0762. Urgency: urgent."}
+2026-05-02T05:22:34.961Z | {"to":"Dana","type":"reporter","complaintId":"a6835c32-759f-4530-aa81-946b56382117","message":"Complaint received and routed to Sanitation with urgency routine."}
+2026-05-02T05:22:34.962Z | {"to":"Sanitation","type":"department","complaintId":"a6835c32-759f-4530-aa81-946b56382117","message":"New complaint assigned: a6835c32-759f-4530-aa81-946b56382117. Urgency: routine."}
+2026-05-02T05:22:34.968Z | {"to":"Eli","type":"reporter","complaintId":"3b941fb5-373f-4cea-a170-a6ad697206c9","message":"Complaint received and routed to Tax Office with urgency urgent."}
+2026-05-02T05:22:34.969Z | {"to":"Tax Office","type":"department","complaintId":"3b941fb5-373f-4cea-a170-a6ad697206c9","message":"New complaint assigned: 3b941fb5-373f-4cea-a170-a6ad697206c9. Urgency: urgent."}
+2026-05-02T05:22:34.972Z | {"to":"Fiona","type":"reporter","complaintId":"781acd2d-48f4-4282-9aad-971772148a9c","message":"Complaint received and routed to Civil Registry with urgency urgent."}
+2026-05-02T05:22:34.973Z | {"to":"Civil Registry","type":"department","complaintId":"781acd2d-48f4-4282-9aad-971772148a9c","message":"New complaint assigned: 781acd2d-48f4-4282-9aad-971772148a9c. Urgency: urgent."}
+2026-05-02T05:22:34.988Z | {"to":"Water","type":"department","complaintId":"stale-urgent-001","message":"Urgent complaint has been automatically escalated for immediate attention."}
+2026-05-02T05:22:34.988Z | {"to":"Carol","type":"reporter","complaintId":"stale-urgent-001","message":"Your urgent complaint has been escalated to the department for faster handling."}
+2026-05-02T05:25:09.318Z | {"to":"Alice","type":"reporter","complaintId":"b6b4f6db-8a46-471a-a983-7551fa294d74","message":"Complaint received and routed to Water with urgency urgent."}
+2026-05-02T05:25:09.320Z | {"to":"Water","type":"department","complaintId":"b6b4f6db-8a46-471a-a983-7551fa294d74","message":"New complaint assigned: b6b4f6db-8a46-471a-a983-7551fa294d74. Urgency: urgent."}
+2026-05-02T05:25:09.330Z | {"to":"Bob","type":"reporter","complaintId":"29a30046-e1ae-42ff-bfc9-7f927a2a2644","message":"Complaint received and routed to Roads with urgency urgent."}
+2026-05-02T05:25:09.332Z | {"to":"Roads","type":"department","complaintId":"29a30046-e1ae-42ff-bfc9-7f927a2a2644","message":"New complaint assigned: 29a30046-e1ae-42ff-bfc9-7f927a2a2644. Urgency: urgent."}
+2026-05-02T05:25:09.337Z | {"to":"Dana","type":"reporter","complaintId":"ee728ce1-1641-4d6c-85bc-fc3b80a153d6","message":"Complaint received and routed to Sanitation with urgency routine."}
+2026-05-02T05:25:09.338Z | {"to":"Sanitation","type":"department","complaintId":"ee728ce1-1641-4d6c-85bc-fc3b80a153d6","message":"New complaint assigned: ee728ce1-1641-4d6c-85bc-fc3b80a153d6. Urgency: routine."}
+2026-05-02T05:25:09.344Z | {"to":"Eli","type":"reporter","complaintId":"641d6aa5-7e09-4df0-b71d-aa57cc75fdc8","message":"Complaint received and routed to Tax Office with urgency urgent."}
+2026-05-02T05:25:09.345Z | {"to":"Tax Office","type":"department","complaintId":"641d6aa5-7e09-4df0-b71d-aa57cc75fdc8","message":"New complaint assigned: 641d6aa5-7e09-4df0-b71d-aa57cc75fdc8. Urgency: urgent."}
+2026-05-02T05:25:09.349Z | {"to":"Fiona","type":"reporter","complaintId":"e6f9621a-2b80-4e24-84d3-0488f94404af","message":"Complaint received and routed to Civil Registry with urgency urgent."}
+2026-05-02T05:25:09.350Z | {"to":"Civil Registry","type":"department","complaintId":"e6f9621a-2b80-4e24-84d3-0488f94404af","message":"New complaint assigned: e6f9621a-2b80-4e24-84d3-0488f94404af. Urgency: urgent."}
+2026-05-02T05:25:09.365Z | {"to":"Water","type":"department","complaintId":"stale-urgent-001","message":"Urgent complaint has been automatically escalated for immediate attention."}
+2026-05-02T05:25:09.366Z | {"to":"Carol","type":"reporter","complaintId":"stale-urgent-001","message":"Your urgent complaint has been escalated to the department for faster handling."}
+2026-05-02T05:30:07.911Z | {"to":"Alice","type":"reporter","complaintId":"951cae66-d9a4-4121-9741-f3d2045352bf","message":"Complaint received and routed to Water with urgency urgent."}
+2026-05-02T05:30:07.912Z | {"to":"Water","type":"department","complaintId":"951cae66-d9a4-4121-9741-f3d2045352bf","message":"New complaint assigned: 951cae66-d9a4-4121-9741-f3d2045352bf. Urgency: urgent."}
+2026-05-02T05:30:07.921Z | {"to":"Bob","type":"reporter","complaintId":"b8b1f8cf-e9f9-4f08-bc1f-4bb768a2b2e6","message":"Complaint received and routed to Roads with urgency urgent."}
+2026-05-02T05:30:07.923Z | {"to":"Roads","type":"department","complaintId":"b8b1f8cf-e9f9-4f08-bc1f-4bb768a2b2e6","message":"New complaint assigned: b8b1f8cf-e9f9-4f08-bc1f-4bb768a2b2e6. Urgency: urgent."}
+2026-05-02T05:30:07.930Z | {"to":"Dana","type":"reporter","complaintId":"264978c5-94d0-423c-81c8-394c769ffca7","message":"Complaint received and routed to Sanitation with urgency routine."}
+2026-05-02T05:30:07.931Z | {"to":"Sanitation","type":"department","complaintId":"264978c5-94d0-423c-81c8-394c769ffca7","message":"New complaint assigned: 264978c5-94d0-423c-81c8-394c769ffca7. Urgency: routine."}
+2026-05-02T05:30:07.937Z | {"to":"Eli","type":"reporter","complaintId":"3fdec55c-fde9-4c7c-891f-869fdda9e266","message":"Complaint received and routed to Tax Office with urgency urgent."}
+2026-05-02T05:30:07.938Z | {"to":"Tax Office","type":"department","complaintId":"3fdec55c-fde9-4c7c-891f-869fdda9e266","message":"New complaint assigned: 3fdec55c-fde9-4c7c-891f-869fdda9e266. Urgency: urgent."}
+2026-05-02T05:30:07.942Z | {"to":"Fiona","type":"reporter","complaintId":"4b23c410-3971-442a-acd0-b9df861017a0","message":"Complaint received and routed to Civil Registry with urgency urgent."}
+2026-05-02T05:30:07.943Z | {"to":"Civil Registry","type":"department","complaintId":"4b23c410-3971-442a-acd0-b9df861017a0","message":"New complaint assigned: 4b23c410-3971-442a-acd0-b9df861017a0. Urgency: urgent."}
+2026-05-02T05:30:07.973Z | {"to":"Water","type":"department","complaintId":"stale-urgent-001","message":"Urgent complaint has been automatically escalated for immediate attention."}
+2026-05-02T05:30:07.974Z | {"to":"Carol","type":"reporter","complaintId":"stale-urgent-001","message":"Your urgent complaint has been escalated to the department for faster handling."}
+2026-05-02T05:30:12.289Z | {"to":"Alice","type":"reporter","complaintId":"410cff13-6958-4cee-a608-c640b572b284","message":"Complaint received and routed to Water with urgency urgent."}
+2026-05-02T05:30:12.290Z | {"to":"Water","type":"department","complaintId":"410cff13-6958-4cee-a608-c640b572b284","message":"New complaint assigned: 410cff13-6958-4cee-a608-c640b572b284. Urgency: urgent."}
+2026-05-02T05:30:12.300Z | {"to":"Bob","type":"reporter","complaintId":"0794a3ce-db11-4039-98f0-33e6991912f7","message":"Complaint received and routed to Roads with urgency urgent."}
+2026-05-02T05:30:12.302Z | {"to":"Roads","type":"department","complaintId":"0794a3ce-db11-4039-98f0-33e6991912f7","message":"New complaint assigned: 0794a3ce-db11-4039-98f0-33e6991912f7. Urgency: urgent."}
+2026-05-02T05:30:12.308Z | {"to":"Dana","type":"reporter","complaintId":"5e94cef1-bbe4-428d-93e5-d2788f1f975e","message":"Complaint received and routed to Sanitation with urgency routine."}
+2026-05-02T05:30:12.309Z | {"to":"Sanitation","type":"department","complaintId":"5e94cef1-bbe4-428d-93e5-d2788f1f975e","message":"New complaint assigned: 5e94cef1-bbe4-428d-93e5-d2788f1f975e. Urgency: routine."}
+2026-05-02T05:30:12.315Z | {"to":"Eli","type":"reporter","complaintId":"bf8b2e7a-6bd6-46a1-b23e-45408aa49e96","message":"Complaint received and routed to Tax Office with urgency urgent."}
+2026-05-02T05:30:12.316Z | {"to":"Tax Office","type":"department","complaintId":"bf8b2e7a-6bd6-46a1-b23e-45408aa49e96","message":"New complaint assigned: bf8b2e7a-6bd6-46a1-b23e-45408aa49e96. Urgency: urgent."}
+2026-05-02T05:30:12.321Z | {"to":"Fiona","type":"reporter","complaintId":"c0fabcc1-6f29-4b6a-846a-49c6a5d0b737","message":"Complaint received and routed to Civil Registry with urgency urgent."}
+2026-05-02T05:30:12.322Z | {"to":"Civil Registry","type":"department","complaintId":"c0fabcc1-6f29-4b6a-846a-49c6a5d0b737","message":"New complaint assigned: c0fabcc1-6f29-4b6a-846a-49c6a5d0b737. Urgency: urgent."}
+2026-05-02T05:30:12.354Z | {"to":"Water","type":"department","complaintId":"stale-urgent-001","message":"Urgent complaint has been automatically escalated for immediate attention."}
+2026-05-02T05:30:12.355Z | {"to":"Carol","type":"reporter","complaintId":"stale-urgent-001","message":"Your urgent complaint has been escalated to the department for faster handling."}
+2026-05-02T05:45:07.460Z | {"to":"S.Das","type":"reporter","complaintId":"c6c7dc67-3478-4cf6-876d-18386cd30f74","message":"Complaint received and routed to PWD with urgency Very Urgent."}
+2026-05-02T05:45:07.460Z | {"to":"PWD","type":"department","complaintId":"c6c7dc67-3478-4cf6-876d-18386cd30f74","message":"New complaint assigned: c6c7dc67-3478-4cf6-876d-18386cd30f74. Urgency: Very Urgent."}
+2026-05-02T05:48:30.922Z | {"to":"Water","type":"department","complaintId":"14876872-c11b-4a88-9bea-2268c919a49d","message":"Urgent complaint has been automatically escalated for immediate attention."}
+2026-05-02T05:48:30.922Z | {"to":"Alice","type":"reporter","complaintId":"14876872-c11b-4a88-9bea-2268c919a49d","message":"Your urgent complaint has been escalated to the department for faster handling."}
+2026-05-02T05:48:30.925Z | {"to":"Roads","type":"department","complaintId":"175888b2-c2b0-42f0-bd58-1e1922de2e04","message":"Urgent complaint has been automatically escalated for immediate attention."}
+2026-05-02T05:48:30.925Z | {"to":"Bob","type":"reporter","complaintId":"175888b2-c2b0-42f0-bd58-1e1922de2e04","message":"Your urgent complaint has been escalated to the department for faster handling."}
+2026-05-02T06:28:03.331Z | {"to":"Alice","type":"reporter","complaintId":"8e734765-9f47-48fe-8a31-742aa381fabf","message":"Complaint received and routed to Water with urgency urgent."}
+2026-05-02T06:28:03.332Z | {"to":"Water","type":"department","complaintId":"8e734765-9f47-48fe-8a31-742aa381fabf","message":"New complaint assigned: 8e734765-9f47-48fe-8a31-742aa381fabf. Urgency: urgent."}
+2026-05-02T06:28:03.340Z | {"to":"Bob","type":"reporter","complaintId":"59ce801c-fffc-4ffa-a60a-53c3ad9bd29b","message":"Complaint received and routed to Roads with urgency urgent."}
+2026-05-02T06:28:03.342Z | {"to":"Roads","type":"department","complaintId":"59ce801c-fffc-4ffa-a60a-53c3ad9bd29b","message":"New complaint assigned: 59ce801c-fffc-4ffa-a60a-53c3ad9bd29b. Urgency: urgent."}
+2026-05-02T06:28:03.347Z | {"to":"Dana","type":"reporter","complaintId":"91e6953e-e8cb-4dbd-bfcb-f5ea947cfc3e","message":"Complaint received and routed to Sanitation with urgency routine."}
+2026-05-02T06:28:03.348Z | {"to":"Sanitation","type":"department","complaintId":"91e6953e-e8cb-4dbd-bfcb-f5ea947cfc3e","message":"New complaint assigned: 91e6953e-e8cb-4dbd-bfcb-f5ea947cfc3e. Urgency: routine."}
+2026-05-02T06:28:03.353Z | {"to":"George","type":"reporter","complaintId":"4370d018-c8b9-4fea-82d3-d0beba1d8966","message":"Complaint received and routed to Water with urgency routine."}
+2026-05-02T06:28:03.354Z | {"to":"Water","type":"department","complaintId":"4370d018-c8b9-4fea-82d3-d0beba1d8966","message":"New complaint assigned: 4370d018-c8b9-4fea-82d3-d0beba1d8966. Urgency: routine."}
+2026-05-02T06:28:03.356Z | {"to":"Harriet","type":"reporter","complaintId":"eeb84695-3651-4716-975e-211e9d7d672a","message":"Complaint received and routed to Roads with urgency routine."}
+2026-05-02T06:28:03.357Z | {"to":"Roads","type":"department","complaintId":"eeb84695-3651-4716-975e-211e9d7d672a","message":"New complaint assigned: eeb84695-3651-4716-975e-211e9d7d672a. Urgency: routine."}
+2026-05-02T06:28:03.363Z | {"to":"Eli","type":"reporter","complaintId":"f93460b2-be6d-4af0-84ff-99a620d21743","message":"Complaint received and routed to Tax Office with urgency urgent."}
+2026-05-02T06:28:03.364Z | {"to":"Tax Office","type":"department","complaintId":"f93460b2-be6d-4af0-84ff-99a620d21743","message":"New complaint assigned: f93460b2-be6d-4af0-84ff-99a620d21743. Urgency: urgent."}
+2026-05-02T06:28:03.367Z | {"to":"Fiona","type":"reporter","complaintId":"bd3b34bb-f45c-4d5f-b11c-ba722618e76d","message":"Complaint received and routed to Civil Registry with urgency urgent."}
+2026-05-02T06:28:03.368Z | {"to":"Civil Registry","type":"department","complaintId":"bd3b34bb-f45c-4d5f-b11c-ba722618e76d","message":"New complaint assigned: bd3b34bb-f45c-4d5f-b11c-ba722618e76d. Urgency: urgent."}
+2026-05-02T06:28:03.393Z | {"to":"Water","type":"department","complaintId":"stale-urgent-001","message":"Urgent complaint has been automatically escalated for immediate attention."}
+2026-05-02T06:28:03.394Z | {"to":"Carol","type":"reporter","complaintId":"stale-urgent-001","message":"Your urgent complaint has been escalated to the department for faster handling."}
+2026-05-02T06:48:32.294Z | {"to":"Water","type":"department","complaintId":"14876872-c11b-4a88-9bea-2268c919a49d","message":"Urgent complaint has been automatically escalated for immediate attention."}
+2026-05-02T06:48:32.294Z | {"to":"Alice","type":"reporter","complaintId":"14876872-c11b-4a88-9bea-2268c919a49d","message":"Your urgent complaint has been escalated to the department for faster handling."}
+2026-05-02T06:48:32.297Z | {"to":"Roads","type":"department","complaintId":"175888b2-c2b0-42f0-bd58-1e1922de2e04","message":"Urgent complaint has been automatically escalated for immediate attention."}
+2026-05-02T06:48:32.298Z | {"to":"Bob","type":"reporter","complaintId":"175888b2-c2b0-42f0-bd58-1e1922de2e04","message":"Your urgent complaint has been escalated to the department for faster handling."}
+2026-05-02T06:50:37.533Z | {"to":"Alice","type":"reporter","complaintId":"21ab9e2a-7d37-419f-8fdc-e92e7f9eb3d0","message":"Complaint received and routed to Water with urgency urgent."}
+2026-05-02T06:50:37.534Z | {"to":"Water","type":"department","complaintId":"21ab9e2a-7d37-419f-8fdc-e92e7f9eb3d0","message":"New complaint assigned: 21ab9e2a-7d37-419f-8fdc-e92e7f9eb3d0. Urgency: urgent."}
+2026-05-02T06:50:37.543Z | {"to":"Bob","type":"reporter","complaintId":"4bb72770-76ad-4d9a-9509-6f5e6ae6a02b","message":"Complaint received and routed to Roads with urgency urgent."}
+2026-05-02T06:50:37.544Z | {"to":"Roads","type":"department","complaintId":"4bb72770-76ad-4d9a-9509-6f5e6ae6a02b","message":"New complaint assigned: 4bb72770-76ad-4d9a-9509-6f5e6ae6a02b. Urgency: urgent."}
+2026-05-02T06:50:37.550Z | {"to":"Dana","type":"reporter","complaintId":"f99a4e8a-21df-456a-8876-221fdba60545","message":"Complaint received and routed to Sanitation with urgency routine."}
+2026-05-02T06:50:37.551Z | {"to":"Sanitation","type":"department","complaintId":"f99a4e8a-21df-456a-8876-221fdba60545","message":"New complaint assigned: f99a4e8a-21df-456a-8876-221fdba60545. Urgency: routine."}
+2026-05-02T06:50:37.556Z | {"to":"George","type":"reporter","complaintId":"0c1387f0-f05c-4962-b5f7-0f8c7db05cfb","message":"Complaint received and routed to Water with urgency routine."}
+2026-05-02T06:50:37.557Z | {"to":"Water","type":"department","complaintId":"0c1387f0-f05c-4962-b5f7-0f8c7db05cfb","message":"New complaint assigned: 0c1387f0-f05c-4962-b5f7-0f8c7db05cfb. Urgency: routine."}
+2026-05-02T06:50:37.561Z | {"to":"Harriet","type":"reporter","complaintId":"0c277a83-fafa-4665-a54d-0c7c0e1874fd","message":"Complaint received and routed to Roads with urgency routine."}
+2026-05-02T06:50:37.562Z | {"to":"Roads","type":"department","complaintId":"0c277a83-fafa-4665-a54d-0c7c0e1874fd","message":"New complaint assigned: 0c277a83-fafa-4665-a54d-0c7c0e1874fd. Urgency: routine."}
+2026-05-02T06:50:37.568Z | {"to":"Eli","type":"reporter","complaintId":"bc84b47d-2529-4022-b3b5-5f3b6fe582ff","message":"Complaint received and routed to Tax Office with urgency urgent."}
+2026-05-02T06:50:37.569Z | {"to":"Tax Office","type":"department","complaintId":"bc84b47d-2529-4022-b3b5-5f3b6fe582ff","message":"New complaint assigned: bc84b47d-2529-4022-b3b5-5f3b6fe582ff. Urgency: urgent."}
+2026-05-02T06:50:37.573Z | {"to":"Fiona","type":"reporter","complaintId":"8f549c3a-29a4-4f72-ade1-dc2be8dbdee3","message":"Complaint received and routed to Civil Registry with urgency urgent."}
+2026-05-02T06:50:37.574Z | {"to":"Civil Registry","type":"department","complaintId":"8f549c3a-29a4-4f72-ade1-dc2be8dbdee3","message":"New complaint assigned: 8f549c3a-29a4-4f72-ade1-dc2be8dbdee3. Urgency: urgent."}
+2026-05-02T06:50:37.588Z | {"to":"Ian","type":"reporter","complaintId":"8c93a5bd-04dc-45f6-ae97-8151661017ff","message":"Complaint received and routed to Roads with urgency routine."}
+2026-05-02T06:50:37.589Z | {"to":"Roads","type":"department","complaintId":"8c93a5bd-04dc-45f6-ae97-8151661017ff","message":"New complaint assigned: 8c93a5bd-04dc-45f6-ae97-8151661017ff. Urgency: routine."}
+2026-05-02T06:50:37.606Z | {"to":"Water","type":"department","complaintId":"stale-urgent-001","message":"Urgent complaint has been automatically escalated for immediate attention."}
+2026-05-02T06:50:37.607Z | {"to":"Carol","type":"reporter","complaintId":"stale-urgent-001","message":"Your urgent complaint has been escalated to the department for faster handling."}
+2026-05-02T07:19:38.286Z | {"to":"Alice","type":"reporter","complaintId":"b76c1638-201f-4bed-91df-a0bdb0d8b6d8","message":"Complaint submitted and routed to Water with urgency urgent."}
+2026-05-02T07:19:38.288Z | {"to":"Water","type":"department","complaintId":"b76c1638-201f-4bed-91df-a0bdb0d8b6d8","message":"New complaint received: b76c1638-201f-4bed-91df-a0bdb0d8b6d8. Urgency: urgent."}
+2026-05-02T07:19:38.296Z | {"to":"Bob","type":"reporter","complaintId":"a827d722-c9da-44bc-9bc9-17513f06fc31","message":"Complaint submitted and routed to Roads with urgency urgent."}
+2026-05-02T07:19:38.297Z | {"to":"Roads","type":"department","complaintId":"a827d722-c9da-44bc-9bc9-17513f06fc31","message":"New complaint received: a827d722-c9da-44bc-9bc9-17513f06fc31. Urgency: urgent."}
+2026-05-02T07:19:38.302Z | {"to":"Dana","type":"reporter","complaintId":"91a9fffc-931b-4326-811a-233631e036cd","message":"Complaint submitted and routed to Sanitation with urgency routine."}
+2026-05-02T07:19:38.303Z | {"to":"Sanitation","type":"department","complaintId":"91a9fffc-931b-4326-811a-233631e036cd","message":"New complaint received: 91a9fffc-931b-4326-811a-233631e036cd. Urgency: routine."}
+2026-05-02T07:19:38.308Z | {"to":"George","type":"reporter","complaintId":"136e9b47-77bd-4b6a-962f-8d294ed22955","message":"Complaint submitted and routed to Water with urgency routine."}
+2026-05-02T07:19:38.309Z | {"to":"Water","type":"department","complaintId":"136e9b47-77bd-4b6a-962f-8d294ed22955","message":"New complaint received: 136e9b47-77bd-4b6a-962f-8d294ed22955. Urgency: routine."}
+2026-05-02T07:19:38.312Z | {"to":"Harriet","type":"reporter","complaintId":"b8ac7c58-e79c-45c6-b1a2-c7bb52b7933d","message":"Complaint submitted and routed to Roads with urgency routine."}
+2026-05-02T07:19:38.313Z | {"to":"Roads","type":"department","complaintId":"b8ac7c58-e79c-45c6-b1a2-c7bb52b7933d","message":"New complaint received: b8ac7c58-e79c-45c6-b1a2-c7bb52b7933d. Urgency: routine."}
+2026-05-02T07:19:38.319Z | {"to":"Eli","type":"reporter","complaintId":"4a69f446-ad9c-454b-bbcc-8baa5d6a448d","message":"Complaint submitted and routed to Tax Office with urgency urgent."}
+2026-05-02T07:19:38.320Z | {"to":"Tax Office","type":"department","complaintId":"4a69f446-ad9c-454b-bbcc-8baa5d6a448d","message":"New complaint received: 4a69f446-ad9c-454b-bbcc-8baa5d6a448d. Urgency: urgent."}
+2026-05-02T07:19:38.324Z | {"to":"Fiona","type":"reporter","complaintId":"1f75df79-32ce-4e4b-8ba9-8455b2558467","message":"Complaint submitted and routed to Civil Registry with urgency urgent."}
+2026-05-02T07:19:38.324Z | {"to":"Civil Registry","type":"department","complaintId":"1f75df79-32ce-4e4b-8ba9-8455b2558467","message":"New complaint received: 1f75df79-32ce-4e4b-8ba9-8455b2558467. Urgency: urgent."}
+2026-05-02T07:19:38.339Z | {"to":"Ian","type":"reporter","complaintId":"b38e90e9-6655-4303-ab06-2c64afa887b0","message":"Complaint submitted and routed to Roads with urgency routine."}
+2026-05-02T07:19:38.340Z | {"to":"Roads","type":"department","complaintId":"b38e90e9-6655-4303-ab06-2c64afa887b0","message":"New complaint received: b38e90e9-6655-4303-ab06-2c64afa887b0. Urgency: routine."}
+2026-05-02T07:19:38.344Z | {"to":"Ian","type":"reporter","complaintId":"b38e90e9-6655-4303-ab06-2c64afa887b0","message":"Your complaint has been received and assigned."}
+2026-05-02T07:19:38.360Z | {"to":"Water","type":"department","complaintId":"stale-urgent-001","message":"Urgent complaint has been automatically escalated for immediate attention."}
+2026-05-02T07:19:38.361Z | {"to":"Carol","type":"reporter","complaintId":"stale-urgent-001","message":"Your urgent complaint has been escalated to the department for faster handling."}
+2026-05-02T07:35:26.262Z | {"to":"Alice","type":"reporter","complaintId":"e525d0d0-4f01-4c33-ba3b-1f72709658be","message":"Complaint submitted and routed to Water with urgency urgent."}
+2026-05-02T07:35:26.264Z | {"to":"Water","type":"department","complaintId":"e525d0d0-4f01-4c33-ba3b-1f72709658be","message":"New complaint received: e525d0d0-4f01-4c33-ba3b-1f72709658be. Urgency: urgent."}
+2026-05-02T07:35:26.273Z | {"to":"Bob","type":"reporter","complaintId":"a63d2ef5-111f-4889-b95f-53b38c8cb8df","message":"Complaint submitted and routed to Roads with urgency urgent."}
+2026-05-02T07:35:26.275Z | {"to":"Roads","type":"department","complaintId":"a63d2ef5-111f-4889-b95f-53b38c8cb8df","message":"New complaint received: a63d2ef5-111f-4889-b95f-53b38c8cb8df. Urgency: urgent."}
+2026-05-02T07:35:26.282Z | {"to":"Dana","type":"reporter","complaintId":"c42ea20d-a94b-43eb-9316-e4951bd71ee4","message":"Complaint submitted and routed to Sanitation with urgency routine."}
+2026-05-02T07:35:26.283Z | {"to":"Sanitation","type":"department","complaintId":"c42ea20d-a94b-43eb-9316-e4951bd71ee4","message":"New complaint received: c42ea20d-a94b-43eb-9316-e4951bd71ee4. Urgency: routine."}
+2026-05-02T07:35:26.291Z | {"to":"George","type":"reporter","complaintId":"cc11bb70-2a78-482b-9132-b31c0f7151b1","message":"Complaint submitted and routed to Water with urgency routine."}
+2026-05-02T07:35:26.293Z | {"to":"Water","type":"department","complaintId":"cc11bb70-2a78-482b-9132-b31c0f7151b1","message":"New complaint received: cc11bb70-2a78-482b-9132-b31c0f7151b1. Urgency: routine."}
+2026-05-02T07:35:26.296Z | {"to":"Harriet","type":"reporter","complaintId":"535ea69b-83ff-4308-9fe1-db459ea5ed6b","message":"Complaint submitted and routed to Roads with urgency routine."}
+2026-05-02T07:35:26.298Z | {"to":"Roads","type":"department","complaintId":"535ea69b-83ff-4308-9fe1-db459ea5ed6b","message":"New complaint received: 535ea69b-83ff-4308-9fe1-db459ea5ed6b. Urgency: routine."}
+2026-05-02T07:35:26.305Z | {"to":"Eli","type":"reporter","complaintId":"619f83d9-d615-4dd4-b7d9-2d0c20e3d475","message":"Complaint submitted and routed to Tax Office with urgency urgent."}
+2026-05-02T07:35:26.306Z | {"to":"Tax Office","type":"department","complaintId":"619f83d9-d615-4dd4-b7d9-2d0c20e3d475","message":"New complaint received: 619f83d9-d615-4dd4-b7d9-2d0c20e3d475. Urgency: urgent."}
+2026-05-02T07:35:26.311Z | {"to":"Fiona","type":"reporter","complaintId":"206bff48-e0c3-4b31-86a3-ebac8dffe483","message":"Complaint submitted and routed to Civil Registry with urgency urgent."}
+2026-05-02T07:35:26.312Z | {"to":"Civil Registry","type":"department","complaintId":"206bff48-e0c3-4b31-86a3-ebac8dffe483","message":"New complaint received: 206bff48-e0c3-4b31-86a3-ebac8dffe483. Urgency: urgent."}
+2026-05-02T07:35:26.330Z | {"to":"Ian","type":"reporter","complaintId":"ab39f5d5-ac69-4e74-bb0b-3393220c4cbb","message":"Complaint submitted and routed to Roads with urgency routine."}
+2026-05-02T07:35:26.331Z | {"to":"Roads","type":"department","complaintId":"ab39f5d5-ac69-4e74-bb0b-3393220c4cbb","message":"New complaint received: ab39f5d5-ac69-4e74-bb0b-3393220c4cbb. Urgency: routine."}
+2026-05-02T07:35:26.336Z | {"to":"Ian","type":"reporter","complaintId":"ab39f5d5-ac69-4e74-bb0b-3393220c4cbb","message":"Your complaint has been received and assigned."}
+2026-05-02T07:35:26.360Z | {"to":"Water","type":"department","complaintId":"stale-urgent-001","message":"Urgent complaint has been automatically escalated for immediate attention."}
+2026-05-02T07:35:26.361Z | {"to":"Carol","type":"reporter","complaintId":"stale-urgent-001","message":"Your urgent complaint has been escalated to the department for faster handling."}
+2026-05-02T07:49:26.695Z | {"to":"Water","type":"department","complaintId":"14876872-c11b-4a88-9bea-2268c919a49d","message":"Urgent complaint has been automatically escalated for immediate attention."}
+2026-05-02T07:49:26.695Z | {"to":"Alice","type":"reporter","complaintId":"14876872-c11b-4a88-9bea-2268c919a49d","message":"Your urgent complaint has been escalated to the department for faster handling."}
+2026-05-02T07:49:26.697Z | {"to":"Roads","type":"department","complaintId":"175888b2-c2b0-42f0-bd58-1e1922de2e04","message":"Urgent complaint has been automatically escalated for immediate attention."}
+2026-05-02T07:49:26.698Z | {"to":"Bob","type":"reporter","complaintId":"175888b2-c2b0-42f0-bd58-1e1922de2e04","message":"Your urgent complaint has been escalated to the department for faster handling."}
+2026-05-02T08:30:11.726Z | {"to":"Alice","type":"reporter","complaintId":"14876872-c11b-4a88-9bea-2268c919a49d","message":"Your complaint status is now Received."}
+2026-05-02T08:30:14.418Z | {"to":"Alice","type":"reporter","complaintId":"14876872-c11b-4a88-9bea-2268c919a49d","message":"Your complaint has been received and assigned."}
+2026-05-02T08:40:12.861Z | {"to":"Test Reporter","type":"reporter","complaintId":"365bb5a9-bc42-499f-b96d-1ff891f45089","message":"Complaint submitted and routed to PWD with urgency Very Urgent."}
+2026-05-02T08:40:12.861Z | {"to":"PWD","type":"department","complaintId":"365bb5a9-bc42-499f-b96d-1ff891f45089","message":"New complaint received: 365bb5a9-bc42-499f-b96d-1ff891f45089. Urgency: Very Urgent."}
+2026-05-02T08:49:40.028Z | {"to":"Roads","type":"department","complaintId":"175888b2-c2b0-42f0-bd58-1e1922de2e04","message":"Urgent complaint has been automatically escalated for immediate attention."}
+2026-05-02T08:49:40.028Z | {"to":"Bob","type":"reporter","complaintId":"175888b2-c2b0-42f0-bd58-1e1922de2e04","message":"Your urgent complaint has been escalated to the department for faster handling."}
+2026-05-02T09:00:42.243Z | {"to":"Test Reporter","type":"reporter","complaintId":"365bb5a9-bc42-499f-b96d-1ff891f45089","message":"Your complaint status is now Received."}
+2026-05-02T09:00:45.045Z | {"to":"Test Reporter","type":"reporter","complaintId":"365bb5a9-bc42-499f-b96d-1ff891f45089","message":"Your complaint has been received and assigned."}
+2026-05-02T09:00:53.439Z | {"to":"Test Reporter","type":"reporter","complaintId":"365bb5a9-bc42-499f-b96d-1ff891f45089","message":"Your complaint status is now Closed."}

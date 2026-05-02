@@ -1,0 +1,194 @@
+[
+  {
+    "id": "14876872-c11b-4a88-9bea-2268c919a49d",
+    "category": "water",
+    "department": "Water",
+    "urgency": "urgent",
+    "status": "Received",
+    "description": "There is a major water leak on Main Street.",
+    "location": "Main Street",
+    "reporter": {
+      "name": "Alice"
+    },
+    "createdAt": "2026-05-02T04:47:49.786Z",
+    "updatedAt": "2026-05-02T08:30:14.417Z",
+    "history": [
+      {
+        "status": "Received",
+        "updatedAt": "2026-05-02T04:47:49.786Z",
+        "note": "Complaint received and routed."
+      },
+      {
+        "status": "In progress",
+        "updatedAt": "2026-05-02T05:48:30.921Z",
+        "note": "Auto-escalated after 60 minutes without progress."
+      },
+      {
+        "status": "In progress",
+        "updatedAt": "2026-05-02T06:48:32.294Z",
+        "note": "Auto-escalated after 60 minutes without progress."
+      },
+      {
+        "status": "In progress",
+        "updatedAt": "2026-05-02T07:49:26.693Z",
+        "note": "Auto-escalated after 60 minutes without progress."
+      },
+      {
+        "status": "Received",
+        "updatedAt": "2026-05-02T08:30:11.724Z",
+        "note": "Status updated."
+      },
+      {
+        "status": "Received",
+        "updatedAt": "2026-05-02T08:30:14.417Z",
+        "note": "Complaint received and assigned to Test User."
+      }
+    ],
+    "assignedTo": "test-user",
+    "assignedToLabel": "Test User"
+  },
+  {
+    "id": "175888b2-c2b0-42f0-bd58-1e1922de2e04",
+    "category": "roads",
+    "department": "Roads",
+    "urgency": "urgent",
+    "status": "In progress",
+    "description": "A pothole is causing a hazard.",
+    "location": "2nd Avenue",
+    "reporter": {
+      "name": "Bob"
+    },
+    "createdAt": "2026-05-02T04:47:49.795Z",
+    "updatedAt": "2026-05-02T08:49:40.026Z",
+    "history": [
+      {
+        "status": "Received",
+        "updatedAt": "2026-05-02T04:47:49.795Z",
+        "note": "Complaint received and routed."
+      },
+      {
+        "status": "In progress",
+        "updatedAt": "2026-05-02T05:48:30.922Z",
+        "note": "Auto-escalated after 60 minutes without progress."
+      },
+      {
+        "status": "In progress",
+        "updatedAt": "2026-05-02T06:48:32.294Z",
+        "note": "Auto-escalated after 60 minutes without progress."
+      },
+      {
+        "status": "In progress",
+        "updatedAt": "2026-05-02T07:49:26.696Z",
+        "note": "Auto-escalated after 60 minutes without progress."
+      },
+      {
+        "status": "In progress",
+        "updatedAt": "2026-05-02T08:49:40.026Z",
+        "note": "Auto-escalated after 60 minutes without progress."
+      }
+    ]
+  },
+  {
+    "id": "8d626f1d-3a88-44e7-ad35-d77adc1b4352",
+    "category": "street lights",
+    "department": "Street Lights",
+    "urgency": "routine",
+    "status": "Received",
+    "description": "04 streetlights got dysfuctional in Kunjra mahal",
+    "location": "Kunjra Mahal",
+    "reporter": {
+      "name": "S.Das"
+    },
+    "createdAt": "2026-05-02T04:56:30.986Z",
+    "updatedAt": "2026-05-02T04:56:30.986Z",
+    "history": [
+      {
+        "status": "Received",
+        "updatedAt": "2026-05-02T04:56:30.986Z",
+        "note": "Complaint received and routed."
+      }
+    ]
+  },
+  {
+    "id": "e4829354-b7ae-47cd-8115-94aab2bcf273",
+    "category": "roads",
+    "department": "Roads",
+    "urgency": "routine",
+    "status": "Received",
+    "description": "Needs repainting",
+    "location": "Kunjra Mahal",
+    "reporter": {
+      "name": "P.Das"
+    },
+    "createdAt": "2026-05-02T04:57:37.110Z",
+    "updatedAt": "2026-05-02T04:57:37.110Z",
+    "history": [
+      {
+        "status": "Received",
+        "updatedAt": "2026-05-02T04:57:37.110Z",
+        "note": "Complaint received and routed."
+      }
+    ]
+  },
+  {
+    "id": "c6c7dc67-3478-4cf6-876d-18386cd30f74",
+    "category": "lighting",
+    "categoryLabel": "Lighting",
+    "department": "PWD",
+    "urgency": "Very Urgent",
+    "status": "Received",
+    "description": "Electric poles needs to be repainted",
+    "location": "Kunjra Mahal",
+    "reporter": {
+      "name": "S.Das"
+    },
+    "createdAt": "2026-05-02T05:45:07.459Z",
+    "updatedAt": "2026-05-02T05:45:07.459Z",
+    "history": [
+      {
+        "status": "Received",
+        "updatedAt": "2026-05-02T05:45:07.459Z",
+        "note": "Complaint received and routed."
+      }
+    ]
+  },
+  {
+    "id": "365bb5a9-bc42-499f-b96d-1ff891f45089",
+    "category": "lighting",
+    "categoryLabel": "Lighting",
+    "department": "PWD",
+    "urgency": "Very Urgent",
+    "status": "Closed",
+    "description": "Testing newest first sorting.",
+    "location": "Test Location",
+    "reporter": {
+      "name": "Test Reporter"
+    },
+    "assignedTo": "test-user",
+    "assignedToLabel": "Test User",
+    "createdAt": "2026-05-02T08:40:12.859Z",
+    "updatedAt": "2026-05-02T09:00:53.438Z",
+    "history": [
+      {
+        "status": "Pending",
+        "updatedAt": "2026-05-02T08:40:12.859Z",
+        "note": "Complaint submitted and routed."
+      },
+      {
+        "status": "Received",
+        "updatedAt": "2026-05-02T09:00:42.241Z",
+        "note": "Status updated."
+      },
+      {
+        "status": "Received",
+        "updatedAt": "2026-05-02T09:00:45.044Z",
+        "note": "Complaint received and assigned to Test User."
+      },
+      {
+        "status": "Closed",
+        "updatedAt": "2026-05-02T09:00:53.438Z",
+        "note": "Status updated."
+      }
+    ]
+  }
+]

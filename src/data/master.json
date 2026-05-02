@@ -1,0 +1,38 @@
+{
+  "urgencies": [
+    "Very Urgent",
+    "Urgent",
+    "Routine",
+    "FYI"
+  ],
+  "categories": [
+    {
+      "key": "lighting",
+      "name": "Lighting",
+      "department": "PWD",
+      "defaultUrgency": "Very Urgent",
+      "urgentKeywords": [],
+      "keywords": [
+        "lighting",
+        "no pwer",
+        "electricity"
+      ]
+    }
+  ],
+  "users": [
+    {
+      "key": "test-user",
+      "name": "Test User",
+      "designation": "Tester",
+      "email": "test@example.com",
+      "contact": "111-222-3333"
+    },
+    {
+      "key": "deepak-rajak",
+      "name": "Deepak Rajak",
+      "designation": "TS",
+      "email": "ds@gmail.com",
+      "contact": "8697264008"
+    }
+  ]
+}

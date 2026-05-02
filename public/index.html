@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Complaint Management Dashboard</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <h2>Resolve</h2>
+      </div>
+      <nav class="main-nav">
+        <p class="nav-heading">Main</p>
+        <button class="nav-button active" data-tab="dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+          Dashboard
+        </button>
+        <button class="nav-button" data-tab="lodge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Lodge Complaint
+        </button>
+        <button class="nav-button" data-tab="reporting">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          Reporting
+        </button>
+
+        <p class="nav-heading">Master Data</p>
+        <button class="nav-button sub-menu" data-tab="master-categories">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+          Categories
+        </button>
+        <button class="nav-button sub-menu" data-tab="master-urgencies">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          Urgency Levels
+        </button>
+        <button class="nav-button sub-menu" data-tab="master-users">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          Users
+        </button>
+      </nav>
+    </aside>
+
+    <!-- Popup Modal -->
+    <div id="welcome-modal" class="modal-overlay hidden">
+      <div class="modal-content glass-card">
+        <div class="modal-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        </div>
+        <h3>Welcome Back!</h3>
+        <p id="pending-complaints-msg">Loading pending complaints...</p>
+        <button id="close-modal-btn" class="primary-btn" style="margin-top: 20px; width: 100%;">Continue</button>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <header class="top-header">
+        <h1>Complaint Management Console</h1>
+        <p>Manage intake, master data, and reporting for municipal complaints.</p>
+      </header>
+
+      <div id="global-message" class="message hidden"></div>
+
+      <!-- Dashboard Panel (Only showing complaints) -->
+      <section id="dashboard-panel" class="panel active">
+        <div class="panel-header">
+          <h2>Current Complaints</h2>
+          <button id="refresh-button" class="secondary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-right:6px;"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            Refresh List
+          </button>
+        </div>
+        
+        <div class="filters glass-card">
+          <div class="filter-row">
+            <label for="search-input">Search</label>
+            <div class="input-with-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input id="search-input" type="search" placeholder="Search description, location..." />
+            </div>
+          </div>
+          <div class="filter-row">
+            <label for="filter-category">Category</label>
+            <select id="filter-category"></select>
+          </div>
+          <div class="filter-row">
+            <label for="filter-department">Department</label>
+            <select id="filter-department">
+              <option value="all">All departments</option>
+            </select>
+          </div>
+          <div class="filter-row">
+            <label for="filter-urgency">Urgency</label>
+            <select id="filter-urgency">
+              <option value="all">All urgencies</option>
+            </select>
+          </div>
+          <div class="filter-row">
+            <label for="filter-status">Status</label>
+            <select id="filter-status">
+              <option value="all">All statuses</option>
+              <option value="Pending">Pending</option>
+              <option value="Received">Received</option>
+              <option value="In progress">In progress</option>
+              <option value="Resolved">Resolved</option>
+              <option value="Closed">Closed</option>
+            </select>
+          </div>
+          <button id="clear-filters" type="button" class="secondary">Clear</button>
+        </div>
+
+        <div id="queue-summary" class="queue-summary hidden"></div>
+        <div id="dashboard-status" class="dashboard-status"></div>
+        <div id="complaint-list" class="glass-card"></div>
+      </section>
+
+      <!-- Lodge Complaint Panel -->
+      <section id="lodge-panel" class="panel hidden">
+        <div class="panel-header">
+          <h2>Lodge a New Complaint</h2>
+        </div>
+        <div class="glass-card max-w-2xl">
+          <form id="complaint-form">
+            <div class="field-row">
+              <label for="category">Category</label>
+              <select id="category" required></select>
+            </div>
+            <div class="field-row">
+              <label for="description">Description</label>
+              <textarea id="description" rows="4" required placeholder="Detailed description of the issue..."></textarea>
+            </div>
+            <div class="field-row">
+              <label for="location">Location</label>
+              <div class="input-with-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                <input id="location" type="text" required placeholder="Street address or area..." />
+              </div>
+            </div>
+            <div class="field-row">
+              <label for="reporter">Reporter Name</label>
+              <div class="input-with-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <input id="reporter" type="text" required placeholder="Full Name" />
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="primary-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-right:6px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                Submit Complaint
+              </button>
+            </div>
+          </form>
+          <div id="lodge-message" class="message hidden"></div>
+        </div>
+      </section>
+
+      <!-- Master Data: Categories -->
+      <section id="master-categories-panel" class="panel hidden">
+        <div class="panel-header">
+          <h2>Master Data: Categories</h2>
+        </div>
+        <div id="master-cat-message" class="message hidden"></div>
+        <div class="master-layout">
+          <div class="form-section glass-card">
+            <h3>Add / Edit Category</h3>
+            <form id="category-form">
+              <div class="field-row">
+                <label for="category-name">Category Name</label>
+                <input id="category-name" type="text" required />
+              </div>
+              <div class="field-row">
+                <label for="category-department">Department</label>
+                <input id="category-department" type="text" required />
+              </div>
+              <div class="field-row">
+                <label for="category-urgency">Default Urgency</label>
+                <select id="category-urgency" required></select>
+              </div>
+              <div class="field-row full-width">
+                <label for="category-keywords">Keywords (comma separated)</label>
+                <input id="category-keywords" type="text" placeholder="tax notice, audit, refund" />
+              </div>
+              <div class="field-row full-width">
+                <label for="category-urgent-keywords">Urgent Keywords (comma separated)</label>
+                <input id="category-urgent-keywords" type="text" placeholder="audit, penalty, late" />
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="primary-btn">Save Category</button>
+                <button type="button" id="cancel-category-edit" class="secondary hidden">Cancel</button>
+              </div>
+            </form>
+          </div>
+          <div class="list-section glass-card">
+            <div id="master-categories-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Master Data: Urgency -->
+      <section id="master-urgencies-panel" class="panel hidden">
+        <div class="panel-header">
+          <h2>Master Data: Urgency Levels</h2>
+        </div>
+        <div id="master-urgency-message" class="message hidden"></div>
+        <div class="master-layout">
+          <div class="form-section glass-card">
+            <h3>Add Urgency Level</h3>
+            <form id="urgency-form">
+              <div class="field-row full-width">
+                <label for="urgency-label">Urgency Label</label>
+                <input id="urgency-label" type="text" required placeholder="e.g. routine, critical" />
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="primary-btn">Add Urgency</button>
+              </div>
+            </form>
+          </div>
+          <div class="list-section glass-card">
+            <ul id="urgency-list" class="styled-list"></ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Master Data: Users -->
+      <section id="master-users-panel" class="panel hidden">
+        <div class="panel-header">
+          <h2>Master Data: Users</h2>
+        </div>
+        <div id="master-user-message" class="message hidden"></div>
+        <div class="master-layout">
+          <div class="form-section glass-card">
+            <h3>Add / Edit User</h3>
+            <form id="user-form">
+              <div class="field-row full-width">
+                <label for="user-name">Full Name</label>
+                <input id="user-name" type="text" required />
+              </div>
+              <div class="field-row full-width">
+                <label for="user-designation">Designation</label>
+                <input id="user-designation" type="text" required />
+              </div>
+              <div class="field-row full-width">
+                <label for="user-email">Email Address</label>
+                <input id="user-email" type="email" required />
+              </div>
+              <div class="field-row full-width">
+                <label for="user-contact">Contact Number</label>
+                <input id="user-contact" type="text" required />
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="primary-btn">Save User</button>
+                <button type="button" id="cancel-user-edit" class="secondary hidden">Cancel</button>
+              </div>
+            </form>
+          </div>
+          <div class="list-section glass-card">
+            <div id="user-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Reporting Panel -->
+      <section id="reporting-panel" class="panel hidden">
+        <div class="panel-header">
+          <h2>Reporting & Analytics</h2>
+          <button id="export-report-pdf" class="secondary hidden" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-right:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            Export to PDF
+          </button>
+        </div>
+        <div id="reporting-message" class="message hidden"></div>
+        
+        <div class="report-filters glass-card">
+          <div class="filter-row">
+            <label for="report-section">Section</label>
+            <select id="report-section">
+              <option value="all">All sections</option>
+            </select>
+          </div>
+          <div class="filter-row">
+            <label for="report-category">Category</label>
+            <select id="report-category">
+              <option value="all">All categories</option>
+            </select>
+          </div>
+          <div class="filter-row">
+            <label for="report-user">Assigned User</label>
+            <select id="report-user">
+              <option value="all">All users</option>
+            </select>
+          </div>
+          <div class="filter-row">
+            <label for="report-pendency">Pendency</label>
+            <select id="report-pendency">
+              <option value="all">All pendency</option>
+              <option value="open">Open</option>
+              <option value="closed">Closed</option>
+              <option value="Pending">Pending</option>
+              <option value="Received">Received</option>
+              <option value="In progress">In progress</option>
+              <option value="Resolved">Resolved</option>
+            </select>
+          </div>
+          <div class="form-actions" style="margin-top:24px;">
+            <button id="report-refresh" class="primary-btn" type="button">Apply Filters</button>
+            <button id="report-clear" class="secondary" type="button">Clear Filters</button>
+          </div>
+        </div>
+
+        <div id="reporting-content" class="hidden">
+          <div id="reporting-summary" class="summary-grid"></div>
+          <div id="reporting-breakdown" class="glass-card" style="margin-top: 24px;"></div>
+          <div id="reporting-table" class="glass-card" style="margin-top: 24px;"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+    <!-- Chatbot Widget -->
+    <div id="chatbot-widget" class="chatbot-container">
+      <button id="chatbot-toggle" class="chatbot-toggle-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+      </button>
+      <div id="chatbot-window" class="chatbot-window hidden glass-card">
+        <div class="chatbot-header">
+          <h3>Query Assistant</h3>
+          <button id="chatbot-close" class="chatbot-close-btn">&times;</button>
+        </div>
+        <div id="chatbot-messages" class="chatbot-messages">
+          <div class="chat-message bot-message">
+            <p>Hi! I can help you query your complaints. Try asking: "how many complaints received in last month and how many of them are from lighting section are they still pending?"</p>
+          </div>
+        </div>
+        <form id="chatbot-form" class="chatbot-form">
+          <input type="text" id="chatbot-input" placeholder="Ask a question..." autocomplete="off" required>
+          <button type="submit" class="chatbot-send-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
