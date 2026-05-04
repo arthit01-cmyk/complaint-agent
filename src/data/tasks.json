@@ -1,0 +1,43 @@
+[
+  {
+    "id": "6c9809cd-fa7b-4cb8-8c25-ed54fe9b66b2",
+    "title": "Compassionate Appointment",
+    "description": "All the files pending regarding compassionate appointment should be put up before 10th May 2026",
+    "status": "Completed",
+    "department": "Admin",
+    "departmentLabel": "Admin",
+    "assignedTo": [
+      "abhishek-majumder"
+    ],
+    "assignedToLabels": [
+      "Abhishek Majumder"
+    ],
+    "document": "/uploads/1777881663906-861022952.pdf",
+    "createdBy": "admin",
+    "createdAt": "2026-05-04T08:01:03.913Z",
+    "updatedAt": "2026-05-04T09:07:19.672Z",
+    "history": [
+      {
+        "action": "Created",
+        "user": "Admin User",
+        "timestamp": "2026-05-04T08:01:03.913Z",
+        "remarks": "Task created and assigned.",
+        "document": "/uploads/1777881663906-861022952.pdf"
+      },
+      {
+        "action": "Status changed to In Progress",
+        "user": "Abhishek Majumder",
+        "timestamp": "2026-05-04T08:42:29.446Z",
+        "remarks": "I have prepared 03 files. 10 more to go on which CBLA observation is pending. ",
+        "document": null
+      },
+      {
+        "action": "Status changed to Completed",
+        "user": "Abhishek Majumder",
+        "timestamp": "2026-05-04T09:07:19.672Z",
+        "remarks": "I have completed the entire work. ",
+        "document": "/uploads/1777885639670-934253427.pdf"
+      }
+    ]
+  }
+]

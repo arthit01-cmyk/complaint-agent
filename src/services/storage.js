@@ -1,9 +1,10 @@
 const fs = require('fs');
 const path = require('path');
+const vectorService = require('./vector');
 
 const dataFile = process.env.DATA_FILE
   ? path.resolve(process.env.DATA_FILE)
-  : path.resolve(__dirname, '../data/complaints.json');
+  : path.resolve(__dirname, '../data/tasks.json');
 
 function ensureDataFile() {
   if (!fs.existsSync(dataFile)) {
@@ -22,39 +23,41 @@ function writeData(records) {
   fs.writeFileSync(dataFile, JSON.stringify(records, null, 2), 'utf8');
 }
 
-function getAllComplaints() {
+function getAllTasks() {
   return readData();
 }
 
-function getComplaintById(id) {
-  const complaints = readData();
-  return complaints.find(item => item.id === id) || null;
+function getTaskById(id) {
+  const tasks = readData();
+  return tasks.find(item => item.id === id) || null;
 }
 
-function getPendingComplaints() {
-  return readData().filter(item => ['Received', 'In progress'].includes(item.status));
+function getPendingTasks() {
+  return readData().filter(item => !['completed', 'closed'].includes((item.status || '').toLowerCase()));
 }
 
-function saveComplaint(complaint) {
-  const complaints = readData();
-  complaints.push(complaint);
-  writeData(complaints);
-  return complaint;
+function saveTask(task) {
+  const tasks = readData();
+  tasks.push(task);
+  writeData(tasks);
+  vectorService.upsertTask(task);
+  return task;
 }
 
-function updateComplaint(id, update) {
-  const complaints = readData();
-  const index = complaints.findIndex(item => item.id === id);
+function updateTask(id, update) {
+  const tasks = readData();
+  const index = tasks.findIndex(item => item.id === id);
   if (index === -1) return null;
-  complaints[index] = { ...complaints[index], ...update };
-  writeData(complaints);
-  return complaints[index];
+  tasks[index] = { ...tasks[index], ...update };
+  writeData(tasks);
+  vectorService.upsertTask(tasks[index]);
+  return tasks[index];
 }
 
 module.exports = {
-  getAllComplaints,
-  getPendingComplaints,
-  getComplaintById,
-  saveComplaint,
-  updateComplaint
+  getAllTasks,
+  getPendingTasks,
+  getTaskById,
+  saveTask,
+  updateTask
 };

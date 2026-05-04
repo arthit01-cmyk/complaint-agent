@@ -11,7 +11,7 @@
       "name": "Alice"
     },
     "createdAt": "2026-05-02T04:47:49.786Z",
-    "updatedAt": "2026-05-02T08:30:14.417Z",
+    "updatedAt": "2026-05-04T04:35:09.720Z",
     "history": [
       {
         "status": "Received",
@@ -42,10 +42,20 @@
         "status": "Received",
         "updatedAt": "2026-05-02T08:30:14.417Z",
         "note": "Complaint received and assigned to Test User."
+      },
+      {
+        "status": "In progress",
+        "updatedAt": "2026-05-04T04:26:13.985Z",
+        "note": "Auto-escalated after 60 minutes without progress."
+      },
+      {
+        "status": "Received",
+        "updatedAt": "2026-05-04T04:35:09.720Z",
+        "note": "Complaint received and assigned to Deepak Rajak."
       }
     ],
-    "assignedTo": "test-user",
-    "assignedToLabel": "Test User"
+    "assignedTo": "deepak-rajak",
+    "assignedToLabel": "Deepak Rajak"
   },
   {
     "id": "175888b2-c2b0-42f0-bd58-1e1922de2e04",
@@ -59,7 +69,7 @@
       "name": "Bob"
     },
     "createdAt": "2026-05-02T04:47:49.795Z",
-    "updatedAt": "2026-05-02T08:49:40.026Z",
+    "updatedAt": "2026-05-04T04:26:13.989Z",
     "history": [
       {
         "status": "Received",
@@ -84,6 +94,11 @@
       {
         "status": "In progress",
         "updatedAt": "2026-05-02T08:49:40.026Z",
+        "note": "Auto-escalated after 60 minutes without progress."
+      },
+      {
+        "status": "In progress",
+        "updatedAt": "2026-05-04T04:26:13.989Z",
         "note": "Auto-escalated after 60 minutes without progress."
       }
     ]
@@ -188,6 +203,30 @@
         "status": "Closed",
         "updatedAt": "2026-05-02T09:00:53.438Z",
         "note": "Status updated."
+      }
+    ]
+  },
+  {
+    "id": "62cf5ce6-1f67-4092-a750-df4df524520b",
+    "category": "lighting",
+    "categoryLabel": "Lighting",
+    "department": "PWD",
+    "urgency": "Very Urgent",
+    "status": "Pending",
+    "description": "02 street light not working",
+    "location": "12 Bungalow",
+    "reporter": {
+      "name": "A. Sen"
+    },
+    "assignedTo": null,
+    "assignedToLabel": null,
+    "createdAt": "2026-05-04T04:32:12.018Z",
+    "updatedAt": "2026-05-04T04:32:12.018Z",
+    "history": [
+      {
+        "status": "Pending",
+        "updatedAt": "2026-05-04T04:32:12.018Z",
+        "note": "Complaint submitted and routed."
       }
     ]
   }

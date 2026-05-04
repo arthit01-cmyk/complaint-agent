@@ -1,69 +1,119 @@
 const express = require('express');
-const { getAllComplaints } = require('../services/storage');
+const { getAllTasks } = require('../services/storage');
 
 const router = express.Router();
 
-router.get('/summary', (req, res) => {
-  let complaints = getAllComplaints();
-  const { section, category, pendency, assignedTo } = req.query;
+function requireAuth(req, res, next) {
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Authentication required. Please log in again.' });
+  }
+  next();
+}
 
-  if (section) {
-    complaints = complaints.filter(c => c.department.toLowerCase() === section.toLowerCase());
+function requireAdmin(req, res, next) {
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Authentication required. Please log in again.' });
+  }
+  if (req.session.user.role !== 'admin') {
+    return res.status(403).json({ error: 'Admin access required.' });
+  }
+  next();
+}
+
+router.get('/summary', requireAuth, (req, res) => {
+  let tasks = getAllTasks();
+  const { department, status, assignedTo, urgency, dateFrom, dateTo } = req.query;
+
+  if (req.session.user.role !== 'admin') {
+    const userDept = req.session.user.department;
+    tasks = tasks.filter(t => 
+      (t.departmentLabel && t.departmentLabel === userDept) || 
+      (t.assignedTo && t.assignedTo.includes(req.session.user.key))
+    );
   }
 
-  if (category) {
-    complaints = complaints.filter(c => {
-      const categoryKey = String(c.category || '').toLowerCase();
-      const categoryLabel = String(c.categoryLabel || '').toLowerCase();
-      return categoryKey === category.toLowerCase() || categoryLabel === category.toLowerCase();
-    });
+  if (department && department !== 'all') {
+    tasks = tasks.filter(t => t.departmentLabel && t.departmentLabel.toLowerCase() === department.toLowerCase());
   }
 
-  if (pendency) {
-    const pendencyLower = pendency.toLowerCase();
-    if (pendencyLower === 'open') {
-      complaints = complaints.filter(c => c.status !== 'Closed');
-    } else if (pendencyLower === 'closed') {
-      complaints = complaints.filter(c => c.status === 'Closed');
+  if (status && status !== 'all') {
+    // Handle 'open' vs 'closed' vs specific statuses
+    if (status.toLowerCase() === 'open') {
+      tasks = tasks.filter(t => t.status !== 'Completed');
+    } else if (status.toLowerCase() === 'closed') {
+      tasks = tasks.filter(t => t.status === 'Completed');
     } else {
-      complaints = complaints.filter(c => c.status.toLowerCase() === pendencyLower);
+      tasks = tasks.filter(t => t.status.toLowerCase() === status.toLowerCase());
     }
   }
 
-  if (assignedTo) {
-    complaints = complaints.filter(c => {
-      const assignedKey = String(c.assignedTo || '').toLowerCase();
-      const assignedLabel = String(c.assignedToLabel || '').toLowerCase();
-      return assignedKey === assignedTo.toLowerCase() || assignedLabel === assignedTo.toLowerCase();
-    });
+  if (assignedTo && assignedTo !== 'all') {
+    tasks = tasks.filter(t => t.assignedTo && t.assignedTo.includes(assignedTo));
+  }
+
+  if (urgency && urgency !== 'all') {
+    tasks = tasks.filter(t => t.urgency && t.urgency.toLowerCase() === urgency.toLowerCase());
+  }
+
+  if (dateFrom) {
+    tasks = tasks.filter(t => new Date(t.createdAt) >= new Date(dateFrom));
+  }
+
+  if (dateTo) {
+    tasks = tasks.filter(t => new Date(t.createdAt) <= new Date(dateTo));
   }
 
   const summary = {
-    total: complaints.length,
-    open: complaints.filter(c => c.status !== 'Closed').length,
-    urgent: complaints.filter(c => c.urgency === 'urgent').length,
-    byCategory: {},
+    total: tasks.length,
+    pending: tasks.filter(t => t.status !== 'Completed').length,
+    completed: tasks.filter(t => t.status === 'Completed').length,
     byDepartment: {},
     byStatus: {},
-    rows: complaints.map(complaint => ({
-      id: complaint.id,
-      category: complaint.categoryLabel || complaint.category,
-      department: complaint.department,
-      urgency: complaint.urgency,
-      status: complaint.status,
-      assignedTo: complaint.assignedToLabel || 'Unassigned',
-      location: complaint.location,
-      reporter: complaint.reporter?.name || 'Unknown',
-      createdAt: complaint.createdAt,
-      updatedAt: complaint.updatedAt
-    }))
+    byUser: {},
+    rows: tasks.map(task => {
+      // Find the first assignment (could be creation or reassignment)
+      const assignedEntry = task.history ? task.history.find(h => h.action === 'Created' || h.status === 'Assigned' || (h.action === 'Status Updated' && h.status === 'Assigned')) : null;
+      const assignedOn = assignedEntry ? new Date(assignedEntry.timestamp) : new Date(task.createdAt);
+
+      // Find the first completion status
+      const completedEntry = task.history ? task.history.find(h => h.status === 'Completed' || (h.action === 'Status Updated' && h.status === 'Completed')) : null;
+      const completionDate = completedEntry ? new Date(completedEntry.timestamp) : null;
+      
+      let timeTaken = 'N/A';
+      if (completionDate) {
+        const diffMs = completionDate - assignedOn;
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        timeTaken = `${diffDays}d ${diffHours}h`;
+      }
+
+      const lastAction = task.history && task.history.length > 0 ? task.history[task.history.length - 1] : null;
+      const lastBrief = lastAction ? lastAction.remarks || lastAction.action : 'No action yet';
+
+      return {
+        id: task.id,
+        title: task.title,
+        description: task.description,
+        assignedOn: assignedOn.toISOString(),
+        assignedTo: task.assignedToLabels ? task.assignedToLabels.join(', ') : 'Unassigned',
+        completedOn: completionDate ? completionDate.toISOString() : null,
+        timeTaken: timeTaken,
+        lastBrief: lastBrief
+      };
+    })
   };
 
-  complaints.forEach(complaint => {
-    const categoryKey = complaint.categoryLabel || complaint.category;
-    summary.byCategory[categoryKey] = (summary.byCategory[categoryKey] || 0) + 1;
-    summary.byDepartment[complaint.department] = (summary.byDepartment[complaint.department] || 0) + 1;
-    summary.byStatus[complaint.status] = (summary.byStatus[complaint.status] || 0) + 1;
+  tasks.forEach(task => {
+    const dept = task.departmentLabel || 'General';
+    summary.byDepartment[dept] = (summary.byDepartment[dept] || 0) + 1;
+    summary.byStatus[task.status] = (summary.byStatus[task.status] || 0) + 1;
+    if (task.assignedToLabels) {
+      task.assignedToLabels.forEach(user => {
+        summary.byUser[user] = (summary.byUser[user] || 0) + 1;
+      });
+    } else {
+      summary.byUser['Unassigned'] = (summary.byUser['Unassigned'] || 0) + 1;
+    }
   });
 
   return res.json(summary);

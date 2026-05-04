@@ -16,6 +16,7 @@ function normalizeKey(value) {
 function ensureMasterFile() {
   if (!fs.existsSync(masterFile)) {
     fs.mkdirSync(path.dirname(masterFile), { recursive: true });
+    const bcrypt = require('bcryptjs');
     const defaultMaster = {
       urgencies: ['urgent', 'routine', 'FYI'],
       categories: [
@@ -68,7 +69,39 @@ function ensureMasterFile() {
           keywords: ['death certificate', 'birth certificate', 'birth registration', 'death registration', 'newborn', 'stillborn']
         }
       ],
-      users: []
+      departments: ['Water', 'Roads', 'Sanitation', 'Street Lights', 'Tax Office', 'Civil Registry'],
+      users: [
+        {
+          key: 'admin',
+          name: 'Administrator',
+          designation: 'System Admin',
+          email: 'admin@workdesk.com',
+          contact: '1234567890',
+          role: 'admin',
+          password: bcrypt.hashSync('admin123', 10),
+          department: null
+        },
+        {
+          key: 'test-user',
+          name: 'Test User',
+          designation: 'Employee',
+          email: 'user@workdesk.com',
+          contact: '0987654321',
+          role: 'user',
+          password: bcrypt.hashSync('user123', 10),
+          department: 'Water'
+        },
+        {
+          key: 'deepak-rajak',
+          name: 'Deepak Rajak',
+          designation: 'Manager',
+          email: 'deepak@workdesk.com',
+          contact: '1122334455',
+          role: 'user',
+          password: bcrypt.hashSync('user123', 10),
+          department: 'Roads'
+        }
+      ]
     };
     fs.writeFileSync(masterFile, JSON.stringify(defaultMaster, null, 2), 'utf8');
   }
@@ -94,10 +127,25 @@ function getUrgencyLevels() {
   return Array.isArray(data.urgencies) ? data.urgencies : [];
 }
 
-function getCategoryByKey(key) {
+function getDepartments() {
+  const data = readMaster();
+  return Array.isArray(data.departments) ? data.departments : [];
+}
+
+function getDepartmentByKey(key) {
   if (!key) return null;
   const normalizedKey = normalizeKey(key);
-  return getCategories().find(item => item.key === normalizedKey || normalizeKey(item.name) === normalizedKey) || null;
+  return getDepartments().find(item => normalizeKey(item) === normalizedKey) || null;
+}
+
+function authenticateUser(username, password) {
+  const user = getUsers().find(u => u.key === username || u.email === username);
+  if (!user) return null;
+  const bcrypt = require('bcryptjs');
+  if (bcrypt.compareSync(password, user.password)) {
+    return user;
+  }
+  return null;
 }
 
 function getUsers() {
@@ -112,8 +160,8 @@ function getUserByKey(key) {
 }
 
 function addUser(user) {
-  if (!user || !user.name || !user.designation || !user.email || !user.contact) {
-    throw new Error('User must include name, designation, email, and contact details.');
+  if (!user || !user.name || !user.designation || !user.email || !user.contact || !user.role || !user.password) {
+    throw new Error('User must include name, designation, email, contact, role, and password.');
   }
 
   const users = getUsers();
@@ -122,12 +170,18 @@ function addUser(user) {
     throw new Error('User already exists with that name or email.');
   }
 
+  const bcrypt = require('bcryptjs');
+  const hashedPassword = bcrypt.hashSync(user.password, 10);
+
   const newUser = {
     key,
     name: user.name.trim(),
     designation: user.designation.trim(),
     email: user.email.trim(),
-    contact: user.contact.trim()
+    contact: user.contact.trim(),
+    role: user.role,
+    password: hashedPassword,
+    department: user.department || null
   };
 
   users.push(newUser);
@@ -152,15 +206,21 @@ function updateUser(oldKey, updates) {
   const designation = updates.designation ? updates.designation.trim() : existing.designation;
   const email = updates.email ? updates.email.trim() : existing.email;
   const contact = updates.contact ? updates.contact.trim() : existing.contact;
+  const role = updates.role || existing.role;
+  const password = updates.password || existing.password;
+  const department = updates.department || existing.department;
 
   if (!name || !designation || !email || !contact) {
     throw new Error('User must include name, designation, email, and contact details.');
   }
 
   const newKey = normalizeKey(name);
-  const duplicate = users.find(item => item.key === newKey && item.key !== existing.key);
-  if (duplicate) {
-    throw new Error('A user with that name already exists.');
+  // Only check for duplicate name if the name is actually changing
+  if (newKey !== existing.key) {
+    const duplicate = users.find(item => item.key === newKey);
+    if (duplicate) {
+      throw new Error('A user with that name already exists.');
+    }
   }
 
   const updatedUser = {
@@ -169,7 +229,10 @@ function updateUser(oldKey, updates) {
     name,
     designation,
     email,
-    contact
+    contact,
+    role,
+    password,
+    department
   };
 
   const updatedUsers = users.map(item => (item.key === existing.key ? updatedUser : item));
@@ -331,6 +394,101 @@ function deleteUrgencyLevel(label) {
   return normalized;
 }
 
+function getCategoryByKey(key) {
+  return null; // Categories removed for task system
+}
+
+function addDepartment(name) {
+  if (!name || !name.trim()) {
+    throw new Error('Department name is required.');
+  }
+  const departments = getDepartments();
+  const normalized = String(name).trim();
+  if (departments.some(dept => dept.toLowerCase() === normalized.toLowerCase())) {
+    throw new Error('Department already exists.');
+  }
+  departments.push(normalized);
+  const data = readMaster();
+  data.departments = departments;
+  writeMaster(data);
+  return normalized;
+}
+
+function deleteDepartment(name) {
+  if (!name || !name.trim()) {
+    throw new Error('Department name is required.');
+  }
+  const departments = getDepartments();
+  const normalized = String(name).trim();
+  if (!departments.some(dept => dept.toLowerCase() === normalized.toLowerCase())) {
+    throw new Error('Department not found.');
+  }
+  const updated = departments.filter(dept => dept.toLowerCase() !== normalized.toLowerCase());
+  const data = readMaster();
+  data.departments = updated;
+  writeMaster(data);
+  return normalized;
+}
+
+function updateDepartment(oldName, newName) {
+  if (!oldName || !oldName.trim()) {
+    throw new Error('Current department name is required.');
+  }
+  if (!newName || !newName.trim()) {
+    throw new Error('New department name is required.');
+  }
+  const departments = getDepartments();
+  const normalizedOld = String(oldName).trim();
+  const normalizedNew = String(newName).trim();
+  const index = departments.findIndex(dept => dept.toLowerCase() === normalizedOld.toLowerCase());
+  if (index === -1) {
+    throw new Error('Department not found.');
+  }
+  if (departments.some((dept, i) => i !== index && dept.toLowerCase() === normalizedNew.toLowerCase())) {
+    throw new Error('A department with that name already exists.');
+  }
+  departments[index] = normalizedNew;
+  const data = readMaster();
+  data.departments = departments;
+  writeMaster(data);
+  return normalizedNew;
+}
+
+function updateUrgencyLevel(oldLabel, newLabel) {
+  if (!oldLabel || !oldLabel.trim()) {
+    throw new Error('Current urgency label is required.');
+  }
+  if (!newLabel || !newLabel.trim()) {
+    throw new Error('New urgency label is required.');
+  }
+  const urgencies = getUrgencyLevels();
+  const normalizedOld = String(oldLabel).trim();
+  const normalizedNew = String(newLabel).trim();
+  const index = urgencies.findIndex(urg => urg.toLowerCase() === normalizedOld.toLowerCase());
+  if (index === -1) {
+    throw new Error('Urgency level not found.');
+  }
+  if (urgencies.some((urg, i) => i !== index && urg.toLowerCase() === normalizedNew.toLowerCase())) {
+    throw new Error('An urgency level with that label already exists.');
+  }
+  urgencies[index] = normalizedNew;
+  const data = readMaster();
+  data.urgencies = urgencies;
+  writeMaster(data);
+  return normalizedNew;
+}
+
+function updateUserPassword(key, hashedPassword) {
+  const users = getUsers();
+  const user = users.find(u => u.key === key);
+  if (user) {
+    user.password = hashedPassword;
+    const data = readMaster();
+    data.users = users;
+    writeMaster(data);
+  }
+}
+
 module.exports = {
   getCategories,
   getCategoryByKey,
@@ -341,9 +499,18 @@ module.exports = {
   addUrgencyLevel,
   addUser,
   updateUser,
+  updateUserPassword,
   updateCategory,
   deleteUser,
   deleteCategory,
   deleteUrgencyLevel,
-  normalizeKey
+  normalizeKey,
+  authenticateUser,
+  getDepartments,
+  getDepartmentByKey,
+  addDepartment,
+  deleteDepartment,
+  updateDepartment,
+  updateUrgencyLevel
 };
+

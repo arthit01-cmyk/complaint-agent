@@ -1,0 +1,165 @@
+{
+  "urgencies": [
+    "urgent",
+    "routine",
+    "FYI"
+  ],
+  "categories": [
+    {
+      "key": "water",
+      "name": "Water",
+      "department": "Water",
+      "defaultUrgency": "routine",
+      "urgentKeywords": [
+        "leak",
+        "outage",
+        "contaminated",
+        "burst",
+        "flood"
+      ],
+      "keywords": [
+        "water leak",
+        "water outage",
+        "contaminated water",
+        "broken pipe"
+      ]
+    },
+    {
+      "key": "roads",
+      "name": "Roads",
+      "department": "Roads",
+      "defaultUrgency": "routine",
+      "urgentKeywords": [
+        "collapse",
+        "blocked",
+        "hazard",
+        "sinkhole"
+      ],
+      "keywords": [
+        "pothole",
+        "road collapse",
+        "damaged signage",
+        "blocked road"
+      ]
+    },
+    {
+      "key": "sanitation",
+      "name": "Sanitation",
+      "department": "Sanitation",
+      "defaultUrgency": "routine",
+      "urgentKeywords": [
+        "sewage",
+        "hazard",
+        "odor",
+        "overflow"
+      ],
+      "keywords": [
+        "garbage",
+        "sewage leak",
+        "drain blockage",
+        "odor"
+      ]
+    },
+    {
+      "key": "street-lights",
+      "name": "Street Lights",
+      "department": "Street Lights",
+      "defaultUrgency": "routine",
+      "urgentKeywords": [
+        "outage",
+        "broken",
+        "flicker"
+      ],
+      "keywords": [
+        "light outage",
+        "broken pole",
+        "flickering light",
+        "damaged fixture"
+      ]
+    },
+    {
+      "key": "tax",
+      "name": "Tax",
+      "department": "Tax Office",
+      "defaultUrgency": "routine",
+      "urgentKeywords": [
+        "audit",
+        "penalty",
+        "late",
+        "due",
+        "notice",
+        "immediate",
+        "urgent"
+      ],
+      "keywords": [
+        "tax liability",
+        "tax audit",
+        "property tax",
+        "income tax",
+        "tax notice",
+        "tax payment"
+      ]
+    },
+    {
+      "key": "death-&-birth",
+      "name": "Death & Birth",
+      "department": "Civil Registry",
+      "defaultUrgency": "routine",
+      "urgentKeywords": [
+        "certificate",
+        "registration",
+        "stillborn",
+        "newborn",
+        "urgent"
+      ],
+      "keywords": [
+        "death certificate",
+        "birth certificate",
+        "birth registration",
+        "death registration",
+        "newborn",
+        "stillborn"
+      ]
+    }
+  ],
+  "departments": [
+    "Water",
+    "Roads",
+    "Sanitation",
+    "Street Lights",
+    "Tax Office",
+    "Civil Registry"
+  ],
+  "users": [
+    {
+      "key": "admin",
+      "name": "Administrator",
+      "designation": "System Admin",
+      "email": "admin@workdesk.com",
+      "contact": "1234567890",
+      "role": "admin",
+      "password": "$2b$10$lN/yHxPghwBt65YzKAtsp.LQKCIQ2k0A.Kv266hkHSJy2nE/opmHO",
+      "department": null
+    },
+    {
+      "key": "test-user",
+      "name": "Test User",
+      "designation": "Employee",
+      "email": "user@workdesk.com",
+      "contact": "0987654321",
+      "role": "user",
+      "password": "$2b$10$U.gpuSXGkDONdYiOmQjkPOakNDgZs1y8Jj9vtBwDVqdw30dGgVmeS",
+      "department": "Water"
+    },
+    {
+      "key": "deepak-rajak",
+      "name": "Deepak Rajak",
+      "designation": "Manager",
+      "email": "deepak@workdesk.com",
+      "contact": "1122334455",
+      "role": "user",
+      "password": "$2b$10$RfcDdyycYdxq1aE4si7cuOOKo71t1CKGsJB6mSMuv9nQnlmCetvBi",
+      "department": "Roads"
+    }
+  ]
+}

@@ -1,56 +1,74 @@
 const express = require('express');
 const {
-  getCategories,
-  getUrgencyLevels,
+  getDepartments,
   getUsers,
-  addCategory,
-  addUrgencyLevel,
   addUser,
-  updateCategory,
   updateUser,
-  deleteCategory,
   deleteUser,
-  deleteUrgencyLevel
+  addDepartment,
+  deleteDepartment,
+  updateDepartment,
+  getUrgencyLevels,
+  addUrgencyLevel,
+  deleteUrgencyLevel,
+  updateUrgencyLevel
 } = require('../services/master');
 
 const router = express.Router();
 
-router.get('/categories', (req, res) => {
-  return res.json(getCategories());
+function requireAuth(req, res, next) {
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Authentication required. Please log in again.' });
+  }
+  next();
+}
+
+function requireAdmin(req, res, next) {
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Authentication required. Please log in again.' });
+  }
+  if (req.session.user.role !== 'admin') {
+    return res.status(403).json({ error: 'Admin access required.' });
+  }
+  next();
+}
+
+router.get('/departments', requireAuth, (req, res) => {
+  return res.json(getDepartments());
 });
 
-router.post('/categories', (req, res) => {
+router.post('/departments', requireAdmin, (req, res) => {
   try {
-    const category = addCategory(req.body);
-    return res.status(201).json(category);
+    const department = addDepartment(req.body.name);
+    return res.status(201).json({ name: department });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
 });
 
-router.patch('/categories/:key', (req, res) => {
+router.put('/departments/:name', requireAdmin, (req, res) => {
   try {
-    const category = updateCategory(req.params.key, req.body);
-    return res.json(category);
+    const department = updateDepartment(req.params.name, req.body.name);
+    return res.json({ name: department });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
 });
 
-router.delete('/categories/:key', (req, res) => {
+router.delete('/departments/:name', requireAdmin, (req, res) => {
   try {
-    const category = deleteCategory(req.params.key);
-    return res.json({ deleted: category.key });
+    const department = deleteDepartment(req.params.name);
+    return res.json({ name: department });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
 });
 
-router.get('/urgencies', (req, res) => {
+router.get('/urgencies', requireAuth, (req, res) => {
   return res.json(getUrgencyLevels());
 });
 
-router.post('/urgencies', (req, res) => {
+router.post('/urgencies', requireAdmin, (req, res) => {
   try {
     const urgency = addUrgencyLevel(req.body.label);
     return res.status(201).json({ label: urgency });
@@ -59,11 +77,29 @@ router.post('/urgencies', (req, res) => {
   }
 });
 
-router.get('/users', (req, res) => {
+router.put('/urgencies/:label', requireAdmin, (req, res) => {
+  try {
+    const urgency = updateUrgencyLevel(req.params.label, req.body.label);
+    return res.json({ label: urgency });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
+router.delete('/urgencies/:label', requireAdmin, (req, res) => {
+  try {
+    const urgency = deleteUrgencyLevel(req.params.label);
+    return res.json({ label: urgency });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
+router.get('/users', requireAdmin, (req, res) => {
   return res.json(getUsers());
 });
 
-router.post('/users', (req, res) => {
+router.post('/users', requireAdmin, (req, res) => {
   try {
     const user = addUser(req.body);
     return res.status(201).json(user);
@@ -72,7 +108,7 @@ router.post('/users', (req, res) => {
   }
 });
 
-router.patch('/users/:key', (req, res) => {
+router.put('/users/:key', requireAdmin, (req, res) => {
   try {
     const user = updateUser(req.params.key, req.body);
     return res.json(user);
@@ -81,19 +117,10 @@ router.patch('/users/:key', (req, res) => {
   }
 });
 
-router.delete('/users/:key', (req, res) => {
+router.delete('/users/:key', requireAdmin, (req, res) => {
   try {
     const user = deleteUser(req.params.key);
     return res.json({ deleted: user.key });
-  } catch (error) {
-    return res.status(400).json({ error: error.message });
-  }
-});
-
-router.delete('/urgencies/:label', (req, res) => {
-  try {
-    const label = deleteUrgencyLevel(req.params.label);
-    return res.json({ deleted: label });
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }

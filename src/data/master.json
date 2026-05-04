@@ -1,38 +1,57 @@
 {
   "urgencies": [
-    "Very Urgent",
     "Urgent",
-    "Routine",
+    "routine",
     "FYI"
   ],
-  "categories": [
-    {
-      "key": "lighting",
-      "name": "Lighting",
-      "department": "PWD",
-      "defaultUrgency": "Very Urgent",
-      "urgentKeywords": [],
-      "keywords": [
-        "lighting",
-        "no pwer",
-        "electricity"
-      ]
-    }
+  "departments": [
+    "PWD",
+    "Water Supply",
+    "Sanitation",
+    "Admin",
+    "Lighting",
+    "Revenue"
   ],
   "users": [
+    {
+      "key": "admin",
+      "name": "Admin User",
+      "designation": "Administrator",
+      "email": "admin@example.com",
+      "contact": "000-000-0000",
+      "role": "admin",
+      "password": "$2b$10$dIQB8uDUJ7jsBc3y5yoy5.oMBz0.T06UNTndoH7Htpqnuconwkfja",
+      "department": null
+    },
     {
       "key": "test-user",
       "name": "Test User",
       "designation": "Tester",
       "email": "test@example.com",
-      "contact": "111-222-3333"
+      "contact": "111-222-3333",
+      "role": "user",
+      "password": "$2b$10$U.gpuSXGkDONdYiOmQjkPOakNDgZs1y8Jj9vtBwDVqdw30dGgVmeS",
+      "department": "PWD"
     },
     {
       "key": "deepak-rajak",
       "name": "Deepak Rajak",
       "designation": "TS",
-      "email": "ds@gmail.com",
-      "contact": "8697264008"
+      "email": "dr@gmail.com",
+      "contact": "8697264008",
+      "role": "user",
+      "password": "$2b$10$U.gpuSXGkDONdYiOmQjkPOakNDgZs1y8Jj9vtBwDVqdw30dGgVmeS",
+      "department": "Revenue"
+    },
+    {
+      "key": "abhishek-majumder",
+      "name": "Abhishek Majumder",
+      "designation": "O.S",
+      "email": "ab@gmail.com",
+      "contact": "7003032006",
+      "role": "user",
+      "password": "$2b$10$U.gpuSXGkDONdYiOmQjkPOakNDgZs1y8Jj9vtBwDVqdw30dGgVmeS",
+      "department": "Admin"
     }
   ]
 }

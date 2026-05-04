@@ -1,0 +1,69 @@
+{
+  "documents": [
+    {
+      "id": "6c9809cd-fa7b-4cb8-8c25-ed54fe9b66b2",
+      "text": "Compassionate Appointment All the files pending regarding compassionate appointment should be put up before 10th May 2026 Admin Completed Abhishek Majumder",
+      "metadata": {
+        "type": "task",
+        "id": "6c9809cd-fa7b-4cb8-8c25-ed54fe9b66b2"
+      },
+      "vector": {
+        "2026": -0.6931471805599453,
+        "compassionate": -1.3862943611198906,
+        "appointment": -1.3862943611198906,
+        "all": -0.6931471805599453,
+        "the": -0.6931471805599453,
+        "files": -0.6931471805599453,
+        "pending": -0.6931471805599453,
+        "regarding": -0.6931471805599453,
+        "should": -0.6931471805599453,
+        "put": -0.6931471805599453,
+        "before": -0.6931471805599453,
+        "10th": -0.6931471805599453,
+        "may": -0.6931471805599453,
+        "admin": -0.6931471805599453,
+        "completed": -0.6931471805599453,
+        "abhishek": -0.6931471805599453,
+        "majumder": -0.6931471805599453
+      }
+    }
+  ],
+  "idf": {
+    "2026": -0.6931471805599453,
+    "compassionate": -0.6931471805599453,
+    "appointment": -0.6931471805599453,
+    "all": -0.6931471805599453,
+    "the": -0.6931471805599453,
+    "files": -0.6931471805599453,
+    "pending": -0.6931471805599453,
+    "regarding": -0.6931471805599453,
+    "should": -0.6931471805599453,
+    "put": -0.6931471805599453,
+    "before": -0.6931471805599453,
+    "10th": -0.6931471805599453,
+    "may": -0.6931471805599453,
+    "admin": -0.6931471805599453,
+    "completed": -0.6931471805599453,
+    "abhishek": -0.6931471805599453,
+    "majumder": -0.6931471805599453
+  },
+  "terms": [
+    "compassionate",
+    "appointment",
+    "all",
+    "the",
+    "files",
+    "pending",
+    "regarding",
+    "should",
+    "put",
+    "before",
+    "10th",
+    "may",
+    "2026",
+    "admin",
+    "completed",
+    "abhishek",
+    "majumder"
+  ]
+}

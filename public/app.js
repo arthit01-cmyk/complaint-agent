@@ -1,82 +1,75 @@
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelector('.sidebar').classList.add('hidden');
+  checkLogin();
+});
+
 const navButtons = document.querySelectorAll('.nav-button');
 const dashboardPanel = document.getElementById('dashboard-panel');
-const lodgePanel = document.getElementById('lodge-panel');
-const masterCategoriesPanel = document.getElementById('master-categories-panel');
-const masterUrgenciesPanel = document.getElementById('master-urgencies-panel');
-const masterUsersPanel = document.getElementById('master-users-panel');
+const createTaskPanel = document.getElementById('create-task-panel');
+const myTasksPanel = document.getElementById('my-tasks-panel');
+const manageUsersPanel = document.getElementById('manage-users-panel');
+const manageDepartmentsPanel = document.getElementById('manage-departments-panel');
+const manageUrgencyPanel = document.getElementById('manage-urgency-panel');
 const reportingPanel = document.getElementById('reporting-panel');
+const loginModal = document.getElementById('login-modal');
 
-const complaintForm = document.getElementById('complaint-form');
+const taskForm = document.getElementById('task-form');
 const globalMessage = document.getElementById('global-message');
-const lodgeMessage = document.getElementById('lodge-message');
-const complaintList = document.getElementById('complaint-list');
+const loginForm = document.getElementById('login-form');
+const loginMessage = document.getElementById('login-message');
+const taskList = document.getElementById('task-list');
 const refreshButton = document.getElementById('refresh-button');
+const logoutButton = document.getElementById('logout-button');
 const dashboardStatus = document.getElementById('dashboard-status');
-const queueSummary = document.getElementById('queue-summary');
-const welcomeModal = document.getElementById('welcome-modal');
-const pendingComplaintsMsg = document.getElementById('pending-complaints-msg');
-const closeModalBtn = document.getElementById('close-modal-btn');
-const reportingContent = document.getElementById('reporting-content');
-const reportingSummary = document.getElementById('reporting-summary');
-const reportingBreakdown = document.getElementById('reporting-breakdown');
 
-const categorySelect = document.getElementById('category');
+const userSelect = document.getElementById('user');
 const searchInput = document.getElementById('search-input');
-const filterCategory = document.getElementById('filter-category');
-const filterDepartment = document.getElementById('filter-department');
-const filterUrgency = document.getElementById('filter-urgency');
 const filterStatus = document.getElementById('filter-status');
 const clearFiltersButton = document.getElementById('clear-filters');
 
-const reportSectionSelect = document.getElementById('report-section');
-const reportCategorySelect = document.getElementById('report-category');
 const reportUserSelect = document.getElementById('report-user');
-const reportPendencySelect = document.getElementById('report-pendency');
+const reportStatusSelect = document.getElementById('report-status');
 const reportRefreshButton = document.getElementById('report-refresh');
-const reportClearButton = document.getElementById('report-clear');
 
-const categoryForm = document.getElementById('category-form');
-const categoryNameInput = document.getElementById('category-name');
-const categoryDepartmentInput = document.getElementById('category-department');
-const categoryUrgencySelect = document.getElementById('category-urgency');
-const categoryKeywordsInput = document.getElementById('category-keywords');
-const categoryUrgentKeywordsInput = document.getElementById('category-urgent-keywords');
-const masterCategoriesList = document.getElementById('master-categories-list');
-const cancelCategoryButton = document.getElementById('cancel-category-edit');
-
-const urgencyForm = document.getElementById('urgency-form');
-const urgencyLabelInput = document.getElementById('urgency-label');
-const urgencyList = document.getElementById('urgency-list');
-const masterCatMessage = document.getElementById('master-cat-message');
-const masterUrgencyMessage = document.getElementById('master-urgency-message');
-const masterUserMessage = document.getElementById('master-user-message');
 const userForm = document.getElementById('user-form');
 const userNameInput = document.getElementById('user-name');
 const userDesignationInput = document.getElementById('user-designation');
 const userEmailInput = document.getElementById('user-email');
 const userContactInput = document.getElementById('user-contact');
+const userRoleSelect = document.getElementById('user-role');
+const userDepartmentSelect = document.getElementById('user-department');
+const userPasswordInput = document.getElementById('user-password');
 const userList = document.getElementById('user-list');
-const cancelUserEdit = document.getElementById('cancel-user-edit');
-const exportReportButton = document.getElementById('export-report-pdf');
-const reportingTable = document.getElementById('reporting-table');
 
-const allComplaints = [];
-let masterCategories = [];
-let urgencyLevels = [];
+const departmentForm = document.getElementById('department-form');
+const departmentNameInput = document.getElementById('department-name');
+const departmentList = document.getElementById('department-list');
+
+const urgencyForm = document.getElementById('urgency-form');
+const urgencyLabelInput = document.getElementById('urgency-label');
+const urgencyList = document.getElementById('urgency-list');
+const manageUserMessage = document.getElementById('manage-user-message');
+const manageDeptMessage = document.getElementById('manage-dept-message');
+const manageUrgencyMessage = document.getElementById('manage-urgency-message');
+
+let allTasks = [];
 let masterUsers = [];
-let editingCategoryKey = null;
+let currentUser = null;
 let editingUserKey = null;
-const statuses = ['Pending', 'Received', 'In progress', 'Resolved', 'Closed'];
+let editingDeptName = null;
+let editingUrgencyLabel = null;
+const statuses = ['Assigned', 'In Progress', 'Completed'];
 
 function setActiveTab(tab) {
   navButtons.forEach(button => {
     button.classList.toggle('active', button.dataset.tab === tab);
   });
   dashboardPanel.classList.toggle('hidden', tab !== 'dashboard');
-  lodgePanel.classList.toggle('hidden', tab !== 'lodge');
-  masterCategoriesPanel.classList.toggle('hidden', tab !== 'master-categories');
-  masterUrgenciesPanel.classList.toggle('hidden', tab !== 'master-urgencies');
-  masterUsersPanel.classList.toggle('hidden', tab !== 'master-users');
+  createTaskPanel.classList.toggle('hidden', tab !== 'create-task');
+  myTasksPanel.classList.toggle('hidden', tab !== 'my-tasks');
+  manageUsersPanel.classList.toggle('hidden', tab !== 'manage-users');
+  manageDepartmentsPanel.classList.toggle('hidden', tab !== 'manage-departments');
+  manageUrgencyPanel.classList.toggle('hidden', tab !== 'manage-urgency');
   reportingPanel.classList.toggle('hidden', tab !== 'reporting');
 }
 
@@ -88,868 +81,853 @@ function setMessage(text, success = true, el = globalMessage) {
   else el.classList.add('hidden');
 }
 
-function setMasterMessage(text, success = true, el = masterCatMessage) {
-  setMessage(text, success, el);
+function checkLogin() {
+  fetch('/auth/me')
+    .then(res => res.json())
+    .then(user => {
+      if (user.key) {
+        currentUser = user;
+        const nameEl = document.getElementById('user-display-name');
+        const roleEl = document.getElementById('user-display-role');
+        const infoEl = document.getElementById('user-info');
+        if (nameEl) nameEl.textContent = user.name;
+        if (roleEl) roleEl.textContent = user.role;
+        if (infoEl) infoEl.classList.remove('hidden');
+
+        loginModal.classList.add('hidden');
+        document.querySelector('.sidebar').classList.remove('hidden');
+        logoutButton.classList.remove('hidden');
+        setupNavForRole(user.role);
+        loadData();
+        setActiveTab('dashboard');
+      } else {
+        loginModal.classList.remove('hidden');
+        document.querySelector('.sidebar').classList.add('hidden');
+        logoutButton.classList.add('hidden');
+      }
+    })
+    .catch(() => {
+      loginModal.classList.remove('hidden');
+      document.querySelector('.sidebar').classList.add('hidden');
+      logoutButton.classList.add('hidden');
+    });
 }
 
-function setCategoryFormMode(category) {
-  editingCategoryKey = category ? category.key : null;
-  categoryNameInput.value = category?.name || '';
-  categoryDepartmentInput.value = category?.department || '';
-  categoryUrgencySelect.value = category?.defaultUrgency || (urgencyLevels[0] || '');
-  categoryKeywordsInput.value = (category?.keywords || []).join(', ');
-  categoryUrgentKeywordsInput.value = (category?.urgentKeywords || []).join(', ');
-  const submitButton = categoryForm.querySelector('button[type="submit"]');
-  if (submitButton) {
-    submitButton.textContent = editingCategoryKey ? 'Save changes' : 'Add category';
+function setupNavForRole(role) {
+  const adminHeading = document.querySelectorAll('.nav-heading')[1];
+  const adminButtons = document.querySelectorAll('.nav-button.sub-menu');
+  const createTaskBtn = document.querySelector('[data-tab="create-task"]');
+  
+  if (role !== 'admin') {
+    if (adminHeading) adminHeading.style.display = 'none';
+    adminButtons.forEach(btn => btn.style.display = 'none');
+    if (createTaskBtn) createTaskBtn.style.display = 'none';
+    setActiveTab('dashboard');
+  } else {
+    if (adminHeading) adminHeading.style.display = 'block';
+    adminButtons.forEach(btn => btn.style.display = 'flex');
+    if (createTaskBtn) createTaskBtn.style.display = 'flex';
   }
-  if (cancelCategoryButton) {
-    cancelCategoryButton.classList.toggle('hidden', !editingCategoryKey);
+}
+
+loginForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+  fetch('/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password })
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.user) {
+        currentUser = data.user;
+        loginModal.classList.add('hidden');
+        document.querySelector('.sidebar').classList.remove('hidden');
+        logoutButton.classList.remove('hidden');
+        setupNavForRole(data.user.role);
+        loadData();
+        setActiveTab('dashboard');
+      } else {
+        setMessage(data.error, false, loginMessage);
+      }
+    })
+    .catch(err => {
+      setMessage('Login failed. Please try again.', false, loginMessage);
+    });
+});
+
+logoutButton.addEventListener('click', () => {
+  fetch('/auth/logout', { method: 'POST' })
+    .then(() => {
+      currentUser = null;
+      logoutButton.classList.add('hidden');
+      document.querySelector('.sidebar').classList.add('hidden');
+      loginModal.classList.remove('hidden');
+    });
+});
+function handleResponse(response, successMessage, errorElement) {
+  if (response.status === 401) {
+    currentUser = null;
+    loginModal.classList.remove("hidden");
+    document.querySelector(".sidebar").classList.add("hidden");
+    logoutButton.classList.add("hidden");
+    setMessage("Session expired. Please log in again.", false);
+    return false;
+  }
+  
+  if (response.ok) {
+    if (successMessage) setMessage(successMessage, true, errorElement);
+    return true;
+  } else {
+    return response.json().then(error => {
+      setMessage(error.error || "Operation failed", false, errorElement);
+      return false;
+    });
   }
 }
 
-function clearCategoryFormMode() {
-  setCategoryFormMode(null);
-  setMasterMessage('', true, masterUserMessage); // Clear user
-}
 
-function normalizeText(value) {
-  return String(value || '').toLowerCase();
-}
-
-function getFilteredComplaints() {
-  const search = normalizeText(searchInput.value);
-  const category = filterCategory.value;
-  const department = filterDepartment.value;
-  const urgency = filterUrgency.value;
-  const status = filterStatus.value;
-
-  return allComplaints.filter(complaint => {
-    if (category !== 'all' && complaint.category !== category) return false;
-    if (department !== 'all' && complaint.department !== department) return false;
-    if (urgency !== 'all' && complaint.urgency !== urgency) return false;
-    if (status !== 'all' && complaint.status !== status) return false;
-
-    if (!search) return true;
-    return [complaint.description, complaint.location, complaint.reporter?.name, complaint.id]
-      .some(value => normalizeText(value).includes(search));
-  });
-}
-
-function renderCategoryOptions() {
-  const options = masterCategories.map(category => `<option value="${category.key}">${category.name}</option>`).join('');
-  categorySelect.innerHTML = options;
-  filterCategory.innerHTML = `<option value="all">All categories</option>${options}`;
-}
-
-function renderDepartmentOptions() {
-  const departments = [...new Set(masterCategories.map(category => category.department))].sort();
-  const options = departments.map(department => `<option value="${department}">${department}</option>`).join('');
-  filterDepartment.innerHTML = `<option value="all">All departments</option>${options}`;
-}
-
-function renderUrgencyOptions() {
-  const options = urgencyLevels.map(urgency => `<option value="${urgency}">${urgency}</option>`).join('');
-  categoryUrgencySelect.innerHTML = options;
-  filterUrgency.innerHTML = `<option value="all">All urgencies</option>${options}`;
-}
-
-function renderAssignmentOptions(assignedKey) {
-  const options = [
-    '<option value="">Unassigned</option>',
-    ...masterUsers.map(user => `<option value="${user.key}" ${user.key === assignedKey ? 'selected' : ''}>${user.name}</option>`)
-  ];
-  return options.join('');
-}
-
-function renderReportFilters() {
-  const sections = [...new Set(masterCategories.map(category => category.department))].sort();
-  const sectionOptions = sections.map(section => `<option value="${section}">${section}</option>`).join('');
-  reportSectionSelect.innerHTML = `<option value="all">All sections</option>${sectionOptions}`;
-
-  const categoryOptions = masterCategories.map(category => `<option value="${category.name}">${category.name}</option>`).join('');
-  reportCategorySelect.innerHTML = `<option value="all">All categories</option>${categoryOptions}`;
-
-  const userOptions = masterUsers.map(user => `<option value="${user.key}">${user.name}</option>`).join('');
-  reportUserSelect.innerHTML = `<option value="all">All users</option>${userOptions}`;
-}
-
-function renderMasterCategories() {
-  if (!masterCategories.length) {
-    masterCategoriesList.innerHTML = '<p>No categories defined yet.</p>';
-    return;
-  }
-
-  masterCategoriesList.innerHTML = `
-    <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Department</th>
-            <th>Default urgency</th>
-            <th>Keywords</th>
-            <th>Urgent keywords</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${masterCategories
-            .map(category => `
-            <tr>
-              <td>${category.name}</td>
-              <td>${category.department}</td>
-              <td>${category.defaultUrgency}</td>
-              <td>${(category.keywords || []).join(', ')}</td>
-              <td>${(category.urgentKeywords || []).join(', ')}</td>
-              <td>
-                <button type="button" data-action="edit-category" data-key="${category.key}">Edit</button>
-                <button type="button" data-action="delete-category" data-key="${category.key}" class="secondary">Delete</button>
-              </td>
-            </tr>
-          `)
-            .join('')}
-        </tbody>
-      </table>
-    </div>
-  `;
-}
-
-function renderUrgencyList() {
-  if (!urgencyLevels.length) {
-    urgencyList.innerHTML = '<li>No urgencies defined.</li>';
-    return;
-  }
-
-  urgencyList.innerHTML = urgencyLevels
-    .map(level => `
-      <li>
-        <span>${level}</span>
-        <button type="button" data-action="delete-urgency" data-label="${level}" class="secondary">Delete</button>
-      </li>
-    `)
-    .join('');
-}
-
-function renderUserList() {
-  if (!masterUsers.length) {
-    userList.innerHTML = '<p>No users defined yet.</p>';
-    return;
-  }
-
-  userList.innerHTML = `
-    <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Designation</th>
-            <th>Email</th>
-            <th>Contact</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${masterUsers
-            .map(user => `
-            <tr>
-              <td>${user.name}</td>
-              <td>${user.designation}</td>
-              <td>${user.email}</td>
-              <td>${user.contact}</td>
-              <td>
-                <button type="button" data-action="edit-user" data-key="${user.key}">Edit</button>
-                <button type="button" data-action="delete-user" data-key="${user.key}" class="secondary">Delete</button>
-              </td>
-            </tr>
-          `)
-            .join('')}
-        </tbody>
-      </table>
-    </div>
-  `;
-}
-
-function renderQueueSummary(complaints) {
-  const departments = [...new Set(complaints.map(c => c.department))].sort();
-
-  if (!departments.length) {
-    queueSummary.innerHTML = '<p>No department queue data available.</p>';
-    return;
-  }
-
-  queueSummary.innerHTML = `
-    <div class="summary-grid">
-      ${departments
-        .map(department => {
-          const queue = complaints.filter(c => c.department === department && c.status !== 'Closed');
-          const urgentCount = queue.filter(c => c.urgency === 'urgent').length;
-          const receivedCount = queue.filter(c => c.status === 'Received').length;
-          const inProgressCount = queue.filter(c => c.status === 'In progress').length;
-          const topIssue = queue[0]?.description || 'No open complaints';
-
-          return `
-            <div class="summary-card">
-              <h3>${department} queue</h3>
-              <p><strong>Open cases:</strong> ${queue.length}</p>
-              <p><strong>Urgent:</strong> ${urgentCount}</p>
-              <p><strong>Received:</strong> ${receivedCount}</p>
-              <p><strong>In progress:</strong> ${inProgressCount}</p>
-              <p><strong>Top issue:</strong> ${topIssue}</p>
-            </div>
-          `;
-        })
-        .join('')}
-    </div>
-  `;
-}
-
-function buildReportFromComplaints(complaints) {
-  const total = complaints.length;
-  const open = complaints.filter(c => c.status !== 'Closed').length;
-  const urgent = complaints.filter(c => c.urgency === 'urgent').length;
-  const byCategory = {};
-  const byDepartment = {};
-  const byStatus = {};
-
-  complaints.forEach(complaint => {
-    const categoryKey = complaint.categoryLabel || complaint.category;
-    byCategory[categoryKey] = (byCategory[categoryKey] || 0) + 1;
-    byDepartment[complaint.department] = (byDepartment[complaint.department] || 0) + 1;
-    byStatus[complaint.status] = (byStatus[complaint.status] || 0) + 1;
-  });
-
-  return { total, open, urgent, byCategory, byDepartment, byStatus };
-}
-
-function renderReportTable(rows) {
-  if (!Array.isArray(rows) || !rows.length) {
-    reportingTable.innerHTML = '<p>No report rows match the selected filters.</p>';
-    return;
-  }
-
-  reportingTable.innerHTML = `
-    <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Category</th>
-            <th>Department</th>
-            <th>Urgency</th>
-            <th>Status</th>
-            <th>Assigned To</th>
-            <th>Location</th>
-            <th>Reporter</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${rows
-            .map(row => `
-            <tr>
-              <td>${row.id}</td>
-              <td>${row.category}</td>
-              <td>${row.department}</td>
-              <td>${row.urgency}</td>
-              <td>${row.status}</td>
-              <td>${row.assignedTo}</td>
-              <td>${row.location}</td>
-              <td>${row.reporter}</td>
-            </tr>
-          `)
-            .join('')}
-        </tbody>
-      </table>
-    </div>
-  `;
-}
-
-function exportReportPdf() {
-  const rows = Array.from(reportingTable.querySelectorAll('tbody tr'))
-    .map(tr => Array.from(tr.children).map(cell => cell.textContent));
-
-  if (!rows.length) {
-    alert('No report rows available to export.');
-    return;
-  }
-
-  if (!window.jspdf || !window.jspdf.jsPDF) {
-    alert('PDF export is not available.');
-    return;
-  }
-
-  const doc = new window.jspdf.jsPDF();
-  doc.setFontSize(14);
-  doc.text('Complaint report', 14, 18);
-  doc.autoTable({
-    startY: 24,
-    head: [[ 'ID', 'Category', 'Department', 'Urgency', 'Status', 'Assigned To', 'Location', 'Reporter' ]],
-    body: rows
-  });
-  doc.save('complaint-report.pdf');
-}
-
-function renderReporting(reportData) {
-  const report = Array.isArray(reportData) ? buildReportFromComplaints(reportData) : reportData;
-  const { total, open, urgent, byCategory, byDepartment, byStatus, rows } = report;
-
-  reportingSummary.innerHTML = `
-    <div class="summary-card">
-      <h3>Total complaints</h3>
-      <p>${total}</p>
-    </div>
-    <div class="summary-card">
-      <h3>Open complaints</h3>
-      <p>${open}</p>
-    </div>
-    <div class="summary-card">
-      <h3>Urgent complaints</h3>
-      <p>${urgent}</p>
-    </div>
-  `;
-
-  const renderBreakdown = (title, data) => {
-    return `
-      <div class="summary-card">
-        <h3>${title}</h3>
-        <ul>
-          ${Object.keys(data)
-            .sort()
-            .map(key => `<li>${key}: ${data[key]}</li>`)
-            .join('')}
-        </ul>
-      </div>
-    `;
+userForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const userData = {
+    name: userNameInput.value,
+    designation: userDesignationInput.value,
+    email: userEmailInput.value,
+    contact: userContactInput.value,
+    role: userRoleSelect.value,
+    department: userDepartmentSelect.value,
+    password: userPasswordInput.value
   };
-
-  reportingBreakdown.innerHTML = `
-    <div class="summary-grid">
-      ${renderBreakdown('By category', byCategory)}
-      ${renderBreakdown('By department', byDepartment)}
-      ${renderBreakdown('By status', byStatus)}
-    </div>
-  `;
-
-  renderReportTable(rows || []);
-}
-
-function createHistoryMarkup(history) {
-  return history
-    .map(item => `<li><strong>${item.status}</strong> — ${new Date(item.updatedAt).toLocaleString()}<br><em>${item.note}</em></li>`)
-    .join('');
-}
-
-function renderComplaints(complaints) {
-  if (!complaints.length) {
-    complaintList.innerHTML = '<p>No complaints match the current filters.</p>';
-    return;
+  const method = editingUserKey ? 'PUT' : 'POST';
+  const url = editingUserKey ? `/masters/users/${editingUserKey}` : '/masters/users';
+  try {
+    const response = await fetch(url, {
+      method: method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData)
+    });
+    if (await handleResponse(response, editingUserKey ? 'User updated successfully' : 'User added successfully', manageUserMessage)) {
+      cancelUserEditMode();
+      loadUsers();
+    }
+  } catch (err) {
+    setMessage('Error saving user', false, manageUserMessage);
   }
+});
 
-  complaintList.innerHTML = `
-    <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Category</th>
-            <th>Department</th>
-            <th>Urgency</th>
-            <th>Status</th>
-            <th>Assigned to</th>
-            <th>Location</th>
-            <th>Reporter</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${complaints
-            .map(complaint => `
-            <tr>
-              <td>${complaint.id}</td>
-              <td>${complaint.categoryLabel || complaint.category}</td>
-              <td>${complaint.department}</td>
-              <td>${complaint.urgency}</td>
-              <td><span class="status-chip">${complaint.status}</span></td>
-              <td>${complaint.assignedToLabel || 'Unassigned'}</td>
-              <td>${complaint.location}</td>
-              <td>${complaint.reporter?.name || 'Unknown'}</td>
-              <td>
-                ${complaint.status !== 'Closed' ? `
-                <div style="display: flex; gap: 4px; margin-bottom: 4px;">
-                  <select data-id="${complaint.id}" class="status-select">
-                    ${statuses
-                      .map(status => `<option value="${status}" ${status === complaint.status ? 'selected' : ''}>${status}</option>`)
-                      .join('')}
-                  </select>
-                  <button type="button" data-action="update" data-id="${complaint.id}">Update</button>
-                </div>
-                <div style="display: flex; gap: 4px;">
-                  <select data-id="${complaint.id}" class="assign-select">
-                    ${renderAssignmentOptions(complaint.assignedTo)}
-                  </select>
-                  <button type="button" data-action="assign" data-id="${complaint.id}">Assign</button>
-                </div>
-                ` : '<span>Closed</span>'}
-              </td>
-            </tr>
-            <tr>
-              <td colspan="8" class="details-cell">
-                <details>
-                  <summary>View details & history</summary>
-                  <p><strong>Description:</strong> ${complaint.description}</p>
-                  <p><strong>Assigned to:</strong> ${complaint.assignedToLabel || 'Unassigned'}</p>
-                  <p><strong>Created:</strong> ${new Date(complaint.createdAt).toLocaleString()}</p>
-                  <p><strong>Last updated:</strong> ${new Date(complaint.updatedAt).toLocaleString()}</p>
-                  <ul>${createHistoryMarkup(complaint.history)}</ul>
-                </details>
-              </td>
-            </tr>
-          `)
-            .join('')}
-        </tbody>
-      </table>
-    </div>
-  `;
+departmentForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const departmentData = {
+    name: departmentNameInput.value
+  };
+  const method = editingDeptName ? 'PUT' : 'POST';
+  const url = editingDeptName ? `/masters/departments/${encodeURIComponent(editingDeptName)}` : '/masters/departments';
+  try {
+    const response = await fetch(url, {
+      method: method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(departmentData)
+    });
+    if (await handleResponse(response, editingDeptName ? 'Department updated successfully' : 'Department added successfully', manageDeptMessage)) {
+      cancelDeptEditMode();
+      loadDepartments();
+    }
+  } catch (err) {
+    setMessage('Error saving department', false, manageDeptMessage);
+  }
+});
+
+urgencyForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const urgencyData = {
+    label: urgencyLabelInput.value
+  };
+  const method = editingUrgencyLabel ? 'PUT' : 'POST';
+  const url = editingUrgencyLabel ? `/masters/urgencies/${encodeURIComponent(editingUrgencyLabel)}` : '/masters/urgencies';
+  try {
+    const response = await fetch(url, {
+      method: method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(urgencyData)
+    });
+    if (await handleResponse(response, editingUrgencyLabel ? 'Urgency level updated successfully' : 'Urgency level added successfully', manageUrgencyMessage)) {
+      cancelUrgencyEditMode();
+      loadUrgencies();
+    }
+  } catch (err) {
+    setMessage('Error saving urgency level', false, manageUrgencyMessage);
+  }
+});
+
+function loadData() {
+  loadDepartments();
+  loadUrgencies();
+  if (currentUser.role === 'admin') {
+    loadUsers();
+  }
+  loadTasks();
+}
+
+function loadDepartments() {
+  fetch('/masters/departments')
+    .then(res => res.json())
+    .then(data => {
+      userDepartmentSelect.innerHTML = '<option value="">Select Department</option>';
+      departmentList.innerHTML = '';
+      data.forEach(dept => {
+        const option = document.createElement('option');
+        option.value = dept;
+        option.textContent = dept;
+        userDepartmentSelect.appendChild(option);
+
+        // Also populate report filter
+        const reportSection = document.getElementById('report-section');
+        if (reportSection) {
+          const opt2 = option.cloneNode(true);
+          reportSection.appendChild(opt2);
+        }
+
+        const item = document.createElement('div');
+        item.className = 'master-item';
+        item.innerHTML = `
+          <div class="item-info">
+            <span class="item-name">${dept}</span>
+          </div>
+          <div class="item-actions">
+            <button class="action-btn edit-btn" onclick="editDepartment('${dept}')" title="Edit">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            </button>
+            <button class="action-btn delete-btn" onclick="deleteDepartment('${dept}')" title="Delete">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+            </button>
+          </div>
+        `;
+        departmentList.appendChild(item);
+      });
+    });
+}
+
+function loadUrgencies() {
+  fetch('/masters/urgencies')
+    .then(res => res.json())
+    .then(data => {
+      urgencyList.innerHTML = '';
+      data.forEach(urg => {
+        const item = document.createElement('div');
+        item.className = 'master-item';
+        item.innerHTML = `
+          <div class="item-info">
+            <span class="item-name">${urg}</span>
+          </div>
+          <div class="item-actions">
+            <button class="action-btn edit-btn" onclick="editUrgency('${urg}')" title="Edit">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            </button>
+            <button class="action-btn delete-btn" onclick="deleteUrgency('${urg}')" title="Delete">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+            </button>
+          </div>
+        `;
+        urgencyList.appendChild(item);
+
+        // Populate report filter
+        const reportUrgency = document.getElementById('report-urgency');
+        if (reportUrgency) {
+          const opt = document.createElement('option');
+          opt.value = urg;
+          opt.textContent = urg;
+          reportUrgency.appendChild(opt);
+        }
+      });
+    });
+}
+
+function deleteDepartment(name) {
+  if (confirm(`Delete department "${name}"?`)) {
+    fetch(`/masters/departments/${encodeURIComponent(name)}`, {
+      method: 'DELETE'
+    })
+    .then(res => {
+      if (res.ok) {
+        loadDepartments();
+        setMessage('Department deleted', true, manageDeptMessage);
+      } else {
+        return res.json().then(err => setMessage(err.error, false, manageDeptMessage));
+      }
+    })
+    .catch(err => setMessage('Error deleting department', false, manageDeptMessage));
+  }
+}
+
+function deleteUrgency(label) {
+  if (confirm(`Delete urgency level "${label}"?`)) {
+    fetch(`/masters/urgencies/${encodeURIComponent(label)}`, {
+      method: 'DELETE'
+    })
+    .then(res => {
+      if (res.ok) {
+        loadUrgencies();
+        setMessage('Urgency level deleted', true, manageUrgencyMessage);
+      } else {
+        return res.json().then(err => setMessage(err.error, false, manageUrgencyMessage));
+      }
+    })
+    .catch(err => setMessage('Error deleting urgency level', false, manageUrgencyMessage));
+  }
+}
+
+function loadUsers() {
+  fetch('/masters/users')
+    .then(res => res.json())
+    .then(data => {
+      masterUsers = data;
+      populateUserSelect();
+      userList.innerHTML = '';
+      masterUsers.forEach(user => {
+        const item = document.createElement('div');
+        item.className = 'master-item';
+        item.innerHTML = `
+          <div class="item-info">
+            <span class="item-name">${user.name}</span>
+            <span class="item-details">${user.designation} | ${user.role} | ${user.email}</span>
+          </div>
+          <div class="item-actions">
+            <button class="action-btn edit-btn" onclick="editUser('${user.key}')" title="Edit">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            </button>
+            <button class="action-btn delete-btn" onclick="deleteUser('${user.key}')" title="Delete">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+            </button>
+          </div>
+        `;
+        userList.appendChild(item);
+      });
+    });
+}
+
+function loadTasks() {
+  fetch('/tasks')
+    .then(res => res.json())
+    .then(data => {
+      allTasks = data;
+      renderDashboard();
+    });
+}
+
+function populateUserSelect() {
+  userSelect.innerHTML = '';
+  const reassignSelect = document.getElementById('reassign-to');
+  if (reassignSelect) reassignSelect.innerHTML = '';
+  
+  masterUsers.forEach(user => {
+    const option = document.createElement('option');
+    option.value = user.key;
+    option.textContent = user.name;
+    userSelect.appendChild(option);
+    
+    if (reassignSelect) {
+      const opt2 = option.cloneNode(true);
+      reassignSelect.appendChild(opt2);
+    }
+
+    // Also populate report user filter
+    const reportUser = document.getElementById('report-user');
+    if (reportUser) {
+      const opt3 = option.cloneNode(true);
+      reportUser.appendChild(opt3);
+    }
+  });
 }
 
 function renderDashboard() {
-  const filtered = getFilteredComplaints();
-  filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  renderQueueSummary(allComplaints);
-  renderComplaints(filtered);
-  renderReporting(allComplaints);
-  dashboardStatus.textContent = `Showing ${filtered.length} complaint(s) (filtered from ${allComplaints.length}).`;
-}
+  if (!currentUser) return;
+  
+  const tasksToShow = currentUser.role === 'admin' ? allTasks : allTasks.filter(t => t.assignedTo && t.assignedTo.includes(currentUser.key));
+  
+  // Summary Stats
+  const total = tasksToShow.length;
+  const pending = tasksToShow.filter(t => t.status !== 'Completed').length;
+  const completed = tasksToShow.filter(t => t.status === 'Completed').length;
+  
+  dashboardStatus.innerHTML = `
+    <div class="summary-grid">
+      <div class="summary-card"><h3>${currentUser.role === 'admin' ? 'Total' : 'My'} Tasks</h3><p>${total}</p></div>
+      <div class="summary-card"><h3>Pending</h3><p>${pending}</p></div>
+      <div class="summary-card"><h3>Completed</h3><p>${completed}</p></div>
+    </div>
+  `;
 
-async function fetchMasters() {
-  try {
-    const [categoriesResponse, urgenciesResponse, usersResponse] = await Promise.all([
-      fetch('/masters/categories'),
-      fetch('/masters/urgencies'),
-      fetch('/masters/users')
-    ]);
+  // Kanban Columns
+  const colAssigned = document.querySelector('#col-assigned .column-cards');
+  const colProgress = document.querySelector('#col-in-progress .column-cards');
+  const colCompleted = document.querySelector('#col-completed .column-cards');
 
-    if (!categoriesResponse.ok || !urgenciesResponse.ok || !usersResponse.ok) {
-      throw new Error('Unable to load master data');
-    }
+  colAssigned.innerHTML = '';
+  colProgress.innerHTML = '';
+  colCompleted.innerHTML = '';
 
-    masterCategories = await categoriesResponse.json();
-    urgencyLevels = await urgenciesResponse.json();
-    masterUsers = await usersResponse.json();
-    renderCategoryOptions();
-    renderDepartmentOptions();
-    renderUrgencyOptions();
-    renderReportFilters();
-    renderMasterCategories();
-    renderUrgencyList();
-    renderUserList();
-  } catch (error) {
-    setMessage(error.message, false, lodgeMessage);
-  }
-}
-
-async function fetchComplaints() {
-  dashboardStatus.textContent = 'Loading complaints...';
-  try {
-    const response = await fetch('/complaints');
-    if (!response.ok) {
-      throw new Error('Unable to load complaints');
-    }
-    const complaints = await response.json();
-    allComplaints.length = 0;
-    allComplaints.push(...complaints);
-    renderDashboard();
-  } catch (error) {
-    dashboardStatus.textContent = error.message;
-  }
-}
-
-async function fetchReportSummary() {
-  const params = new URLSearchParams();
-  if (reportSectionSelect.value !== 'all') params.set('section', reportSectionSelect.value);
-  if (reportCategorySelect.value !== 'all') params.set('category', reportCategorySelect.value);
-  if (reportUserSelect.value !== 'all') params.set('assignedTo', reportUserSelect.value);
-  if (reportPendencySelect.value !== 'all') params.set('pendency', reportPendencySelect.value);
-
-  try {
-    const query = params.toString() ? `?${params.toString()}` : '';
-    const response = await fetch(`/reports/summary${query}`);
-    if (!response.ok) {
-      throw new Error('Unable to load report summary');
-    }
-    const report = await response.json();
-    renderReporting(report);
-    reportingContent.classList.remove('hidden');
-  } catch (error) {
-    reportingSummary.innerHTML = `<p style="color:#b91c1c">${error.message}</p>`;
-    reportingBreakdown.innerHTML = '';
-    reportingTable.innerHTML = '';
-  }
-}
-
-async function updateComplaintStatus(id, status) {
-  try {
-    const response = await fetch(`/complaints/${id}/status`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status })
-    });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to update status');
-    }
-    const updated = await response.json();
-    message.textContent = `Updated complaint ${updated.id} to ${updated.status}.`;
-    message.style.color = '#065f46';
-    fetchComplaints();
-  } catch (error) {
-    console.error(error);
-    setMessage(error.message, false);
-  }
-}
-
-async function assignComplaint(id, assignedTo) {
-  if (!assignedTo) {
-    setMessage('Please select a user to assign the complaint to.', false);
-    return;
-  }
-  try {
-    const response = await fetch(`/complaints/${id}/assign`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ assignedTo })
-    });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to assign complaint');
-    }
-    const updated = await response.json();
-    setMessage(`Assigned complaint ${updated.id} to ${updated.assignedToLabel} and marked as Received.`, true);
-    fetchComplaints();
-  } catch (error) {
-    console.error(error);
-    setMessage(error.message, false);
-  }
-}
-
-async function createCategory(event) {
-  event.preventDefault();
-
-  const name = categoryNameInput.value.trim();
-  const department = categoryDepartmentInput.value.trim();
-  const defaultUrgency = categoryUrgencySelect.value;
-
-  if (!name || !department || !defaultUrgency) {
-    setMasterMessage('Category name, department, and default urgency are required before adding a category.', false);
-    return;
-  }
-
-  try {
-    const method = editingCategoryKey ? 'PATCH' : 'POST';
-    const url = editingCategoryKey ? `/masters/categories/${encodeURIComponent(editingCategoryKey)}` : '/masters/categories';
-    const response = await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name,
-        department,
-        defaultUrgency,
-        keywords: categoryKeywordsInput.value.split(',').map(k => k.trim()).filter(Boolean),
-        urgentKeywords: categoryUrgentKeywordsInput.value.split(',').map(k => k.trim()).filter(Boolean)
-      })
-    });
-    const result = await response.json();
-    if (!response.ok) {
-      throw new Error(result.error || 'Failed to save category. Please review the form values.');
-    }
-    const action = editingCategoryKey ? 'updated' : 'added';
-    setMasterMessage(`Category ${result.name} ${action}.`, true);
-    categoryForm.reset();
-    clearCategoryFormMode();
-    await fetchMasters();
-    await fetchComplaints();
-  } catch (error) {
-    console.error(error);
-    setMasterMessage(`Could not save category: ${error.message}`, false);
-  }
-}
-
-async function createUrgency(event) {
-  event.preventDefault();
-
-  const label = urgencyLabelInput.value.trim();
-  if (!label) {
-    setMasterMessage('Urgency label cannot be empty. Enter a name like "urgent", "routine", or "critical".', false, masterUrgencyMessage);
-    return;
-  }
-
-  try {
-    const response = await fetch('/masters/urgencies', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ label })
-    });
-    const result = await response.json();
-    if (!response.ok) {
-      throw new Error(result.error || 'Failed to add urgency. Please choose a unique urgency label.');
-    }
-    if (!result.label) {
-      throw new Error('Unexpected server response when adding urgency.');
-    }
-    setMasterMessage(`Urgency ${result.label} added.`, true, masterUrgencyMessage);
-    urgencyForm.reset();
-    await fetchMasters();
-  } catch (error) {
-    console.error(error);
-    setMasterMessage(`Could not add urgency: ${error.message}`, false, masterUrgencyMessage);
-  }
-}
-
-async function createUser(event) {
-  event.preventDefault();
-
-  const name = userNameInput.value.trim();
-  const designation = userDesignationInput.value.trim();
-  const email = userEmailInput.value.trim();
-  const contact = userContactInput.value.trim();
-
-  if (!name || !designation || !email || !contact) {
-    setMasterMessage('User name, designation, email and contact are required.', false, masterUserMessage);
-    return;
-  }
-
-  try {
-    const method = editingUserKey ? 'PATCH' : 'POST';
-    const url = editingUserKey ? `/masters/users/${encodeURIComponent(editingUserKey)}` : '/masters/users';
-    const response = await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, designation, email, contact })
-    });
-    const result = await response.json();
-    if (!response.ok) {
-      throw new Error(result.error || 'Failed to save user.');
-    }
-    const action = editingUserKey ? 'updated' : 'added';
-    setMasterMessage(`User ${result.name} ${action}.`, true, masterUserMessage);
-    userForm.reset();
-    editingUserKey = null;
-    cancelUserEdit.classList.add('hidden');
-    await fetchMasters();
-  } catch (error) {
-    console.error(error);
-    setMasterMessage(`Could not save user: ${error.message}`, false, masterUserMessage);
-  }
-}
-
-async function deleteCategory(key) {
-  if (!key) return;
-  if (!confirm('Delete this category? This cannot be undone.')) return;
-  try {
-    const response = await fetch(`/masters/categories/${encodeURIComponent(key)}`, { method: 'DELETE' });
-    const result = await response.json();
-    if (!response.ok) {
-      throw new Error(result.error || 'Failed to delete category.');
-    }
-    setMasterMessage(`Category ${result.deleted} deleted.`, true);
-    if (editingCategoryKey === key) {
-      clearCategoryFormMode();
-      categoryForm.reset();
-    }
-    await fetchMasters();
-    await fetchComplaints();
-  } catch (error) {
-    console.error(error);
-    setMasterMessage(`Could not delete category: ${error.message}`, false);
-  }
-}
-
-async function deleteUrgency(label) {
-  if (!label) return;
-  if (!confirm(`Delete urgency level "${label}"?`)) return;
-  try {
-    const response = await fetch(`/masters/urgencies/${encodeURIComponent(label)}`, { method: 'DELETE' });
-    const result = await response.json();
-    if (!response.ok) {
-      throw new Error(result.error || 'Failed to delete urgency.');
-    }
-    setMasterMessage(`Urgency ${result.deleted} deleted.`, true, masterUrgencyMessage);
-    await fetchMasters();
-  } catch (error) {
-    console.error(error);
-    setMasterMessage(`Could not delete urgency: ${error.message}`, false, masterUrgencyMessage);
-  }
-}
-
-async function deleteUser(key) {
-  if (!key) return;
-  if (!confirm('Delete this user? This cannot be undone.')) return;
-  try {
-    const response = await fetch(`/masters/users/${encodeURIComponent(key)}`, { method: 'DELETE' });
-    const result = await response.json();
-    if (!response.ok) {
-      throw new Error(result.error || 'Failed to delete user.');
-    }
-    setMasterMessage(`User ${result.deleted} deleted.`, true, masterUserMessage);
-    if (editingUserKey === key) {
-      editingUserKey = null;
-      userForm.reset();
-      cancelUserEdit.classList.add('hidden');
-    }
-    await fetchMasters();
-  } catch (error) {
-    console.error(error);
-    setMasterMessage(`Could not delete user: ${error.message}`, false, masterUserMessage);
-  }
-}
-
-function resetFilters() {
-  searchInput.value = '';
-  filterCategory.value = 'all';
-  filterDepartment.value = 'all';
-  filterUrgency.value = 'all';
-  filterStatus.value = 'all';
-  renderDashboard();
-}
-
-navButtons.forEach(button => {
-  button.addEventListener('click', () => setActiveTab(button.dataset.tab));
-});
-
-complaintList.addEventListener('click', event => {
-  const button = event.target.closest('button[data-action]');
-  if (!button) return;
-  const action = button.dataset.action;
-  const complaintId = button.dataset.id;
-
-  if (action === 'update') {
-    const select = document.querySelector(`select[data-id="${complaintId}"].status-select`);
-    if (!select) return;
-    updateComplaintStatus(complaintId, select.value);
-  }
-
-  if (action === 'assign') {
-    const select = document.querySelector(`select[data-id="${complaintId}"].assign-select`);
-    if (!select) return;
-    assignComplaint(complaintId, select.value);
-  }
-});
-
-masterCategoriesList.addEventListener('click', event => {
-  const button = event.target.closest('button[data-action]');
-  if (!button) return;
-  const action = button.dataset.action;
-  const key = button.dataset.key;
-  if (action === 'edit-category') {
-    const category = masterCategories.find(item => item.key === key);
-    if (!category) return;
-    setCategoryFormMode(category);
-    setMasterMessage(`Editing category ${category.name}.`, true);
-  }
-  if (action === 'delete-category') {
-    deleteCategory(key);
-  }
-});
-
-userList.addEventListener('click', event => {
-  const button = event.target.closest('button[data-action]');
-  if (!button) return;
-  const action = button.dataset.action;
-  const key = button.dataset.key;
-  const user = masterUsers.find(item => item.key === key);
-  if (action === 'edit-user') {
-    if (!user) return;
-    editingUserKey = key;
-    userNameInput.value = user.name;
-    userDesignationInput.value = user.designation;
-    userEmailInput.value = user.email;
-    userContactInput.value = user.contact;
-    cancelUserEdit.classList.remove('hidden');
-    setMasterMessage(`Editing user ${user.name}.`, true, masterUserMessage);
-  }
-  if (action === 'delete-user') {
-    deleteUser(key);
-  }
-});
-
-urgencyList.addEventListener('click', event => {
-  const button = event.target.closest('button[data-action="delete-urgency"]');
-  if (!button) return;
-  const label = button.dataset.label;
-  deleteUrgency(label);
-});
-
-cancelCategoryButton?.addEventListener('click', () => {
-  clearCategoryFormMode();
-  categoryForm.reset();
-});
-
-complaintForm.addEventListener('submit', async event => {
-  event.preventDefault();
-  const newComplaint = {
-    category: categorySelect.value,
-    description: document.getElementById('description').value.trim(),
-    location: document.getElementById('location').value.trim(),
-    reporter: { name: document.getElementById('reporter').value.trim() }
+  const renderCard = (task) => {
+    const card = document.createElement('div');
+    card.className = 'task-card';
+    card.onclick = () => viewTask(task.id, 'view');
+    
+    card.innerHTML = `
+      <h4>${task.title}</h4>
+      <p>${task.description}</p>
+      <div class="card-meta">
+        <div class="assigned-users">
+          ${(task.assignedToLabels || []).map(label => `<div class="user-avatar" title="${label}">${label.charAt(0).toUpperCase()}</div>`).join('')}
+        </div>
+        <div class="card-actions">
+          <button class="card-icon-btn" onclick="event.stopPropagation(); viewTask('${task.id}', 'view')" title="View Details">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          </button>
+          ${(task.status !== 'Completed' || currentUser.role === 'admin') ? `
+            <button class="card-icon-btn" onclick="event.stopPropagation(); viewTask('${task.id}', 'update')" title="Update Status">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            </button>
+          ` : ''}
+        </div>
+      </div>
+    `;
+    return card;
   };
 
-  try {
-    const response = await fetch('/complaints', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newComplaint)
-    });
-    const result = await response.json();
-    if (!response.ok) {
-      throw new Error(result.error || 'Failed to submit complaint');
+  tasksToShow.forEach(task => {
+    const card = renderCard(task);
+    if (task.status === 'Completed') {
+      colCompleted.appendChild(card);
+    } else if (task.status === 'In Progress' || task.status === 'In progress') {
+      colProgress.appendChild(card);
+    } else {
+      colAssigned.appendChild(card);
     }
-    setMessage(`Complaint submitted: ${result.id}`, true, lodgeMessage);
-    complaintForm.reset();
-    fetchComplaints();
-  } catch (error) {
-    setMessage(error.message, false, lodgeMessage);
+  });
+
+  // Update counts
+  document.querySelector('#col-assigned .count').textContent = tasksToShow.filter(t => t.status !== 'Completed' && t.status !== 'In Progress' && t.status !== 'In progress').length;
+  document.querySelector('#col-in-progress .count').textContent = tasksToShow.filter(t => t.status === 'In Progress' || t.status === 'In progress').length;
+  document.querySelector('#col-completed .count').textContent = tasksToShow.filter(t => t.status === 'Completed').length;
+}
+
+// Navigation
+navButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    setActiveTab(button.dataset.tab);
+  });
+});
+
+function editUser(key) {
+  const user = masterUsers.find(u => u.key === key);
+  if (!user) return;
+  
+  userNameInput.value = user.name;
+  userDesignationInput.value = user.designation;
+  userEmailInput.value = user.email;
+  userContactInput.value = user.contact;
+  userRoleSelect.value = user.role;
+  userDepartmentSelect.value = user.department || '';
+  
+  // Hide password for edit
+  document.getElementById('password-field-row').classList.add('hidden');
+  userPasswordInput.removeAttribute('required');
+  
+  editingUserKey = user.key;
+  document.getElementById('user-form-title').textContent = 'Edit User';
+  document.getElementById('user-submit-btn').textContent = 'Update User';
+  document.getElementById('cancel-user-edit').classList.remove('hidden');
+}
+
+function deleteUser(key) {
+  if (confirm('Delete this user?')) {
+    fetch(`/masters/users/${key}`, {
+      method: 'DELETE'
+    })
+    .then(res => {
+      if (res.ok) {
+        loadUsers();
+        setMessage('User deleted', true, manageUserMessage);
+      } else {
+        return res.json().then(err => setMessage(err.error, false, manageUserMessage));
+      }
+    })
+    .catch(err => setMessage('Error deleting user', false, manageUserMessage));
+  }
+}
+
+// Task Creation
+taskForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const formData = new FormData(taskForm);
+  
+  // Note: multiple select values might need manual appending if FormData doesn't handle them automatically in some browsers
+  // But usually FormData(form) handles everything with name attributes.
+  
+  try {
+    const response = await fetch('/tasks', {
+      method: 'POST',
+      body: formData
+    });
+    if (await handleResponse(response, 'Task created successfully')) {
+      taskForm.reset();
+      loadTasks();
+      setActiveTab('dashboard');
+    }
+  } catch (err) {
+    setMessage('Error creating task', false);
   }
 });
 
-categoryForm.addEventListener('submit', createCategory);
-urgencyForm.addEventListener('submit', createUrgency);
-userForm.addEventListener('submit', createUser);
-refreshButton.addEventListener('click', fetchComplaints);
-searchInput.addEventListener('input', renderDashboard);
-filterCategory.addEventListener('change', renderDashboard);
-filterDepartment.addEventListener('change', renderDashboard);
-filterUrgency.addEventListener('change', renderDashboard);
-filterStatus.addEventListener('change', renderDashboard);
-clearFiltersButton.addEventListener('click', resetFilters);
-reportRefreshButton?.addEventListener('click', fetchReportSummary);
-reportClearButton?.addEventListener('click', () => {
-  reportingContent.classList.add('hidden');
-  reportSectionSelect.value = 'all';
-  reportCategorySelect.value = 'all';
-  reportUserSelect.value = 'all';
-  reportPendencySelect.value = 'all';
-  fetchReportSummary();
-});
-exportReportButton?.addEventListener('click', exportReportPdf);
-cancelUserEdit?.addEventListener('click', () => {
-  editingUserKey = null;
+// Edit/Delete Department
+function editDepartment(name) {
+  departmentNameInput.value = name;
+  editingDeptName = name;
+  document.getElementById('dept-form-title').textContent = 'Edit Department';
+  document.getElementById('dept-submit-btn').textContent = 'Update Department';
+  document.getElementById('cancel-dept-edit').classList.remove('hidden');
+}
+
+function cancelDeptEditMode() {
+  departmentForm.reset();
+  editingDeptName = null;
+  document.getElementById('dept-form-title').textContent = 'Add New Department';
+  document.getElementById('dept-submit-btn').textContent = 'Add Department';
+  document.getElementById('cancel-dept-edit').classList.add('hidden');
+  setMessage('', true, manageDeptMessage);
+}
+
+document.getElementById('cancel-dept-edit').addEventListener('click', cancelDeptEditMode);
+
+// Edit/Delete Urgency
+function editUrgency(label) {
+  urgencyLabelInput.value = label;
+  editingUrgencyLabel = label;
+  document.getElementById('urgency-form-title').textContent = 'Edit Urgency Level';
+  document.getElementById('urgency-submit-btn').textContent = 'Update Urgency Level';
+  document.getElementById('cancel-urgency-edit').classList.remove('hidden');
+}
+
+function cancelUrgencyEditMode() {
+  urgencyForm.reset();
+  editingUrgencyLabel = null;
+  document.getElementById('urgency-form-title').textContent = 'Add New Urgency Level';
+  document.getElementById('urgency-submit-btn').textContent = 'Add Urgency Level';
+  document.getElementById('cancel-urgency-edit').classList.add('hidden');
+  setMessage('', true, manageUrgencyMessage);
+}
+
+document.getElementById('cancel-urgency-edit').addEventListener('click', cancelUrgencyEditMode);
+
+// Edit User Helpers
+function cancelUserEditMode() {
   userForm.reset();
-  cancelUserEdit.classList.add('hidden');
-  setMasterMessage('', true, masterUserMessage); // Clear user
+  editingUserKey = null;
+  document.getElementById('user-form-title').textContent = 'Add New User';
+  document.getElementById('user-submit-btn').textContent = 'Add User';
+  document.getElementById('cancel-user-edit').classList.add('hidden');
+  document.getElementById('password-field-row').classList.remove('hidden');
+  userPasswordInput.setAttribute('required', 'required');
+  setMessage('', true, manageUserMessage);
+}
+
+document.getElementById('cancel-user-edit').addEventListener('click', cancelUserEditMode);
+
+// Reporting logic
+reportRefreshButton.addEventListener('click', () => {
+  const section = document.getElementById('report-section').value;
+  const user = document.getElementById('report-user').value;
+  const pendency = document.getElementById('report-pendency').value;
+  const urgency = document.getElementById('report-urgency')?.value || 'all';
+
+  let url = '/reports/summary?';
+  if (section !== 'all') url += `department=${encodeURIComponent(section)}&`;
+  if (user !== 'all') url += `assignedTo=${encodeURIComponent(user)}&`;
+  if (pendency !== 'all') url += `status=${encodeURIComponent(pendency)}&`;
+  if (urgency !== 'all') url += `urgency=${encodeURIComponent(urgency)}&`;
+
+  fetch(url)
+    .then(res => {
+      if (res.status === 401) {
+        handleResponse(res);
+        return;
+      }
+      return res.json();
+    })
+    .then(data => {
+      if (data) {
+        renderReport(data);
+        document.getElementById('export-report-pdf').classList.remove('hidden');
+      }
+    });
 });
 
-window.addEventListener('load', async () => {
-  await fetchMasters();
-  await fetchComplaints();
+let lastReportData = null;
+
+function renderReport(data) {
+  lastReportData = data;
+  const content = document.getElementById('reporting-content');
+  const summary = document.getElementById('reporting-summary');
+  const table = document.getElementById('reporting-table');
+
+  content.classList.remove('hidden');
+  summary.innerHTML = `
+    <div class="summary-card"><h3>Total Tasks</h3><p>${data.total}</p></div>
+    <div class="summary-card"><h3>Pending</h3><p>${data.pending}</p></div>
+    <div class="summary-card"><h3>Completed</h3><p>${data.completed}</p></div>
+  `;
+
+  let tableHtml = `
+    <h3 class="form-section-title" style="margin-top:0;">Task Details</h3>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Task Details</th>
+            <th>Assigned On</th>
+            <th>Assigned To</th>
+            <th>Completed On</th>
+            <th>Time Taken</th>
+            <th>Last Action Brief</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${data.rows.map(row => `
+            <tr>
+              <td>
+                <div style="font-weight:600;">${row.title}</div>
+                <div style="font-size:0.75rem; color:#666; max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${row.description}</div>
+              </td>
+              <td>${new Date(row.assignedOn).toLocaleDateString()}</td>
+              <td>${row.assignedTo}</td>
+              <td>${row.completedOn ? new Date(row.completedOn).toLocaleDateString() : 'N/A'}</td>
+              <td style="font-weight:600; color:var(--primary-color);">${row.timeTaken}</td>
+              <td style="font-size:0.8rem; max-width:150px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${row.lastBrief}</td>
+              <td><button class="action-btn edit-btn" onclick="viewTask('${row.id}', 'view', true)" style="font-size:0.7rem; padding:4px 8px;">View</button></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+  table.innerHTML = tableHtml;
+}
+
+document.getElementById('export-report-pdf').addEventListener('click', () => {
+  if (!lastReportData) return;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
   
-  // Calculate pending complaints (any complaint that is not 'closed' or 'resolved')
-  const pendingCount = allComplaints.filter(c => c.status !== 'closed' && c.status !== 'resolved').length;
+  doc.setFontSize(18);
+  doc.text('e-Desk Monitor - Reporting & Analytics', 14, 22);
   
-  pendingComplaintsMsg.textContent = `You have ${pendingCount} pending complaint${pendingCount !== 1 ? 's' : ''} to review.`;
-  welcomeModal.classList.remove('hidden');
+  doc.setFontSize(11);
+  doc.setTextColor(100);
+  doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 30);
+  
+  doc.setFontSize(12);
+  doc.setTextColor(0);
+  doc.text(`Summary: Total: ${lastReportData.total} | Pending: ${lastReportData.pending} | Completed: ${lastReportData.completed}`, 14, 40);
+  
+  const tableData = lastReportData.rows.map(row => [
+    `${row.title}\n${row.description}`,
+    new Date(row.assignedOn).toLocaleDateString(),
+    row.assignedTo,
+    row.completedOn ? new Date(row.completedOn).toLocaleDateString() : 'N/A',
+    row.timeTaken,
+    row.lastBrief
+  ]);
+  
+  doc.autoTable({
+    startY: 50,
+    head: [['Task Details', 'Assigned On', 'Assigned To', 'Completed On', 'Time Taken', 'Last Action Brief']],
+    body: tableData,
+    theme: 'striped',
+    headStyles: { fillColor: [139, 69, 19] } // Brown color matching theme
+  });
+  
+  doc.save(`report_${Date.now()}.pdf`);
 });
 
-// Chatbot Logic
+// Global Exports for onclick handlers
+window.editUser = editUser;
+window.deleteUser = deleteUser;
+window.editDepartment = editDepartment;
+window.deleteDepartment = deleteDepartment;
+window.editUrgency = editUrgency;
+window.deleteUrgency = deleteUrgency;
+let viewingTaskId = null;
+
+function viewTask(id, mode = 'view', fromReporting = false) {
+  const task = allTasks.find(t => t.id === id);
+  if (!task) return;
+  
+  viewingTaskId = id;
+  
+  // Set Modal Tabs
+  const tabView = document.getElementById('tab-view');
+  const tabUpdate = document.getElementById('tab-update');
+  const sectionView = document.getElementById('section-view');
+  const sectionUpdate = document.getElementById('section-update');
+
+  // Logic: Hide Update tab if from reporting OR if task is completed and user is not admin
+  const canUpdate = !fromReporting && (task.status !== 'Completed' || currentUser.role === 'admin');
+  
+  if (!canUpdate) {
+    tabUpdate.classList.add('hidden');
+    tabView.style.width = '100%';
+    mode = 'view';
+  } else {
+    tabUpdate.classList.remove('hidden');
+    tabView.style.width = 'auto';
+  }
+
+  const switchTab = (m) => {
+    if (m === 'view') {
+      tabView.style.borderBottom = '2px solid var(--primary-color)';
+      tabView.style.opacity = '1';
+      tabUpdate.style.borderBottom = 'none';
+      tabUpdate.style.opacity = '0.6';
+      sectionView.classList.remove('hidden');
+      sectionUpdate.classList.add('hidden');
+    } else {
+      tabUpdate.style.borderBottom = '2px solid var(--primary-color)';
+      tabUpdate.style.opacity = '1';
+      tabView.style.borderBottom = 'none';
+      tabView.style.opacity = '0.6';
+      sectionUpdate.classList.remove('hidden');
+      sectionView.classList.add('hidden');
+    }
+  };
+
+  tabView.onclick = () => switchTab('view');
+  tabUpdate.onclick = () => switchTab('update');
+  
+  switchTab(mode);
+
+  // Populate View Data
+  document.getElementById('modal-task-status').textContent = task.status;
+  document.getElementById('modal-task-desc').textContent = task.description;
+  document.getElementById('modal-task-assigned').textContent = task.assignedToLabels ? task.assignedToLabels.join(', ') : 'Unassigned';
+  
+  const docContainer = document.getElementById('modal-task-doc-container');
+  const docLink = document.getElementById('modal-task-doc-link');
+  if (task.document) {
+    docContainer.classList.remove('hidden');
+    docLink.href = task.document;
+  } else {
+    docContainer.classList.add('hidden');
+  }
+
+  const historyList = document.getElementById('task-history-list');
+  historyList.innerHTML = '';
+  if (task.history && task.history.length > 0) {
+    [...task.history].reverse().forEach(item => {
+      const div = document.createElement('div');
+      div.style.marginBottom = '15px';
+      div.style.padding = '10px';
+      div.style.background = 'white';
+      div.style.borderRadius = '6px';
+      div.style.boxShadow = '0 1px 3px rgba(0,0,0,0.05)';
+      div.innerHTML = `
+        <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+          <span style="font-weight:700; color:var(--primary-color); font-size:0.8rem;">${item.action}</span>
+          <span style="font-size:0.7rem; color:#666;">${new Date(item.timestamp).toLocaleString()}</span>
+        </div>
+        <div style="font-size:0.85rem; color:#333; margin-bottom:5px;">${item.remarks || ''}</div>
+        <div style="font-size:0.75rem; color:#888;">Updated by: ${item.user}</div>
+        ${item.document ? `<a href="${item.document}" target="_blank" style="display:inline-block; margin-top:8px; font-size:0.75rem; color:var(--accent-color); font-weight:600;">View Attachment</a>` : ''}
+      `;
+      historyList.appendChild(div);
+    });
+  } else {
+    historyList.innerHTML = '<p style="color:#999; font-style:italic;">No history available.</p>';
+  }
+
+  // Pre-populate Update Form
+  document.getElementById('new-status').value = task.status;
+  document.getElementById('update-remarks').value = '';
+  document.getElementById('update-document').value = '';
+
+  document.getElementById('task-modal').classList.remove('hidden');
+}
+
+document.getElementById('close-task-modal').addEventListener('click', () => {
+  document.getElementById('task-modal').classList.add('hidden');
+  viewingTaskId = null;
+});
+
+document.getElementById('update-status-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const formData = new FormData(document.getElementById('update-status-form'));
+
+  try {
+    const response = await fetch(`/tasks/${viewingTaskId}/status`, {
+      method: 'PATCH',
+      body: formData
+    });
+    if (await handleResponse(response, 'Status updated successfully')) {
+      document.getElementById('task-modal').classList.add('hidden');
+      document.getElementById('update-status-form').reset();
+      loadTasks();
+    }
+  } catch (err) {
+    alert('Error updating status');
+  }
+});
+
+window.viewTask = viewTask;
+// Password Change Handling
+const passwordModal = document.getElementById('password-modal');
+const openPasswordBtn = document.getElementById('open-change-password');
+const closePasswordBtn = document.getElementById('close-password-modal');
+const changePasswordForm = document.getElementById('change-password-form');
+const passwordMessage = document.getElementById('password-message');
+
+openPasswordBtn?.addEventListener('click', () => {
+  passwordModal.classList.remove('hidden');
+});
+
+closePasswordBtn?.addEventListener('click', () => {
+  passwordModal.classList.add('hidden');
+  changePasswordForm.reset();
+  setMessage('', true, passwordMessage);
+});
+
+changePasswordForm?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const currentPassword = document.getElementById('current-password').value;
+  const newPassword = document.getElementById('new-password').value;
+  const confirmPassword = document.getElementById('confirm-password').value;
+
+  if (newPassword !== confirmPassword) {
+    setMessage('Passwords do not match', false, passwordMessage);
+    return;
+  }
+
+  try {
+    const response = await fetch('/profile/change-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ currentPassword, newPassword })
+    });
+    
+    if (await handleResponse(response, 'Password updated successfully', passwordMessage)) {
+      setTimeout(() => {
+        passwordModal.classList.add('hidden');
+        changePasswordForm.reset();
+        setMessage('', true, passwordMessage);
+      }, 2000);
+    }
+  } catch (err) {
+    setMessage('Error updating password', false, passwordMessage);
+  }
+});
+
+// Chatbot Handling
+const chatbotWidget = document.getElementById('chatbot-widget');
 const chatbotToggle = document.getElementById('chatbot-toggle');
 const chatbotWindow = document.getElementById('chatbot-window');
 const chatbotClose = document.getElementById('chatbot-close');
@@ -957,21 +935,8 @@ const chatbotForm = document.getElementById('chatbot-form');
 const chatbotInput = document.getElementById('chatbot-input');
 const chatbotMessages = document.getElementById('chatbot-messages');
 
-function addChatMessage(text, sender = 'user') {
-  const div = document.createElement('div');
-  div.className = `chat-message ${sender}-message`;
-  const p = document.createElement('p');
-  p.textContent = text;
-  div.appendChild(p);
-  chatbotMessages.appendChild(div);
-  chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-}
-
 chatbotToggle?.addEventListener('click', () => {
   chatbotWindow.classList.toggle('hidden');
-  if (!chatbotWindow.classList.contains('hidden')) {
-    chatbotInput.focus();
-  }
 });
 
 chatbotClose?.addEventListener('click', () => {
@@ -980,25 +945,30 @@ chatbotClose?.addEventListener('click', () => {
 
 chatbotForm?.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const text = chatbotInput.value.trim();
-  if (!text) return;
+  const query = chatbotInput.value.trim();
+  if (!query) return;
 
-  addChatMessage(text, 'user');
+  // Add user message
+  appendChatMessage(query, 'user');
   chatbotInput.value = '';
 
   try {
     const response = await fetch('/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query: text })
+      body: JSON.stringify({ query })
     });
-    const result = await response.json();
-    addChatMessage(result.reply || "I'm sorry, I couldn't understand that.", 'bot');
+    const data = await response.json();
+    appendChatMessage(data.reply, 'bot');
   } catch (err) {
-    addChatMessage("Error connecting to chat server.", 'bot');
+    appendChatMessage('Sorry, I encountered an error. Please try again.', 'bot');
   }
 });
 
-closeModalBtn?.addEventListener('click', () => {
-  welcomeModal.classList.add('hidden');
-});
+function appendChatMessage(text, sender) {
+  const div = document.createElement('div');
+  div.className = `chat-message ${sender}-message`;
+  div.innerHTML = `<p>${text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>`;
+  chatbotMessages.appendChild(div);
+  chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+}
