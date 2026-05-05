@@ -1,516 +1,201 @@
-const fs = require('fs');
-const path = require('path');
+/**
+ * Master data service — users, departments, urgency levels.
+ * All reads/writes go through SQLite.
+ */
+const db = require('./db');
+const bcrypt = require('bcryptjs');
 
-const masterFile = process.env.MASTER_FILE
-  ? path.resolve(process.env.MASTER_FILE)
-  : path.resolve(__dirname, '../data/master.json');
-
+// ── Key normalisation (same logic as before) ─────────────────────────────────
 function normalizeKey(value) {
-  return String(value || '')
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, ' ')
-    .replace(/\s/g, '-');
+  return String(value || '').trim().toLowerCase().replace(/\s+/g, ' ').replace(/\s/g, '-');
 }
 
-function ensureMasterFile() {
-  if (!fs.existsSync(masterFile)) {
-    fs.mkdirSync(path.dirname(masterFile), { recursive: true });
-    const bcrypt = require('bcryptjs');
-    const defaultMaster = {
-      urgencies: ['urgent', 'routine', 'FYI'],
-      categories: [
-        {
-          key: 'water',
-          name: 'Water',
-          department: 'Water',
-          defaultUrgency: 'routine',
-          urgentKeywords: ['leak', 'outage', 'contaminated', 'burst', 'flood'],
-          keywords: ['water leak', 'water outage', 'contaminated water', 'broken pipe']
-        },
-        {
-          key: 'roads',
-          name: 'Roads',
-          department: 'Roads',
-          defaultUrgency: 'routine',
-          urgentKeywords: ['collapse', 'blocked', 'hazard', 'sinkhole'],
-          keywords: ['pothole', 'road collapse', 'damaged signage', 'blocked road']
-        },
-        {
-          key: 'sanitation',
-          name: 'Sanitation',
-          department: 'Sanitation',
-          defaultUrgency: 'routine',
-          urgentKeywords: ['sewage', 'hazard', 'odor', 'overflow'],
-          keywords: ['garbage', 'sewage leak', 'drain blockage', 'odor']
-        },
-        {
-          key: 'street-lights',
-          name: 'Street Lights',
-          department: 'Street Lights',
-          defaultUrgency: 'routine',
-          urgentKeywords: ['outage', 'broken', 'flicker'],
-          keywords: ['light outage', 'broken pole', 'flickering light', 'damaged fixture']
-        },
-        {
-          key: 'tax',
-          name: 'Tax',
-          department: 'Tax Office',
-          defaultUrgency: 'routine',
-          urgentKeywords: ['audit', 'penalty', 'late', 'due', 'notice', 'immediate', 'urgent'],
-          keywords: ['tax liability', 'tax audit', 'property tax', 'income tax', 'tax notice', 'tax payment']
-        },
-        {
-          key: 'death-&-birth',
-          name: 'Death & Birth',
-          department: 'Civil Registry',
-          defaultUrgency: 'routine',
-          urgentKeywords: ['certificate', 'registration', 'stillborn', 'newborn', 'urgent'],
-          keywords: ['death certificate', 'birth certificate', 'birth registration', 'death registration', 'newborn', 'stillborn']
-        }
-      ],
-      departments: ['Water', 'Roads', 'Sanitation', 'Street Lights', 'Tax Office', 'Civil Registry'],
-      users: [
-        {
-          key: 'admin',
-          name: 'Administrator',
-          designation: 'System Admin',
-          email: 'admin@workdesk.com',
-          contact: '1234567890',
-          role: 'admin',
-          password: bcrypt.hashSync('admin123', 10),
-          department: null
-        },
-        {
-          key: 'test-user',
-          name: 'Test User',
-          designation: 'Employee',
-          email: 'user@workdesk.com',
-          contact: '0987654321',
-          role: 'user',
-          password: bcrypt.hashSync('user123', 10),
-          department: 'Water'
-        },
-        {
-          key: 'deepak-rajak',
-          name: 'Deepak Rajak',
-          designation: 'Manager',
-          email: 'deepak@workdesk.com',
-          contact: '1122334455',
-          role: 'user',
-          password: bcrypt.hashSync('user123', 10),
-          department: 'Roads'
-        }
-      ]
-    };
-    fs.writeFileSync(masterFile, JSON.stringify(defaultMaster, null, 2), 'utf8');
-  }
+// ── Users ─────────────────────────────────────────────────────────────────────
+
+// Returns users WITHOUT password (safe for API responses)
+function getUsers() {
+  return db.prepare('SELECT key, name, designation, email, contact, role, department FROM users ORDER BY name ASC').all();
 }
 
-function readMaster() {
-  ensureMasterFile();
-  const raw = fs.readFileSync(masterFile, 'utf8');
-  return JSON.parse(raw || '{}');
-}
-
-function writeMaster(data) {
-  fs.writeFileSync(masterFile, JSON.stringify(data, null, 2), 'utf8');
-}
-
-function getCategories() {
-  const data = readMaster();
-  return Array.isArray(data.categories) ? data.categories : [];
-}
-
-function getUrgencyLevels() {
-  const data = readMaster();
-  return Array.isArray(data.urgencies) ? data.urgencies : [];
-}
-
-function getDepartments() {
-  const data = readMaster();
-  return Array.isArray(data.departments) ? data.departments : [];
-}
-
-function getDepartmentByKey(key) {
+// Returns full user row INCLUDING password (for internal auth only)
+function getUserByKey(key) {
   if (!key) return null;
-  const normalizedKey = normalizeKey(key);
-  return getDepartments().find(item => normalizeKey(item) === normalizedKey) || null;
+  const k = normalizeKey(key);
+  return db.prepare('SELECT * FROM users WHERE key = ? OR key = ?').get(k, key) || null;
 }
 
 function authenticateUser(username, password) {
-  const user = getUsers().find(u => u.key === username || u.email === username);
+  const user = db.prepare('SELECT * FROM users WHERE key = ? OR email = ?').get(username, username);
   if (!user) return null;
-  const bcrypt = require('bcryptjs');
-  if (bcrypt.compareSync(password, user.password)) {
-    return user;
-  }
-  return null;
+  if (!bcrypt.compareSync(password, user.password)) return null;
+  return user;
 }
 
-function getUsers() {
-  const data = readMaster();
-  return Array.isArray(data.users) ? data.users : [];
-}
-
-function getUserByKey(key) {
-  if (!key) return null;
-  const normalizedKey = normalizeKey(key);
-  return getUsers().find(item => item.key === normalizedKey || normalizeKey(item.name) === normalizedKey) || null;
-}
-
-function addUser(user) {
-  if (!user || !user.name || !user.designation || !user.email || !user.contact || !user.role || !user.password) {
+function addUser(userData) {
+  const { name, username, designation, email, contact, role, department, password } = userData;
+  if (!name || !designation || !email || !contact || !role || !password) {
     throw new Error('User must include name, designation, email, contact, role, and password.');
   }
-
-  const users = getUsers();
-  const key = normalizeKey(user.name);
-  if (users.some(item => item.key === key || normalizeKey(item.email) === normalizeKey(user.email))) {
-    throw new Error('User already exists with that name or email.');
+  // Use explicit username if provided and valid, otherwise derive from name
+  let key;
+  if (username && username.trim()) {
+    const trimmed = username.trim().toLowerCase();
+    if (!/^[a-z0-9\-]+$/.test(trimmed)) {
+      throw new Error('Username may only contain lowercase letters, numbers, and hyphens.');
+    }
+    key = trimmed;
+  } else {
+    key = normalizeKey(name);
   }
+  const existing = db.prepare('SELECT key FROM users WHERE key = ? OR email = ?').get(key, email);
+  if (existing) throw new Error('A user with that name or email already exists.');
 
-  const bcrypt = require('bcryptjs');
-  const hashedPassword = bcrypt.hashSync(user.password, 10);
+  const hashed = bcrypt.hashSync(password, 10);
+  db.prepare(`
+    INSERT INTO users (key, name, designation, email, contact, role, password, department)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(key, name.trim(), designation.trim(), email.trim(), contact.trim(), role, hashed, department || null);
 
-  const newUser = {
-    key,
-    name: user.name.trim(),
-    designation: user.designation.trim(),
-    email: user.email.trim(),
-    contact: user.contact.trim(),
-    role: user.role,
-    password: hashedPassword,
-    department: user.department || null
-  };
-
-  users.push(newUser);
-  const data = readMaster();
-  data.users = users;
-  writeMaster(data);
-  return newUser;
+  return { key, name: name.trim(), designation: designation.trim(), email: email.trim(), contact: contact.trim(), role, department: department || null };
 }
 
 function updateUser(oldKey, updates) {
-  if (!oldKey) {
-    throw new Error('User key is required to update the user.');
-  }
-
-  const users = getUsers();
   const existing = getUserByKey(oldKey);
-  if (!existing) {
-    throw new Error('User not found.');
-  }
+  if (!existing) throw new Error('User not found.');
 
-  const name = updates.name ? updates.name.trim() : existing.name;
+  const name        = updates.name        ? updates.name.trim()        : existing.name;
   const designation = updates.designation ? updates.designation.trim() : existing.designation;
-  const email = updates.email ? updates.email.trim() : existing.email;
-  const contact = updates.contact ? updates.contact.trim() : existing.contact;
-  const role = updates.role || existing.role;
-  const password = updates.password || existing.password;
-  const department = updates.department || existing.department;
+  const email       = updates.email       ? updates.email.trim()       : existing.email;
+  const contact     = updates.contact     ? updates.contact.trim()     : existing.contact;
+  const role        = updates.role        || existing.role;
+  const department  = updates.department !== undefined ? (updates.department || null) : existing.department;
 
   if (!name || !designation || !email || !contact) {
-    throw new Error('User must include name, designation, email, and contact details.');
+    throw new Error('User must include name, designation, email, and contact.');
   }
 
   const newKey = normalizeKey(name);
-  // Only check for duplicate name if the name is actually changing
   if (newKey !== existing.key) {
-    const duplicate = users.find(item => item.key === newKey);
-    if (duplicate) {
-      throw new Error('A user with that name already exists.');
-    }
+    const dup = db.prepare('SELECT key FROM users WHERE key = ?').get(newKey);
+    if (dup) throw new Error('A user with that name already exists.');
   }
 
-  const updatedUser = {
-    ...existing,
-    key: newKey,
-    name,
-    designation,
-    email,
-    contact,
-    role,
-    password,
-    department
-  };
+  // Hash new password if provided, otherwise keep existing
+  let password = existing.password;
+  if (updates.password && updates.password.trim()) {
+    password = bcrypt.hashSync(updates.password.trim(), 10);
+  }
 
-  const updatedUsers = users.map(item => (item.key === existing.key ? updatedUser : item));
-  const data = readMaster();
-  data.users = updatedUsers;
-  writeMaster(data);
-  return updatedUser;
+  db.prepare(`
+    UPDATE users SET key = ?, name = ?, designation = ?, email = ?, contact = ?, role = ?, password = ?, department = ?
+    WHERE key = ?
+  `).run(newKey, name, designation, email, contact, role, password, department, existing.key);
+
+  return { key: newKey, name, designation, email, contact, role, department };
 }
 
 function deleteUser(key) {
-  if (!key) {
-    throw new Error('User key is required to delete the user.');
-  }
-
-  const users = getUsers();
   const existing = getUserByKey(key);
-  if (!existing) {
-    throw new Error('User not found.');
-  }
-
-  const remaining = users.filter(item => item.key !== existing.key);
-  const data = readMaster();
-  data.users = remaining;
-  writeMaster(data);
+  if (!existing) throw new Error('User not found.');
+  db.prepare('DELETE FROM users WHERE key = ?').run(existing.key);
   return existing;
 }
 
-function addCategory(category) {
-  if (!category || !category.name || !category.department || !category.defaultUrgency) {
-    throw new Error('Category must include name, department, and default urgency.');
-  }
-
-  const categories = getCategories();
-  const key = normalizeKey(category.name);
-  if (categories.some(item => item.key === key || normalizeKey(item.name) === key)) {
-    throw new Error('Category already exists.');
-  }
-
-  const newCategory = {
-    key,
-    name: category.name.trim(),
-    department: category.department.trim(),
-    defaultUrgency: category.defaultUrgency,
-    urgentKeywords: Array.isArray(category.urgentKeywords) ? category.urgentKeywords.map(String).map(k => k.trim().toLowerCase()).filter(Boolean) : [],
-    keywords: Array.isArray(category.keywords) ? category.keywords.map(String).map(k => k.trim().toLowerCase()).filter(Boolean) : []
-  };
-
-  categories.push(newCategory);
-  const data = readMaster();
-  data.categories = categories;
-  writeMaster(data);
-  return newCategory;
+function updateUserPassword(key, hashedPassword) {
+  db.prepare('UPDATE users SET password = ? WHERE key = ?').run(hashedPassword, key);
 }
 
-function addUrgencyLevel(label) {
-  if (!label || !label.trim()) {
-    throw new Error('Urgency label is required.');
-  }
+// ── Departments ───────────────────────────────────────────────────────────────
 
-  const urgencies = getUrgencyLevels();
-  const normalized = String(label).trim();
-  const alreadyExists = urgencies.some(existing => existing.toLowerCase() === normalized.toLowerCase());
-  if (alreadyExists) {
-    throw new Error('Urgency level already exists. Use a new label.');
-  }
-
-  urgencies.push(normalized);
-  const data = readMaster();
-  data.urgencies = urgencies;
-  writeMaster(data);
-  return normalized;
-}
-
-function updateCategory(oldKey, updates) {
-  if (!oldKey) {
-    throw new Error('Category key is required to update the category.');
-  }
-
-  const categories = getCategories();
-  const existing = getCategoryByKey(oldKey);
-  if (!existing) {
-    throw new Error('Category not found.');
-  }
-
-  const name = updates.name ? updates.name.trim() : existing.name;
-  const department = updates.department ? updates.department.trim() : existing.department;
-  const defaultUrgency = updates.defaultUrgency || existing.defaultUrgency;
-
-  if (!name || !department || !defaultUrgency) {
-    throw new Error('Category must include name, department, and default urgency.');
-  }
-
-  const newKey = normalizeKey(name);
-  const duplicate = categories.find(item => item.key === newKey && item.key !== existing.key);
-  if (duplicate) {
-    throw new Error('A category with that name already exists.');
-  }
-
-  const updatedCategory = {
-    ...existing,
-    key: newKey,
-    name,
-    department,
-    defaultUrgency,
-    keywords: Array.isArray(updates.keywords)
-      ? updates.keywords.map(String).map(k => k.trim().toLowerCase()).filter(Boolean)
-      : existing.keywords,
-    urgentKeywords: Array.isArray(updates.urgentKeywords)
-      ? updates.urgentKeywords.map(String).map(k => k.trim().toLowerCase()).filter(Boolean)
-      : existing.urgentKeywords
-  };
-
-  const updatedCategories = categories.map(item => (item.key === existing.key ? updatedCategory : item));
-  const data = readMaster();
-  data.categories = updatedCategories;
-  writeMaster(data);
-  return updatedCategory;
-}
-
-function deleteCategory(key) {
-  if (!key) {
-    throw new Error('Category key is required to delete the category.');
-  }
-
-  const categories = getCategories();
-  const existing = getCategoryByKey(key);
-  if (!existing) {
-    throw new Error('Category not found.');
-  }
-
-  const remaining = categories.filter(item => item.key !== existing.key);
-  const data = readMaster();
-  data.categories = remaining;
-  writeMaster(data);
-  return existing;
-}
-
-function deleteUrgencyLevel(label) {
-  if (!label || !label.trim()) {
-    throw new Error('Urgency label is required to delete.');
-  }
-
-  const urgencies = getUrgencyLevels();
-  const normalized = String(label).trim();
-  if (!urgencies.some(item => item.toLowerCase() === normalized.toLowerCase())) {
-    throw new Error('Urgency level not found.');
-  }
-
-  const categories = getCategories();
-  const inUse = categories.some(category => category.defaultUrgency.toLowerCase() === normalized.toLowerCase());
-  if (inUse) {
-    throw new Error('Cannot delete urgency while it is used as a default urgency by a category.');
-  }
-
-  const updated = urgencies.filter(item => item.toLowerCase() !== normalized.toLowerCase());
-  const data = readMaster();
-  data.urgencies = updated;
-  writeMaster(data);
-  return normalized;
-}
-
-function getCategoryByKey(key) {
-  return null; // Categories removed for task system
+function getDepartments() {
+  return db.prepare('SELECT name FROM departments ORDER BY name ASC').all().map(r => r.name);
 }
 
 function addDepartment(name) {
-  if (!name || !name.trim()) {
-    throw new Error('Department name is required.');
-  }
-  const departments = getDepartments();
-  const normalized = String(name).trim();
-  if (departments.some(dept => dept.toLowerCase() === normalized.toLowerCase())) {
-    throw new Error('Department already exists.');
-  }
-  departments.push(normalized);
-  const data = readMaster();
-  data.departments = departments;
-  writeMaster(data);
-  return normalized;
-}
-
-function deleteDepartment(name) {
-  if (!name || !name.trim()) {
-    throw new Error('Department name is required.');
-  }
-  const departments = getDepartments();
-  const normalized = String(name).trim();
-  if (!departments.some(dept => dept.toLowerCase() === normalized.toLowerCase())) {
-    throw new Error('Department not found.');
-  }
-  const updated = departments.filter(dept => dept.toLowerCase() !== normalized.toLowerCase());
-  const data = readMaster();
-  data.departments = updated;
-  writeMaster(data);
+  if (!name || !name.trim()) throw new Error('Department name is required.');
+  const normalized = name.trim();
+  const existing = db.prepare('SELECT name FROM departments WHERE lower(name) = lower(?)').get(normalized);
+  if (existing) throw new Error('Department already exists.');
+  db.prepare('INSERT INTO departments (name) VALUES (?)').run(normalized);
   return normalized;
 }
 
 function updateDepartment(oldName, newName) {
-  if (!oldName || !oldName.trim()) {
-    throw new Error('Current department name is required.');
-  }
-  if (!newName || !newName.trim()) {
-    throw new Error('New department name is required.');
-  }
-  const departments = getDepartments();
-  const normalizedOld = String(oldName).trim();
-  const normalizedNew = String(newName).trim();
-  const index = departments.findIndex(dept => dept.toLowerCase() === normalizedOld.toLowerCase());
-  if (index === -1) {
-    throw new Error('Department not found.');
-  }
-  if (departments.some((dept, i) => i !== index && dept.toLowerCase() === normalizedNew.toLowerCase())) {
-    throw new Error('A department with that name already exists.');
-  }
-  departments[index] = normalizedNew;
-  const data = readMaster();
-  data.departments = departments;
-  writeMaster(data);
-  return normalizedNew;
+  if (!oldName || !newName) throw new Error('Both old and new names are required.');
+  const existing = db.prepare('SELECT name FROM departments WHERE lower(name) = lower(?)').get(oldName.trim());
+  if (!existing) throw new Error('Department not found.');
+  const normalized = newName.trim();
+  const dup = db.prepare('SELECT name FROM departments WHERE lower(name) = lower(?) AND name != ?').get(normalized, existing.name);
+  if (dup) throw new Error('A department with that name already exists.');
+  db.prepare('UPDATE departments SET name = ? WHERE name = ?').run(normalized, existing.name);
+  return normalized;
+}
+
+function deleteDepartment(name) {
+  if (!name) throw new Error('Department name is required.');
+  const existing = db.prepare('SELECT name FROM departments WHERE lower(name) = lower(?)').get(name.trim());
+  if (!existing) throw new Error('Department not found.');
+  db.prepare('DELETE FROM departments WHERE name = ?').run(existing.name);
+  return existing.name;
+}
+
+// ── Urgency levels ────────────────────────────────────────────────────────────
+
+function getUrgencyLevels() {
+  return db.prepare('SELECT label FROM urgency_levels ORDER BY label ASC').all().map(r => r.label);
+}
+
+function addUrgencyLevel(label) {
+  if (!label || !label.trim()) throw new Error('Urgency label is required.');
+  const normalized = label.trim();
+  const existing = db.prepare('SELECT label FROM urgency_levels WHERE lower(label) = lower(?)').get(normalized);
+  if (existing) throw new Error('Urgency level already exists.');
+  db.prepare('INSERT INTO urgency_levels (label) VALUES (?)').run(normalized);
+  return normalized;
 }
 
 function updateUrgencyLevel(oldLabel, newLabel) {
-  if (!oldLabel || !oldLabel.trim()) {
-    throw new Error('Current urgency label is required.');
-  }
-  if (!newLabel || !newLabel.trim()) {
-    throw new Error('New urgency label is required.');
-  }
-  const urgencies = getUrgencyLevels();
-  const normalizedOld = String(oldLabel).trim();
-  const normalizedNew = String(newLabel).trim();
-  const index = urgencies.findIndex(urg => urg.toLowerCase() === normalizedOld.toLowerCase());
-  if (index === -1) {
-    throw new Error('Urgency level not found.');
-  }
-  if (urgencies.some((urg, i) => i !== index && urg.toLowerCase() === normalizedNew.toLowerCase())) {
-    throw new Error('An urgency level with that label already exists.');
-  }
-  urgencies[index] = normalizedNew;
-  const data = readMaster();
-  data.urgencies = urgencies;
-  writeMaster(data);
-  return normalizedNew;
+  if (!oldLabel || !newLabel) throw new Error('Both old and new labels are required.');
+  const existing = db.prepare('SELECT label FROM urgency_levels WHERE lower(label) = lower(?)').get(oldLabel.trim());
+  if (!existing) throw new Error('Urgency level not found.');
+  const normalized = newLabel.trim();
+  const dup = db.prepare('SELECT label FROM urgency_levels WHERE lower(label) = lower(?) AND label != ?').get(normalized, existing.label);
+  if (dup) throw new Error('An urgency level with that label already exists.');
+  db.prepare('UPDATE urgency_levels SET label = ? WHERE label = ?').run(normalized, existing.label);
+  return normalized;
 }
 
-function updateUserPassword(key, hashedPassword) {
-  const users = getUsers();
-  const user = users.find(u => u.key === key);
-  if (user) {
-    user.password = hashedPassword;
-    const data = readMaster();
-    data.users = users;
-    writeMaster(data);
-  }
+function deleteUrgencyLevel(label) {
+  if (!label) throw new Error('Urgency label is required.');
+  const existing = db.prepare('SELECT label FROM urgency_levels WHERE lower(label) = lower(?)').get(label.trim());
+  if (!existing) throw new Error('Urgency level not found.');
+  db.prepare('DELETE FROM urgency_levels WHERE label = ?').run(existing.label);
+  return existing.label;
 }
+
+// ── Misc (kept for compatibility) ────────────────────────────────────────────
+function getDepartmentByKey(key) { return key || null; }
+function getCategories() { return []; }
+function getCategoryByKey() { return null; }
 
 module.exports = {
-  getCategories,
-  getCategoryByKey,
+  normalizeKey,
   getUsers,
   getUserByKey,
-  getUrgencyLevels,
-  addCategory,
-  addUrgencyLevel,
+  authenticateUser,
   addUser,
   updateUser,
-  updateUserPassword,
-  updateCategory,
   deleteUser,
-  deleteCategory,
-  deleteUrgencyLevel,
-  normalizeKey,
-  authenticateUser,
+  updateUserPassword,
   getDepartments,
   getDepartmentByKey,
   addDepartment,
-  deleteDepartment,
   updateDepartment,
-  updateUrgencyLevel
+  deleteDepartment,
+  getUrgencyLevels,
+  addUrgencyLevel,
+  updateUrgencyLevel,
+  deleteUrgencyLevel,
+  getCategories,
+  getCategoryByKey
 };
-

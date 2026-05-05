@@ -39,5 +39,107 @@
         "document": "/uploads/1777885639670-934253427.pdf"
       }
     ]
+  },
+  {
+    "id": "cad3d911-b848-4097-a95f-d54f12d55b54",
+    "title": "RTI application",
+    "description": "The user wants to know last recruitment date and also refund status",
+    "status": "Completed",
+    "department": "Revenue",
+    "departmentLabel": "Revenue",
+    "assignedTo": [
+      "deepak-rajak",
+      "abhishek-majumder"
+    ],
+    "assignedToLabels": [
+      "Deepak Rajak",
+      "Abhishek Majumder"
+    ],
+    "document": "/uploads/1777966097680-826337289.pdf",
+    "createdBy": "admin",
+    "createdAt": "2026-05-05T07:28:17.688Z",
+    "updatedAt": "2026-05-05T07:29:01.987Z",
+    "history": [
+      {
+        "action": "Created",
+        "user": "Admin User",
+        "timestamp": "2026-05-05T07:28:17.688Z",
+        "remarks": "Task created and assigned.",
+        "document": "/uploads/1777966097680-826337289.pdf"
+      },
+      {
+        "action": "Status changed to Completed",
+        "user": "Abhishek Majumder",
+        "timestamp": "2026-05-05T07:29:01.987Z",
+        "remarks": "Data has been provided to OS",
+        "document": null
+      }
+    ]
+  },
+  {
+    "id": "13f26628-96f8-4251-a3e9-7bfaef5f3044",
+    "title": "Test Multi-User Task",
+    "description": "Testing per-user status tracking",
+    "urgency": "Urgent",
+    "status": "In Progress",
+    "department": "PWD",
+    "departmentLabel": "PWD",
+    "assignedTo": [
+      "test-user",
+      "deepak-rajak"
+    ],
+    "assignedToLabels": [
+      "Test User",
+      "Deepak Rajak"
+    ],
+    "assignments": [
+      {
+        "userId": "test-user",
+        "userName": "Test User",
+        "status": "Completed",
+        "assignedAt": "2026-05-05T07:36:05.322Z",
+        "completedAt": "2026-05-05T07:36:05.404Z",
+        "remarks": "My part is done"
+      },
+      {
+        "userId": "deepak-rajak",
+        "userName": "Deepak Rajak",
+        "status": "Assigned",
+        "assignedAt": "2026-05-05T07:36:05.322Z",
+        "completedAt": null,
+        "remarks": ""
+      }
+    ],
+    "document": null,
+    "createdBy": "admin",
+    "createdAt": "2026-05-05T07:36:05.322Z",
+    "updatedAt": "2026-05-05T07:36:05.404Z",
+    "history": [
+      {
+        "action": "Created",
+        "user": "Admin User",
+        "timestamp": "2026-05-05T07:36:05.322Z",
+        "remarks": "Task created and assigned to: Test User, Deepak Rajak.",
+        "document": null
+      },
+      {
+        "action": "Test User: Status changed to In Progress",
+        "user": "Admin User",
+        "targetUser": "Test User",
+        "status": "In Progress",
+        "timestamp": "2026-05-05T07:36:05.375Z",
+        "remarks": "Started working on this",
+        "document": null
+      },
+      {
+        "action": "Test User: Status changed to Completed",
+        "user": "Admin User",
+        "targetUser": "Test User",
+        "status": "Completed",
+        "timestamp": "2026-05-05T07:36:05.404Z",
+        "remarks": "My part is done",
+        "document": null
+      }
+    ]
   }
 ]

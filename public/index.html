@@ -60,7 +60,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
           Dashboard
         </button>
-        <button class="nav-button" data-tab="create-task">
+        <button class="nav-button" data-tab="create-task" id="nav-create-task">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
           Create Task
         </button>
@@ -69,7 +69,7 @@
           Reporting
         </button>
 
-        <p class="nav-heading">Admin</p>
+        <p class="nav-heading" id="admin-nav-heading">Admin</p>
         <button class="nav-button sub-menu" data-tab="manage-users">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
           Manage Users
@@ -90,70 +90,85 @@
       </nav>
     </aside>
 
+    <!-- ====== TASK DETAIL MODAL ====== -->
     <div id="task-modal" class="modal-overlay hidden">
-      <div class="modal-content glass-card" style="max-width: 700px;">
+      <div class="modal-content glass-card" style="max-width: 720px;">
         <div class="modal-tabs" style="display:flex; gap:2px; border-bottom:1px solid #ddd; margin-bottom:20px;">
           <button id="tab-view" class="modal-tab active" style="flex:1; padding:12px; border:none; background:none; cursor:pointer; font-weight:600; border-bottom:2px solid var(--primary-color);">View Details</button>
           <button id="tab-update" class="modal-tab" style="flex:1; padding:12px; border:none; background:none; cursor:pointer; font-weight:600; opacity:0.6;">Update Task</button>
           <button id="close-task-modal" style="padding:0 15px; border:none; background:none; cursor:pointer; font-size:1.5rem;">&times;</button>
         </div>
 
+        <!-- VIEW SECTION -->
         <div id="section-view">
           <div class="modal-body" style="text-align: left;">
-            <div class="field-row">
-              <label>Current Status</label>
-              <div style="margin-top:5px;"><span id="modal-task-status" class="status-chip"></span></div>
+            <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:16px;">
+              <span id="modal-task-status" class="status-chip"></span>
+              <span id="modal-task-urgency" class="status-chip" style="background:#7c3aed22; color:#7c3aed; border:1px solid #7c3aed44;"></span>
             </div>
-            <div class="field-row" style="margin-top:15px;">
+
+            <div class="field-row">
               <label>Description</label>
               <div id="modal-task-desc" style="padding:15px; background:rgba(0,0,0,0.03); border-radius:8px; margin-top:5px; white-space:pre-wrap;"></div>
             </div>
-            <div class="field-row" style="margin-top:15px;">
-              <label>Assigned To</label>
-              <div id="modal-task-assigned" style="font-weight:600; margin-top:5px;"></div>
+
+            <!-- ASSIGNMENT PROGRESS (key new section) -->
+            <div class="field-row" style="margin-top:20px;">
+              <label style="font-weight:700; color:var(--primary-color);">Assignment Progress</label>
+              <div id="modal-assignment-progress" style="margin-top:10px; border:1px solid rgba(0,0,0,0.08); border-radius:10px; overflow:hidden;"></div>
             </div>
+
             <div id="modal-task-doc-container" class="field-row hidden" style="margin-top:15px;">
               <label>Primary Attachment</label>
               <div style="margin-top:5px;"><a id="modal-task-doc-link" href="#" target="_blank" class="primary-btn" style="display:inline-block; font-size:0.8rem; padding:8px 15px;">View Document</a></div>
             </div>
-            
+
             <div style="margin-top:25px;">
-              <label style="font-weight:700; color:var(--primary-color);">Action History & Updates</label>
+              <label style="font-weight:700; color:var(--primary-color);">Action History</label>
               <div id="task-history-list" style="margin-top:10px; max-height:250px; overflow-y:auto; background:rgba(0,0,0,0.02); padding:15px; border-radius:8px;"></div>
             </div>
           </div>
         </div>
 
+        <!-- UPDATE SECTION -->
         <div id="section-update" class="hidden">
           <div class="modal-body">
+
+            <!-- Admin: pick whose assignment to update -->
+            <div id="admin-target-user-row" class="form-group hidden">
+              <label for="target-user-id">Update Assignment For</label>
+              <select id="target-user-id" name="targetUserId">
+                <!-- populated dynamically -->
+              </select>
+            </div>
+
             <form id="update-status-form">
               <div class="form-group">
                 <label for="new-status">New Status</label>
                 <select id="new-status" name="status">
-                  <option value="Received">Received</option>
+                  <option value="Assigned">Assigned</option>
                   <option value="In Progress">In Progress</option>
-                  <option value="Resolved">Resolved</option>
                   <option value="Completed">Completed</option>
                 </select>
               </div>
               <div class="form-group">
-                <label for="reassign-to">Reassign To (Optional)</label>
-                <select id="reassign-to" name="reassignTo" multiple style="height:100px;">
-                  <!-- populated dynamically -->
-                </select>
-              </div>
-              <div class="form-group">
                 <label for="update-remarks">Remarks / Progress Update</label>
-                <textarea id="update-remarks" name="remarks" rows="3" placeholder="Explain the current progress or changes..." required></textarea>
+                <textarea id="update-remarks" name="remarks" rows="3" placeholder="Explain the current progress or action taken..." required></textarea>
               </div>
               <div class="form-group">
-                <label for="update-document">Attach Supporting Document (if any)</label>
+                <label for="update-document">Attach Supporting Document (optional)</label>
                 <input id="update-document" name="document" type="file">
               </div>
               <div style="margin-top:20px;">
                 <button type="submit" class="primary-btn" style="width:100%;">Post Update</button>
               </div>
             </form>
+
+            <!-- Admin reopen buttons rendered dynamically below the form -->
+            <div id="admin-reopen-section" class="hidden" style="margin-top:24px; border-top:1px solid rgba(0,0,0,0.08); padding-top:16px;">
+              <label style="font-weight:700; color:var(--primary-color); display:block; margin-bottom:10px;">Reopen Completed Assignments</label>
+              <div id="reopen-buttons"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -185,25 +200,26 @@
       </div>
     </div>
 
-    <!-- Popup Modal -->
+    <!-- Welcome popup -->
     <div id="welcome-modal" class="modal-overlay hidden">
       <div class="modal-content glass-card">
         <div class="modal-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
         </div>
         <h3>Welcome Back!</h3>
-        <p id="pending-complaints-msg">Loading pending complaints...</p>
+        <p id="pending-complaints-msg">Loading pending tasks...</p>
         <button id="close-modal-btn" class="primary-btn" style="margin-top: 20px; width: 100%;">Continue</button>
       </div>
     </div>
 
-    <!-- Main Content Area -->
+    <!-- Main Content -->
     <main class="main-content">
       <div id="global-message" class="message hidden"></div>
 
+      <!-- DASHBOARD PANEL -->
       <section id="dashboard-panel" class="panel active">
         <div class="panel-header">
-          <h2>Dashboard Board</h2>
+          <h2>Dashboard</h2>
         </div>
         <div id="dashboard-status"></div>
         <div class="kanban-board">
@@ -216,7 +232,7 @@
           </div>
           <div class="kanban-column" id="col-in-progress">
             <div class="column-header">
-              <h3>Doing</h3>
+              <h3>In Progress</h3>
               <span class="count">0</span>
             </div>
             <div class="column-cards"></div>
@@ -231,37 +247,52 @@
         </div>
       </section>
 
-      <!-- Create Task Panel -->
+      <!-- CREATE TASK PANEL -->
       <section id="create-task-panel" class="panel hidden">
         <div class="panel-header">
           <h2>Create New Task</h2>
         </div>
-        <form id="task-form">
-          <label for="task-title">Title</label>
-          <input id="task-title" name="title" type="text" required>
-          <label for="task-description">Description</label>
-          <textarea id="task-description" name="description" required></textarea>
-          <label for="user">Assign To (Select multiple)</label>
-          <select id="user" name="assignedTo" multiple required></select>
-          <label for="task-document">Attach Document</label>
-          <input id="task-document" name="document" type="file">
-          <button type="submit">Create Task</button>
-        </form>
+        <div class="glass-card">
+          <form id="task-form">
+            <div class="form-grid-2col">
+              <div class="field-row" style="grid-column: 1/-1;">
+                <label for="task-title">Title</label>
+                <input id="task-title" name="title" type="text" required placeholder="Enter task title">
+              </div>
+              <div class="field-row" style="grid-column: 1/-1;">
+                <label for="task-description">Description</label>
+                <textarea id="task-description" name="description" rows="3" required placeholder="Describe the task in detail"></textarea>
+              </div>
+              <div class="field-row">
+                <label for="task-urgency">Urgency Level</label>
+                <select id="task-urgency" name="urgency">
+                  <option value="">Select urgency</option>
+                </select>
+              </div>
+              <div class="field-row">
+                <label for="user">Assign To (hold Ctrl / Cmd to select multiple)</label>
+                <select id="user" name="assignedTo" multiple required style="min-height:100px;"></select>
+              </div>
+              <div class="field-row" style="grid-column: 1/-1;">
+                <label for="task-document">Attach Document (optional)</label>
+                <input id="task-document" name="document" type="file">
+              </div>
+            </div>
+            <div class="form-actions" style="margin-top:20px;">
+              <button type="submit" class="primary-btn">Create Task</button>
+            </div>
+          </form>
+        </div>
       </section>
 
-      <!-- My Tasks Panel -->
+      <!-- MY TASKS PANEL (users) -->
       <section id="my-tasks-panel" class="panel hidden">
-        <div class="panel-header">
-          <h2>My Tasks</h2>
-        </div>
-        <!-- Task list and actions -->
+        <div class="panel-header"><h2>My Tasks</h2></div>
       </section>
 
-      <!-- Manage Users Panel -->
+      <!-- MANAGE USERS PANEL -->
       <section id="manage-users-panel" class="panel hidden">
-        <div class="panel-header">
-          <h2>Manage Users</h2>
-        </div>
+        <div class="panel-header"><h2>Manage Users</h2></div>
         <div id="manage-user-message" class="message hidden"></div>
         <div class="glass-card" style="margin-bottom: 24px;">
           <h3 id="user-form-title" class="form-section-title">Add New User</h3>
@@ -270,6 +301,16 @@
               <div class="field-row">
                 <label for="user-name">Full Name</label>
                 <input id="user-name" type="text" required placeholder="Enter full name" />
+              </div>
+              <div class="field-row">
+                <label for="user-username">
+                  Username (Login ID)
+                  <span style="font-size:0.72rem; font-weight:400; color:#888; margin-left:4px;">— used to log in</span>
+                </label>
+                <input id="user-username" type="text" required placeholder="e.g. john-doe"
+                  pattern="[a-z0-9\-]+" title="Lowercase letters, numbers and hyphens only"
+                  style="font-family: monospace;" />
+                <span id="username-hint" style="font-size:0.72rem; color:#7c3aed; margin-top:3px; display:block;"></span>
               </div>
               <div class="field-row">
                 <label for="user-designation">Designation</label>
@@ -296,9 +337,10 @@
                   <option value="">Select Department</option>
                 </select>
               </div>
-              <div class="field-row" id="password-field-row">
-                <label for="user-password">Password</label>
-                <input id="user-password" type="password" required placeholder="Enter password" />
+              <div class="field-row" style="grid-column: 1/-1; border-top:1px solid rgba(0,0,0,0.07); padding-top:16px; margin-top:4px;">
+                <label id="user-password-label" for="user-password" style="font-weight:700;">Password</label>
+                <input id="user-password" type="password" placeholder="Enter password" autocomplete="new-password" />
+                <span id="user-password-hint" style="font-size:0.72rem; color:#888; margin-top:3px; display:block;"></span>
               </div>
             </div>
             <div class="form-actions">
@@ -313,11 +355,9 @@
         </div>
       </section>
 
-      <!-- Manage Departments Panel -->
+      <!-- MANAGE DEPARTMENTS PANEL -->
       <section id="manage-departments-panel" class="panel hidden">
-        <div class="panel-header">
-          <h2>Manage Departments</h2>
-        </div>
+        <div class="panel-header"><h2>Manage Departments</h2></div>
         <div id="manage-dept-message" class="message hidden"></div>
         <div class="glass-card" style="margin-bottom: 24px;">
           <h3 id="dept-form-title" class="form-section-title">Add New Department</h3>
@@ -338,18 +378,16 @@
         </div>
       </section>
 
-      <!-- Manage Urgency Levels Panel -->
+      <!-- MANAGE URGENCY PANEL -->
       <section id="manage-urgency-panel" class="panel hidden">
-        <div class="panel-header">
-          <h2>Manage Urgency Levels</h2>
-        </div>
+        <div class="panel-header"><h2>Manage Urgency Levels</h2></div>
         <div id="manage-urgency-message" class="message hidden"></div>
         <div class="glass-card" style="margin-bottom: 24px;">
           <h3 id="urgency-form-title" class="form-section-title">Add New Urgency Level</h3>
           <form id="urgency-form">
             <div class="field-row">
               <label for="urgency-label">Urgency Label</label>
-              <input id="urgency-label" type="text" required placeholder="e.g. routine, critical" />
+              <input id="urgency-label" type="text" required placeholder="e.g. Urgent, Routine, FYI" />
             </div>
             <div class="form-actions">
               <button type="submit" class="primary-btn" id="urgency-submit-btn">Add Urgency Level</button>
@@ -363,22 +401,22 @@
         </div>
       </section>
 
-      <!-- Reporting Panel -->
+      <!-- REPORTING PANEL -->
       <section id="reporting-panel" class="panel hidden">
         <div class="panel-header">
-          <h2>Reporting & Analytics</h2>
+          <h2>Reporting &amp; Analytics</h2>
           <button id="export-report-pdf" class="secondary hidden" type="button">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-right:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
             Export to PDF
           </button>
         </div>
         <div id="reporting-message" class="message hidden"></div>
-        
+
         <div class="report-filters glass-card">
           <div class="filter-row">
-            <label for="report-section">Section</label>
+            <label for="report-section">Department</label>
             <select id="report-section">
-              <option value="all">All sections</option>
+              <option value="all">All departments</option>
             </select>
           </div>
           <div class="filter-row">
@@ -394,18 +432,25 @@
             </select>
           </div>
           <div class="filter-row">
-            <label for="report-pendency">Pendency</label>
+            <label for="report-pendency">Status / Pendency</label>
             <select id="report-pendency">
-              <option value="all">All pendency</option>
-              <option value="open">Open</option>
-              <option value="closed">Closed</option>
-              <option value="Pending">Pending</option>
-              <option value="Received">Received</option>
-              <option value="In progress">In progress</option>
-              <option value="Resolved">Resolved</option>
+              <option value="all">All</option>
+              <option value="open">Open (not fully done)</option>
+              <option value="Assigned">Assigned (not started)</option>
+              <option value="In Progress">In Progress</option>
+              <option value="partial">Partially Completed</option>
+              <option value="closed">Fully Completed</option>
             </select>
           </div>
-          <div class="form-actions" style="margin-top:24px;">
+          <div class="filter-row">
+            <label for="report-date-from">Date From</label>
+            <input type="date" id="report-date-from">
+          </div>
+          <div class="filter-row">
+            <label for="report-date-to">Date To</label>
+            <input type="date" id="report-date-to">
+          </div>
+          <div class="form-actions" style="margin-top:24px; grid-column: 1/-1;">
             <button id="report-refresh" class="primary-btn" type="button">Apply Filters</button>
             <button id="report-clear" class="secondary" type="button">Clear Filters</button>
           </div>
@@ -414,40 +459,63 @@
         <div id="reporting-content" class="hidden">
           <div id="reporting-summary" class="summary-grid"></div>
           <div id="reporting-breakdown" class="glass-card" style="margin-top: 24px;"></div>
-          <div id="reporting-table" class="glass-card" style="margin-top: 24px;"></div>
+          <div id="reporting-table" class="glass-card" style="margin-top: 24px; overflow-x: auto;"></div>
         </div>
       </section>
 
     </main>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-
-    <!-- Chatbot Widget -->
-    <div id="chatbot-widget" class="chatbot-container">
-      <button id="chatbot-toggle" class="chatbot-toggle-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-      </button>
-      <div id="chatbot-window" class="chatbot-window hidden glass-card">
-        <div class="chatbot-header">
-          <h3>Query Assistant</h3>
-          <button id="chatbot-close" class="chatbot-close-btn">&times;</button>
+  <!-- Chatbot Widget -->
+  <div id="chatbot-widget" class="chatbot-container">
+    <button id="chatbot-toggle" class="chatbot-toggle-btn" title="AI Assistant">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+    </button>
+    <div id="chatbot-window" class="chatbot-window hidden glass-card">
+      <div class="chatbot-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          <h3 style="margin:0;">AI Assistant</h3>
+          <span id="chat-model-badge" style="font-size:0.65rem; background:#7c3aed22; color:#7c3aed; padding:2px 6px; border-radius:8px; font-weight:600; border:1px solid #7c3aed33;">Claude</span>
         </div>
-        <div id="chatbot-messages" class="chatbot-messages">
-          <div class="chat-message bot-message">
-            <p>Hi! I can help you query your complaints. Try asking: "how many complaints received in last month and how many of them are from lighting section are they still pending?"</p>
-          </div>
-        </div>
-        <form id="chatbot-form" class="chatbot-form">
-          <input type="text" id="chatbot-input" placeholder="Ask a question..." autocomplete="off" required>
-          <button type="submit" class="chatbot-send-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-          </button>
-        </form>
+        <button id="chatbot-close" class="chatbot-close-btn">&times;</button>
       </div>
+
+      <!-- Quick action buttons -->
+      <div id="quick-actions" style="padding:8px 12px; border-bottom:1px solid rgba(0,0,0,0.06); display:flex; flex-wrap:wrap; gap:6px;">
+        <button class="quick-action-btn" data-action="my_pending">📋 My Pending</button>
+        <button class="quick-action-btn" data-action="my_completed">✅ My Completed</button>
+        <button class="quick-action-btn" data-action="today_completed">📅 Done Today</button>
+        <button class="quick-action-btn" data-action="dept_summary">🏢 Dept Summary</button>
+        <button class="quick-action-btn" data-action="high_urgency">🔴 High Urgency</button>
+        <button class="quick-action-btn" data-action="summary">📊 Overview</button>
+      </div>
+
+      <div id="chatbot-messages" class="chatbot-messages">
+        <div class="chat-message bot-message">
+          <p>Hi! I'm your AI assistant. Ask me anything about tasks — or tap a quick-action button above.</p>
+          <p style="margin-top:6px; font-size:0.8em; opacity:0.7;">Examples: "Show me pending urgent tasks" · "Which department has most work?" · "Tasks completed this week"</p>
+        </div>
+      </div>
+
+      <div id="chat-typing" class="hidden" style="padding:8px 12px; font-size:0.8rem; color:#7c3aed; display:flex; align-items:center; gap:6px;">
+        <span style="animation: pulse 1s infinite;">●</span>
+        <span style="animation: pulse 1s infinite 0.3s;">●</span>
+        <span style="animation: pulse 1s infinite 0.6s;">●</span>
+        <span style="margin-left:4px;">Thinking...</span>
+      </div>
+
+      <form id="chatbot-form" class="chatbot-form">
+        <input type="text" id="chatbot-input" placeholder="Ask about your tasks..." autocomplete="off" required>
+        <button type="submit" class="chatbot-send-btn" id="chatbot-send-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        </button>
+      </form>
     </div>
   </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

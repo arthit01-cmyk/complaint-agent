@@ -4,81 +4,123 @@ const { getAllTasks } = require('../services/storage');
 const router = express.Router();
 
 function requireAuth(req, res, next) {
-  if (!req.session.user) {
-    return res.status(401).json({ error: 'Authentication required. Please log in again.' });
-  }
+  if (!req.session.user) return res.status(401).json({ error: 'Authentication required. Please log in again.' });
   next();
 }
 
 function requireAdmin(req, res, next) {
-  if (!req.session.user) {
-    return res.status(401).json({ error: 'Authentication required. Please log in again.' });
-  }
-  if (req.session.user.role !== 'admin') {
-    return res.status(403).json({ error: 'Admin access required.' });
-  }
+  if (!req.session.user) return res.status(401).json({ error: 'Authentication required. Please log in again.' });
+  if (req.session.user.role !== 'admin') return res.status(403).json({ error: 'Admin access required.' });
   next();
+}
+
+// Check if all assignments are completed
+function isFullyCompleted(task) {
+  if (task.assignments && task.assignments.length > 0) {
+    return task.assignments.every(a => a.status === 'Completed');
+  }
+  return task.status === 'Completed';
+}
+
+// Check if some but not all assignments are completed
+function isPartiallyCompleted(task) {
+  if (task.assignments && task.assignments.length > 0) {
+    const doneCount = task.assignments.filter(a => a.status === 'Completed').length;
+    return doneCount > 0 && doneCount < task.assignments.length;
+  }
+  return false;
+}
+
+// Check if no assignments started
+function isPending(task) {
+  if (task.assignments && task.assignments.length > 0) {
+    return task.assignments.every(a => a.status === 'Assigned');
+  }
+  return task.status === 'Assigned';
+}
+
+// Completion percentage for a task
+function completionPercent(task) {
+  if (!task.assignments || task.assignments.length === 0) {
+    return task.status === 'Completed' ? 100 : 0;
+  }
+  const done = task.assignments.filter(a => a.status === 'Completed').length;
+  return Math.round((done / task.assignments.length) * 100);
 }
 
 router.get('/summary', requireAuth, (req, res) => {
   let tasks = getAllTasks();
-  const { department, status, assignedTo, urgency, dateFrom, dateTo } = req.query;
+  const isAdmin = req.session.user.role === 'admin';
 
-  if (req.session.user.role !== 'admin') {
-    const userDept = req.session.user.department;
-    tasks = tasks.filter(t => 
-      (t.departmentLabel && t.departmentLabel === userDept) || 
-      (t.assignedTo && t.assignedTo.includes(req.session.user.key))
+  // Non-admins only see their tasks
+  if (!isAdmin) {
+    const userKey = req.session.user.key;
+    tasks = tasks.filter(t =>
+      (t.assignments && t.assignments.some(a => a.userId === userKey)) ||
+      (t.assignedTo && t.assignedTo.includes(userKey))
     );
   }
+
+  const { department, status, assignedTo, urgency, dateFrom, dateTo } = req.query;
 
   if (department && department !== 'all') {
     tasks = tasks.filter(t => t.departmentLabel && t.departmentLabel.toLowerCase() === department.toLowerCase());
   }
 
   if (status && status !== 'all') {
-    // Handle 'open' vs 'closed' vs specific statuses
     if (status.toLowerCase() === 'open') {
-      tasks = tasks.filter(t => t.status !== 'Completed');
+      tasks = tasks.filter(t => !isFullyCompleted(t));
     } else if (status.toLowerCase() === 'closed') {
-      tasks = tasks.filter(t => t.status === 'Completed');
+      tasks = tasks.filter(t => isFullyCompleted(t));
+    } else if (status.toLowerCase() === 'partial') {
+      tasks = tasks.filter(t => isPartiallyCompleted(t));
     } else {
       tasks = tasks.filter(t => t.status.toLowerCase() === status.toLowerCase());
     }
   }
 
   if (assignedTo && assignedTo !== 'all') {
-    tasks = tasks.filter(t => t.assignedTo && t.assignedTo.includes(assignedTo));
+    tasks = tasks.filter(t =>
+      (t.assignments && t.assignments.some(a => a.userId === assignedTo)) ||
+      (t.assignedTo && t.assignedTo.includes(assignedTo))
+    );
   }
 
   if (urgency && urgency !== 'all') {
     tasks = tasks.filter(t => t.urgency && t.urgency.toLowerCase() === urgency.toLowerCase());
   }
 
-  if (dateFrom) {
-    tasks = tasks.filter(t => new Date(t.createdAt) >= new Date(dateFrom));
-  }
+  if (dateFrom) tasks = tasks.filter(t => new Date(t.createdAt) >= new Date(dateFrom));
+  if (dateTo) tasks = tasks.filter(t => new Date(t.createdAt) <= new Date(dateTo + 'T23:59:59'));
 
-  if (dateTo) {
-    tasks = tasks.filter(t => new Date(t.createdAt) <= new Date(dateTo));
-  }
+  const fullyCompleted = tasks.filter(isFullyCompleted).length;
+  const partiallyCompleted = tasks.filter(isPartiallyCompleted).length;
+  const pending = tasks.filter(isPending).length;
 
   const summary = {
     total: tasks.length,
-    pending: tasks.filter(t => t.status !== 'Completed').length,
-    completed: tasks.filter(t => t.status === 'Completed').length,
+    pending,
+    inProgress: tasks.length - fullyCompleted - pending,
+    partiallyCompleted,
+    fullyCompleted,
     byDepartment: {},
     byStatus: {},
     byUser: {},
     rows: tasks.map(task => {
-      // Find the first assignment (could be creation or reassignment)
-      const assignedEntry = task.history ? task.history.find(h => h.action === 'Created' || h.status === 'Assigned' || (h.action === 'Status Updated' && h.status === 'Assigned')) : null;
-      const assignedOn = assignedEntry ? new Date(assignedEntry.timestamp) : new Date(task.createdAt);
+      const assignedOn = new Date(task.createdAt);
 
-      // Find the first completion status
-      const completedEntry = task.history ? task.history.find(h => h.status === 'Completed' || (h.action === 'Status Updated' && h.status === 'Completed')) : null;
-      const completionDate = completedEntry ? new Date(completedEntry.timestamp) : null;
-      
+      // Find earliest completion date when all done
+      let completionDate = null;
+      if (isFullyCompleted(task)) {
+        if (task.assignments && task.assignments.length > 0) {
+          const dates = task.assignments.map(a => a.completedAt).filter(Boolean);
+          if (dates.length > 0) completionDate = new Date(Math.max(...dates.map(d => new Date(d))));
+        } else {
+          const completedEntry = (task.history || []).find(h => h.status === 'Completed');
+          if (completedEntry) completionDate = new Date(completedEntry.timestamp);
+        }
+      }
+
       let timeTaken = 'N/A';
       if (completionDate) {
         const diffMs = completionDate - assignedOn;
@@ -87,18 +129,34 @@ router.get('/summary', requireAuth, (req, res) => {
         timeTaken = `${diffDays}d ${diffHours}h`;
       }
 
-      const lastAction = task.history && task.history.length > 0 ? task.history[task.history.length - 1] : null;
-      const lastBrief = lastAction ? lastAction.remarks || lastAction.action : 'No action yet';
+      const lastAction = (task.history || []).slice(-1)[0];
+      const lastBrief = lastAction ? (lastAction.remarks || lastAction.action) : 'No action yet';
+
+      // Per-assignment breakdown for report rows
+      const assignmentBreakdown = (task.assignments || []).map(a => ({
+        userName: a.userName,
+        status: a.status,
+        completedAt: a.completedAt
+      }));
+
+      const pct = completionPercent(task);
 
       return {
         id: task.id,
         title: task.title,
         description: task.description,
+        urgency: task.urgency || 'N/A',
+        departmentLabel: task.departmentLabel || 'General',
+        status: task.status,
         assignedOn: assignedOn.toISOString(),
         assignedTo: task.assignedToLabels ? task.assignedToLabels.join(', ') : 'Unassigned',
         completedOn: completionDate ? completionDate.toISOString() : null,
-        timeTaken: timeTaken,
-        lastBrief: lastBrief
+        timeTaken,
+        lastBrief,
+        completionPercent: pct,
+        assignmentBreakdown,
+        isPartial: isPartiallyCompleted(task),
+        isFullyCompleted: isFullyCompleted(task)
       };
     })
   };
@@ -107,13 +165,9 @@ router.get('/summary', requireAuth, (req, res) => {
     const dept = task.departmentLabel || 'General';
     summary.byDepartment[dept] = (summary.byDepartment[dept] || 0) + 1;
     summary.byStatus[task.status] = (summary.byStatus[task.status] || 0) + 1;
-    if (task.assignedToLabels) {
-      task.assignedToLabels.forEach(user => {
-        summary.byUser[user] = (summary.byUser[user] || 0) + 1;
-      });
-    } else {
-      summary.byUser['Unassigned'] = (summary.byUser['Unassigned'] || 0) + 1;
-    }
+    (task.assignedToLabels || []).forEach(uname => {
+      summary.byUser[uname] = (summary.byUser[uname] || 0) + 1;
+    });
   });
 
   return res.json(summary);

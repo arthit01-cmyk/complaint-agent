@@ -1039,3 +1039,27 @@ details ul {
   width: 20px;
   height: 20px;
 }
+
+/* ── Quick-action buttons in chat widget ── */
+.quick-action-btn {
+  background: rgba(124, 58, 237, 0.08);
+  border: 1px solid rgba(124, 58, 237, 0.25);
+  color: #7c3aed;
+  border-radius: 14px;
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  white-space: nowrap;
+}
+.quick-action-btn:hover {
+  background: rgba(124, 58, 237, 0.18);
+  transform: translateY(-1px);
+}
+
+/* ── Typing pulse animation ── */
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; }
+  50%       { opacity: 1; }
+}

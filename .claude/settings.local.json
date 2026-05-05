@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"require\\('better-sqlite3'\\); console.log\\('SQLite OK'\\); require\\('@anthropic-ai/sdk'\\); console.log\\('Anthropic SDK OK'\\)\")",
+      "Bash(fuser -k 4000/tcp)",
+      "Bash(npm start *)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\" http://localhost:4000/)",
+      "Bash(curl -s http://localhost:4000/chat/quick-actions)",
+      "Bash(python3 -c 'import sys,json; [print\\(x[\"id\"],\"→\",x[\"label\"]\\) for x in json.load\\(sys.stdin\\)]')",
+      "Bash(fuser -k 4000/tcp 2>/dev/null; sleep 1 && npm start > /tmp/edesk.log 2>&1 &)",
+      "Bash(curl -s http://localhost:4000/masters/users)",
+      "Bash(npm list *)",
+      "Bash(npm install *)",
+      "Bash(cat /tmp/edesk.log)",
+      "Bash(printenv)",
+      "Bash(env)"
+    ]
+  }
+}
