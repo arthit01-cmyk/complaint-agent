@@ -4,27 +4,67 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>e-Desk Monitor</title>
+  <link rel="icon" type="image/svg+xml" href="/logo.svg">
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-  <!-- Top Header -->
+  <!-- Tricolor strip -->
+  <div class="gov-tricolor-strip">
+    <span class="tcs-saffron"></span>
+    <span class="tcs-white"></span>
+    <span class="tcs-green"></span>
+  </div>
+
+  <!-- Government Header -->
   <header class="top-header">
     <div class="header-content">
-      <div class="logo-section">
-        <div class="logo-icon" style="background:none; width:auto; height:auto;">
-          <img src="/edesk_monitor_logo.png" alt="e-Desk Monitor" style="height:40px;">
+
+      <!-- Left: Emblem + Identity -->
+      <div class="gov-left">
+        <div class="gov-emblem">
+          <img src="/logo.svg" alt="e-Desk Monitor Logo" class="header-logo-img">
         </div>
-        <h1>e-Desk Monitor</h1>
+        <div class="gov-identity">
+          <div class="gov-dept-line">Government Administrative Services Portal</div>
+          <div class="gov-portal-name">e-Desk Monitor</div>
+          <div class="gov-tagline">Digital Task &amp; Workflow Management System</div>
+        </div>
       </div>
-      <button id="logout-button" class="secondary hidden">Logout</button>
+
+      <!-- Right: clock + user + logout -->
+      <div class="gov-right">
+        <div class="gov-clock-block">
+          <div id="gov-date" class="gov-date-text"></div>
+          <div id="gov-time" class="gov-time-text"></div>
+        </div>
+        <div class="gov-user-chip hidden" id="gov-user-chip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;flex-shrink:0;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <div>
+            <div style="font-size:0.68rem; opacity:0.7; line-height:1;">Welcome,</div>
+            <div id="user-display-name" style="font-size:0.88rem; font-weight:700; line-height:1.2;"></div>
+          </div>
+          <span id="user-display-role" class="gov-role-badge"></span>
+        </div>
+        <button id="logout-button" class="gov-logout-btn hidden">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Logout
+        </button>
+      </div>
+
     </div>
+    <!-- Bottom golden rule -->
+    <div class="gov-header-rule"></div>
   </header>
 
   <!-- Login Modal -->
   <div id="login-modal" class="modal-overlay">
     <div class="modal-content glass-card">
-      <div class="logo-icon" style="background:none; width:auto; height:auto; margin-bottom: 24px;">
-        <img src="/edesk_monitor_logo.png" alt="e-Desk Monitor" style="height:100px;">
+      <div class="login-logo-block">
+        <img src="/logo.svg" alt="e-Desk Monitor" class="login-logo-img">
+        <div class="login-logo-text">
+          <span class="login-logo-primary">e-Desk</span><span class="login-logo-accent"> Monitor</span>
+        </div>
+        <div class="login-logo-sub">Digital Task Management Portal</div>
       </div>
       <h3>Login to e-Desk Monitor</h3>
       <form id="login-form">
@@ -44,14 +84,14 @@
 
   <div class="app-layout">
     <aside class="sidebar">
-      <div class="sidebar-header" style="padding: 24px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 16px; display: flex; align-items: center; gap: 12px;">
-        <div style="background: none; padding: 0;">
-          <img src="/edesk_monitor_logo.png" alt="Logo" style="height:32px;">
+      <div class="sidebar-header" style="padding: 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 16px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <img src="/logo.svg" alt="e-Desk Monitor" style="height:32px; opacity:.95;">
+          <div class="logo" style="font-size: 1.1rem; font-weight: 800; letter-spacing: -0.5px; color: var(--primary-color);">e-Desk Monitor</div>
         </div>
-        <div class="logo" style="font-size: 1.2rem; font-weight: 800; letter-spacing: -0.5px; color: var(--primary-color);">e-Desk Monitor</div>
-        <div id="user-info" class="hidden" style="margin-top: 10px; font-size: 0.8rem; opacity: 0.8;">
-          <div id="user-display-name" style="font-weight: 600;"></div>
-          <div id="user-display-role" style="text-transform: uppercase; font-size: 0.7rem; color: var(--accent-color);"></div>
+        <div id="user-info" class="hidden" style="margin-top: 10px; padding: 8px 10px; background:rgba(255,255,255,0.05); border-radius:8px; font-size: 0.8rem;">
+          <div id="sidebar-user-name" style="font-weight: 600; color:#fff;"></div>
+          <div id="sidebar-user-role" style="text-transform: uppercase; font-size: 0.7rem; color: var(--accent-color); margin-top:2px;"></div>
         </div>
       </div>
       <nav class="main-nav">
@@ -67,6 +107,12 @@
         <button class="nav-button" data-tab="reporting">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
           Reporting
+        </button>
+
+        <button class="nav-button" data-tab="review" id="nav-review" style="display:none; position:relative;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Review Work
+          <span id="review-nav-badge" class="hidden" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:#e11d48;color:#fff;font-size:0.65rem;font-weight:800;padding:2px 6px;border-radius:10px;min-width:18px;text-align:center;"></span>
         </button>
 
         <p class="nav-heading" id="admin-nav-heading">Admin</p>
@@ -220,6 +266,11 @@
       <section id="dashboard-panel" class="panel active">
         <div class="panel-header">
           <h2>Dashboard</h2>
+          <div class="live-indicator" id="live-indicator" title="Data updates automatically">
+            <span class="live-dot"></span>
+            <span class="live-label">LIVE</span>
+            <span class="live-updated" id="live-updated"></span>
+          </div>
         </div>
         <div id="dashboard-status"></div>
         <div class="kanban-board">
@@ -401,14 +452,20 @@
         </div>
       </section>
 
+      <!-- REVIEW PANEL (Admin only) -->
+      <section id="review-panel" class="panel hidden">
+        <div class="panel-header">
+          <h2>Review Work</h2>
+          <button id="review-refresh-btn" class="secondary" type="button" style="font-size:0.8rem; padding:8px 14px;">Refresh</button>
+        </div>
+        <div id="review-message" class="message hidden"></div>
+        <div id="review-table-container"></div>
+      </section>
+
       <!-- REPORTING PANEL -->
       <section id="reporting-panel" class="panel hidden">
         <div class="panel-header">
           <h2>Reporting &amp; Analytics</h2>
-          <button id="export-report-pdf" class="secondary hidden" type="button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-right:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-            Export to PDF
-          </button>
         </div>
         <div id="reporting-message" class="message hidden"></div>
 
@@ -459,11 +516,34 @@
         <div id="reporting-content" class="hidden">
           <div id="reporting-summary" class="summary-grid"></div>
           <div id="reporting-breakdown" class="glass-card" style="margin-top: 24px;"></div>
-          <div id="reporting-table" class="glass-card" style="margin-top: 24px; overflow-x: auto;"></div>
+          <div style="margin-top: 24px; text-align: right;">
+            <button id="export-report-pdf" class="secondary hidden" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-right:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Export to PDF
+            </button>
+          </div>
+          <div id="reporting-table" class="glass-card" style="margin-top: 8px; overflow-x: auto;"></div>
         </div>
       </section>
 
     </main>
+  </div>
+
+  <!-- Reject Work Modal -->
+  <div id="reject-modal" class="modal-overlay hidden">
+    <div class="modal-content glass-card" style="max-width:480px;">
+      <h3 style="margin-bottom:8px; color:#e11d48;">Mark as Not Satisfactory</h3>
+      <p style="font-size:0.88rem; color:#555; margin-bottom:16px;">The work will be sent back to the user for rectification. Please describe what needs to be corrected.</p>
+      <div class="form-group">
+        <label for="reject-remarks">Remarks / Reason <span style="color:#e11d48;">*</span></label>
+        <textarea id="reject-remarks" rows="4" placeholder="Describe what needs to be corrected..." style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd; font-size:0.9rem; resize:vertical;"></textarea>
+        <div id="reject-error" class="message hidden" style="margin-top:6px;"></div>
+      </div>
+      <div class="form-actions" style="margin-top:16px;">
+        <button id="reject-confirm-btn" class="primary-btn" style="background:#e11d48;">Send Back for Rectification</button>
+        <button id="reject-cancel-btn" class="secondary">Cancel</button>
+      </div>
+    </div>
   </div>
 
   <!-- Chatbot Widget -->
@@ -513,6 +593,9 @@
       </form>
     </div>
   </div>
+
+  <!-- Toast notification container -->
+  <div id="toast-container" aria-live="polite" aria-atomic="false"></div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>

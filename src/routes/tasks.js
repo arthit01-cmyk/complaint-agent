@@ -19,9 +19,10 @@ function requireAdmin(req, res, next) {
 // Derive overall task status from per-user assignments
 function deriveTaskStatus(assignments) {
   if (!assignments || assignments.length === 0) return 'Assigned';
-  const statuses = assignments.map(a => a.status);
-  if (statuses.every(s => s === 'Completed')) return 'Completed';
-  if (statuses.some(s => s === 'In Progress' || s === 'Completed')) return 'In Progress';
+  const s = assignments.map(a => a.status);
+  if (s.every(x => x === 'Completed'))                           return 'Completed';
+  if (s.every(x => x === 'Completed' || x === 'Pending Review')) return 'Pending Review';
+  if (s.some(x => x === 'In Progress' || x === 'Pending Review' || x === 'Completed')) return 'In Progress';
   return 'Assigned';
 }
 

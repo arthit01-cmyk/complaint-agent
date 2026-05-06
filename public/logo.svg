@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="e-Desk Monitor">
+  <!-- Outer gold ring -->
+  <circle cx="50" cy="50" r="48" fill="#0a1f44"/>
+  <circle cx="50" cy="50" r="48" fill="none" stroke="#FFD700" stroke-width="2.8"/>
+  <!-- Decorative inner ring -->
+  <circle cx="50" cy="50" r="41" fill="none" stroke="#FFD700" stroke-width="0.7" opacity="0.35"/>
+
+  <!-- Monitor screen body -->
+  <rect x="16" y="24" width="68" height="44" rx="6" fill="none" stroke="#ffffff" stroke-width="2.8"/>
+  <!-- Screen bottom bar -->
+  <line x1="16" y1="60" x2="84" y2="60" stroke="#ffffff" stroke-width="1.6" opacity="0.55"/>
+  <!-- Monitor stand neck -->
+  <line x1="50" y1="68" x2="50" y2="77" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round"/>
+  <!-- Monitor base -->
+  <rect x="35" y="76" width="30" height="3.5" rx="1.8" fill="#ffffff"/>
+
+  <!-- Shield (filled gold) -->
+  <path d="M50 30 L63 36 L63 51 Q63 62 50 67 Q37 62 37 51 L37 36 Z" fill="#FFD700"/>
+  <!-- Checkmark (navy on gold) -->
+  <polyline
+    points="43.5,50  49,56  58.5,43"
+    fill="none"
+    stroke="#0a1f44"
+    stroke-width="3.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"/>
+</svg>

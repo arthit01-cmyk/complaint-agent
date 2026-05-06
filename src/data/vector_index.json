@@ -2,7 +2,7 @@
   "documents": [
     {
       "id": "33d9cd61-7a7f-4882-9759-c20500a62cd4",
-      "text": "Compassionate Appointment Need to work on pending 10 files of the subject topic and put a detailed report. General Administration Assigned Abhishek Majumder",
+      "text": "Compassionate Appointment Need to work on pending 10 files of the subject topic and put a detailed report. General Administration Completed Abhishek Majumder",
       "metadata": {
         "type": "task",
         "id": "33d9cd61-7a7f-4882-9759-c20500a62cd4"
@@ -23,20 +23,19 @@
         "report": 0,
         "general": 0,
         "administration": 0,
-        "assigned": -0.40546510810816444,
+        "completed": 0,
         "abhishek": 0,
         "majumder": 0
       }
     },
     {
       "id": "fba65155-a4d8-40e6-93ff-f4889e7087cf",
-      "text": "Road Repair - NH12 Urgent repair needed at NH12 near bridge Water Assigned Test User Deepak Rajak",
+      "text": "Road Repair - NH12 Urgent repair needed at NH12 near bridge Water In Progress Test User Deepak Rajak",
       "metadata": {
         "type": "task",
         "id": "fba65155-a4d8-40e6-93ff-f4889e7087cf"
       },
       "vector": {
-        "assigned": -0.40546510810816444,
         "road": 0,
         "repair": 0,
         "nh12": 0,
@@ -45,6 +44,7 @@
         "near": 0,
         "bridge": 0,
         "water": 0,
+        "progress": 0,
         "test": 0,
         "user": 0,
         "deepak": 0,
@@ -68,7 +68,7 @@
     "report": 0,
     "general": 0,
     "administration": 0,
-    "assigned": -0.40546510810816444,
+    "completed": 0,
     "abhishek": 0,
     "majumder": 0,
     "road": 0,
@@ -79,6 +79,7 @@
     "near": 0,
     "bridge": 0,
     "water": 0,
+    "progress": 0,
     "test": 0,
     "user": 0,
     "deepak": 0,
@@ -100,7 +101,7 @@
     "report",
     "general",
     "administration",
-    "assigned",
+    "completed",
     "abhishek",
     "majumder",
     "road",
@@ -111,6 +112,7 @@
     "near",
     "bridge",
     "water",
+    "progress",
     "test",
     "user",
     "deepak",

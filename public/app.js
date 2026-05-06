@@ -16,6 +16,7 @@ const manageUsersPanel     = document.getElementById('manage-users-panel');
 const manageDepartmentsPanel = document.getElementById('manage-departments-panel');
 const manageUrgencyPanel   = document.getElementById('manage-urgency-panel');
 const reportingPanel       = document.getElementById('reporting-panel');
+const reviewPanel          = document.getElementById('review-panel');
 const loginModal           = document.getElementById('login-modal');
 const loginForm            = document.getElementById('login-form');
 const loginMessage         = document.getElementById('login-message');
@@ -59,14 +60,16 @@ let lastReportData      = null;
 
 // ── Status helpers ───────────────────────────────────────────
 const STATUS_ICON = {
-  'Assigned':    '📋',
-  'In Progress': '⏳',
-  'Completed':   '✅'
+  'Assigned':       '📋',
+  'In Progress':    '⏳',
+  'Pending Review': '🔍',
+  'Completed':      '✅'
 };
 const STATUS_COLOR = {
-  'Assigned':    '#64748b',
-  'In Progress': '#d97706',
-  'Completed':   '#059669'
+  'Assigned':       '#64748b',
+  'In Progress':    '#d97706',
+  'Pending Review': '#7c3aed',
+  'Completed':      '#059669'
 };
 
 // Get the current user's own assignment status for a task
@@ -79,13 +82,64 @@ function myAssignmentStatus(task) {
   return task.status;
 }
 
+// ── Toast notification system ─────────────────────────────────
+const TOAST_ICONS   = { success: '✓', error: '✕', warning: '⚠', info: 'ℹ' };
+const TOAST_TITLES  = { success: 'Success', error: 'Error', warning: 'Warning', info: 'Info' };
+const TOAST_DURATION = { success: 4000, error: 6000, warning: 5000, info: 4500 };
+
+function showToast(message, type = 'success', duration) {
+  const container = document.getElementById('toast-container');
+  if (!container || !message) return;
+
+  const dur = duration || TOAST_DURATION[type] || 4500;
+
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.style.setProperty('--toast-duration', `${dur}ms`);
+  toast.innerHTML = `
+    <div class="toast-icon">${TOAST_ICONS[type] || '●'}</div>
+    <div class="toast-body">
+      <div class="toast-title" style="color:${type === 'success' ? '#059669' : type === 'error' ? '#e11d48' : type === 'warning' ? '#d97706' : '#0d2b6b'};">${TOAST_TITLES[type]}</div>
+      ${message}
+    </div>
+    <button class="toast-close" aria-label="Dismiss">&times;</button>`;
+
+  container.appendChild(toast);
+  toast.scrollIntoView({ block: 'nearest' });
+
+  let dismissed = false;
+  const dismiss = () => {
+    if (dismissed) return;
+    dismissed = true;
+    clearTimeout(autoTimer);
+    toast.classList.add('toast-out');
+    setTimeout(() => toast.remove(), 340);
+  };
+
+  const autoTimer = setTimeout(dismiss, dur);
+
+  toast.querySelector('.toast-close').addEventListener('click', dismiss);
+
+  // Pause timer on hover, restart with shorter remaining time on leave
+  toast.addEventListener('mouseenter', () => {
+    clearTimeout(autoTimer);
+    toast.style.setProperty('--toast-duration', '9999s'); // freeze bar
+  });
+  toast.addEventListener('mouseleave', () => {
+    toast.style.setProperty('--toast-duration', '2s'); // restart short countdown
+    setTimeout(dismiss, 2000);
+  });
+}
+
 // ── Utilities ────────────────────────────────────────────────
 function setMessage(text, success = true, el = globalMessage) {
-  if (!el) return;
-  el.textContent = text;
-  el.style.color = success ? '#065f46' : '#b91c1c';
-  if (text) el.classList.remove('hidden');
-  else el.classList.add('hidden');
+  // Always hide the inline element — toasts are the source of truth now
+  if (el) {
+    el.textContent = '';
+    el.classList.add('hidden');
+  }
+  if (!text) return;
+  showToast(text, success ? 'success' : 'error');
 }
 
 function handleResponse(response, successMessage, errorElement) {
@@ -129,15 +183,26 @@ function showLogin() {
 
 function onLoginSuccess(user) {
   currentUser = user;
-  document.getElementById('user-display-name').textContent = user.name;
-  document.getElementById('user-display-role').textContent = user.role;
+  // Sidebar user info
+  const sidebarName = document.getElementById('sidebar-user-name');
+  const sidebarRole = document.getElementById('sidebar-user-role');
+  if (sidebarName) sidebarName.textContent = user.name;
+  if (sidebarRole) sidebarRole.textContent = user.role;
   document.getElementById('user-info').classList.remove('hidden');
+  // Header user chip
+  const nameEl = document.getElementById('user-display-name');
+  const roleEl = document.getElementById('user-display-role');
+  const chip   = document.getElementById('gov-user-chip');
+  if (nameEl) nameEl.textContent = user.name;
+  if (roleEl) roleEl.textContent = user.role;
+  if (chip)   chip.classList.remove('hidden');
   loginModal.classList.add('hidden');
   document.querySelector('.sidebar').classList.remove('hidden');
   logoutButton.classList.remove('hidden');
   setupNavForRole(user.role);
   loadData();
   setActiveTab('dashboard');
+  startDashboardPolling();
 }
 
 loginForm.addEventListener('submit', e => {
@@ -165,7 +230,10 @@ logoutButton.addEventListener('click', () => {
     currentUser = null;
     allTasks = [];
     masterUsers = [];
+    stopDashboardPolling();
     logoutButton.classList.add('hidden');
+    const chip = document.getElementById('gov-user-chip');
+    if (chip) chip.classList.add('hidden');
     document.querySelector('.sidebar').classList.add('hidden');
     loginModal.classList.remove('hidden');
   });
@@ -181,21 +249,27 @@ function setActiveTab(tab) {
   manageDepartmentsPanel.classList.toggle('hidden', tab !== 'manage-departments');
   manageUrgencyPanel.classList.toggle('hidden', tab !== 'manage-urgency');
   reportingPanel.classList.toggle('hidden', tab !== 'reporting');
+  reviewPanel.classList.toggle('hidden', tab !== 'review');
+  if (tab === 'review') loadReviewTasks();
 }
 
 function setupNavForRole(role) {
   const adminHeading  = document.getElementById('admin-nav-heading');
   const adminButtons  = document.querySelectorAll('.nav-button.sub-menu');
   const createTaskBtn = document.getElementById('nav-create-task');
+  const reviewBtn     = document.getElementById('nav-review');
 
   if (role !== 'admin') {
     if (adminHeading) adminHeading.style.display = 'none';
     adminButtons.forEach(btn => btn.style.display = 'none');
     if (createTaskBtn) createTaskBtn.style.display = 'none';
+    if (reviewBtn) reviewBtn.style.display = 'none';
   } else {
     if (adminHeading) adminHeading.style.display = 'block';
     adminButtons.forEach(btn => btn.style.display = 'flex');
     if (createTaskBtn) createTaskBtn.style.display = 'flex';
+    if (reviewBtn) reviewBtn.style.display = 'flex';
+    loadReviewBadge();
   }
 }
 
@@ -419,29 +493,26 @@ function populateKanban(tasks, getColStatus) {
   const colProgress  = document.querySelector('#col-in-progress .column-cards');
   const colCompleted = document.querySelector('#col-completed .column-cards');
 
-  colAssigned.innerHTML = '';
-  colProgress.innerHTML = '';
+  colAssigned.innerHTML  = '';
+  colProgress.innerHTML  = '';
   colCompleted.innerHTML = '';
 
   tasks.forEach(task => {
     const card = renderCard(task);
-    const colStatus = getColStatus(task);
-    if (colStatus === 'Completed') {
-      colCompleted.appendChild(card);
-    } else if (colStatus === 'In Progress') {
-      colProgress.appendChild(card);
-    } else {
-      colAssigned.appendChild(card);
-    }
+    const s = getColStatus(task);
+    if      (s === 'Completed')                     colCompleted.appendChild(card);
+    else if (s === 'In Progress' || s === 'Pending Review') colProgress.appendChild(card);
+    else                                            colAssigned.appendChild(card);
   });
 
-  const toDoCount   = tasks.filter(t => getColStatus(t) === 'Assigned').length;
-  const doingCount  = tasks.filter(t => getColStatus(t) === 'In Progress').length;
-  const doneCount   = tasks.filter(t => getColStatus(t) === 'Completed').length;
+  const inProgressCount = tasks.filter(t => {
+    const s = getColStatus(t);
+    return s === 'In Progress' || s === 'Pending Review';
+  }).length;
 
-  document.querySelector('#col-assigned .count').textContent  = toDoCount;
-  document.querySelector('#col-in-progress .count').textContent = doingCount;
-  document.querySelector('#col-completed .count').textContent = doneCount;
+  document.querySelector('#col-assigned .count').textContent    = tasks.filter(t => getColStatus(t) === 'Assigned').length;
+  document.querySelector('#col-in-progress .count').textContent = inProgressCount;
+  document.querySelector('#col-completed .count').textContent   = tasks.filter(t => getColStatus(t) === 'Completed').length;
 }
 
 function renderCard(task) {
@@ -511,14 +582,14 @@ function renderCard(task) {
 }
 
 // ── Task modal ───────────────────────────────────────────────
-function viewTask(id, mode = 'view') {
+function viewTask(id, mode = 'view', readOnly = false) {
   const task = allTasks.find(t => t.id === id);
   if (!task) return;
 
   viewingTaskId = id;
   const isAdmin = currentUser && currentUser.role === 'admin';
   const myStatus = myAssignmentStatus(task);
-  const canUpdate = isAdmin || myStatus !== 'Completed';
+  const canUpdate = !readOnly && (isAdmin || (myStatus !== 'Completed' && myStatus !== 'Pending Review'));
 
   // Tab visibility
   const tabView   = document.getElementById('tab-view');
@@ -675,22 +746,26 @@ function viewTask(id, mode = 'view') {
       reopenSection.classList.add('hidden');
     }
 
-    // Update status dropdown to full set
+    // Admin can set any status
     newStatusSelect.innerHTML = `
       <option value="Assigned">Assigned</option>
       <option value="In Progress">In Progress</option>
+      <option value="Pending Review">Pending Review</option>
       <option value="Completed">Completed</option>`;
   } else {
-    // Regular user: update only their own status
+    // Regular user: forward movement only; Completed is replaced by Submit for Review
     adminTargetRow.classList.add('hidden');
     reopenSection.classList.add('hidden');
 
-    // Only allow forward movement
-    const statusOrder = ['Assigned', 'In Progress', 'Completed'];
-    const curIdx = statusOrder.indexOf(myStatus);
-    newStatusSelect.innerHTML = statusOrder
-      .slice(curIdx)
-      .map(s => `<option value="${s}">${s}</option>`)
+    const userStatusOptions = [
+      { value: 'Assigned',       label: 'Assigned' },
+      { value: 'In Progress',    label: 'In Progress' },
+      { value: 'Pending Review', label: 'Submit for Review' }
+    ];
+    const curIdx = userStatusOptions.findIndex(o => o.value === myStatus);
+    newStatusSelect.innerHTML = userStatusOptions
+      .slice(Math.max(curIdx, 0))
+      .map(o => `<option value="${o.value}">${o.label}</option>`)
       .join('');
   }
 
@@ -761,6 +836,146 @@ async function reopenAssignment(taskId, userId, userName) {
 
 window.viewTask = viewTask;
 window.reopenAssignment = reopenAssignment;
+
+// ── Review panel ─────────────────────────────────────────────
+let _pendingRejectTaskId = null;
+let _pendingRejectUserId = null;
+
+function loadReviewBadge() {
+  fetch('/tasks/review')
+    .then(r => r.ok ? r.json() : [])
+    .then(rows => {
+      const badge = document.getElementById('review-nav-badge');
+      if (!badge) return;
+      if (rows.length > 0) {
+        badge.textContent = rows.length;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    }).catch(() => {});
+}
+
+function loadReviewTasks() {
+  fetch('/tasks/review')
+    .then(r => { if (r.status === 401) { handleResponse(r); return null; } return r.json(); })
+    .then(rows => { if (rows) renderReviewPanel(rows); })
+    .catch(() => setMessage('Error loading review tasks.', false, document.getElementById('review-message')));
+}
+
+function renderReviewPanel(rows) {
+  const container = document.getElementById('review-table-container');
+  const badge = document.getElementById('review-nav-badge');
+  if (badge) { if (rows.length) { badge.textContent = rows.length; badge.classList.remove('hidden'); } else badge.classList.add('hidden'); }
+
+  if (!rows.length) {
+    container.innerHTML = `
+      <div class="glass-card" style="text-align:center; padding:48px; color:#888; margin-top:24px;">
+        <div style="font-size:2.5rem; margin-bottom:12px;">✅</div>
+        <h3 style="color:#059669;">No Pending Reviews</h3>
+        <p>All submitted work has been reviewed. Nothing awaiting your approval.</p>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="glass-card" style="margin-top:24px; overflow-x:auto;">
+      <h3 class="form-section-title" style="margin-top:0;">Submitted Work — Awaiting Approval (${rows.length})</h3>
+      <table style="min-width:750px;">
+        <thead>
+          <tr>
+            <th>Task</th>
+            <th>User</th>
+            <th>Department</th>
+            <th>Urgency</th>
+            <th>Submitted On</th>
+            <th>User Remarks</th>
+            <th style="text-align:center;">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(r => `
+            <tr>
+              <td>
+                <div style="font-weight:600; font-size:0.88rem;">${r.title}</div>
+                <div style="font-size:0.72rem; color:#666; margin-top:2px; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${r.description || ''}</div>
+              </td>
+              <td style="font-weight:600; font-size:0.85rem;">${r.userName}</td>
+              <td style="font-size:0.82rem;">${r.department || '—'}</td>
+              <td style="font-size:0.82rem;">${r.urgency || '—'}</td>
+              <td style="font-size:0.8rem;">${r.submittedAt ? new Date(r.submittedAt).toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'}) : '—'}</td>
+              <td style="font-size:0.8rem; max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${(r.userRemarks||'').replace(/"/g,'&quot;')}">${r.userRemarks || '—'}</td>
+              <td style="text-align:center; white-space:nowrap;">
+                <button class="action-btn edit-btn" style="background:#059669; color:#fff; border:none; font-size:0.75rem; padding:5px 10px; margin:2px;"
+                  onclick="approveWork('${r.taskId}','${r.userId}','${r.userName.replace(/'/g,"\\'")}')">✓ Approve</button>
+                <button class="action-btn" style="background:#e11d48; color:#fff; border:none; font-size:0.75rem; padding:5px 10px; margin:2px;"
+                  onclick="openRejectModal('${r.taskId}','${r.userId}')">✗ Not Satisfactory</button>
+                <button class="action-btn" style="background:#64748b; color:#fff; border:none; font-size:0.75rem; padding:5px 10px; margin:2px;"
+                  onclick="viewTask('${r.taskId}','view',true)">View</button>
+              </td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+async function approveWork(taskId, userId, userName) {
+  if (!confirm(`Approve work submitted by ${userName}?`)) return;
+  try {
+    const r = await fetch(`/tasks/${taskId}/assignments/${userId}/approve`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ remarks: 'Work approved by admin.' })
+    });
+    if (await handleResponse(r, `Work by ${userName} approved and marked Completed.`, document.getElementById('review-message'))) {
+      loadTasks();
+      loadReviewTasks();
+    }
+  } catch { setMessage('Error approving work.', false, document.getElementById('review-message')); }
+}
+
+function openRejectModal(taskId, userId) {
+  _pendingRejectTaskId = taskId;
+  _pendingRejectUserId = userId;
+  document.getElementById('reject-remarks').value = '';
+  document.getElementById('reject-error').classList.add('hidden');
+  document.getElementById('reject-modal').classList.remove('hidden');
+}
+
+document.getElementById('reject-cancel-btn').addEventListener('click', () => {
+  document.getElementById('reject-modal').classList.add('hidden');
+  _pendingRejectTaskId = null;
+  _pendingRejectUserId = null;
+});
+
+document.getElementById('reject-confirm-btn').addEventListener('click', async () => {
+  const remarks = document.getElementById('reject-remarks').value.trim();
+  if (!remarks) {
+    showToast('Please enter remarks explaining what needs to be corrected.', 'warning');
+    return;
+  }
+  try {
+    const r = await fetch(`/tasks/${_pendingRejectTaskId}/assignments/${_pendingRejectUserId}/reject`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ remarks })
+    });
+    if (await handleResponse(r, 'Work sent back for rectification.')) {
+      document.getElementById('reject-modal').classList.add('hidden');
+      _pendingRejectTaskId = null;
+      _pendingRejectUserId = null;
+      loadTasks();
+      loadReviewTasks();
+    }
+  } catch {
+    showToast('Network error. Please try again.', 'error');
+  }
+});
+
+document.getElementById('review-refresh-btn').addEventListener('click', loadReviewTasks);
+
+window.approveWork    = approveWork;
+window.openRejectModal = openRejectModal;
 
 // ── Auto-suggest username from name (add mode only) ──────────
 function slugify(str) {
@@ -969,6 +1184,17 @@ window.editUrgency      = editUrgency;
 window.deleteUrgency    = deleteUrgency;
 
 // ── Reporting ────────────────────────────────────────────────
+
+// Keep "Date To" min in sync so it can never be before "Date From"
+document.getElementById('report-date-from').addEventListener('change', function () {
+  const dateTo = document.getElementById('report-date-to');
+  dateTo.min = this.value;
+  if (dateTo.value && dateTo.value < this.value) {
+    dateTo.value = '';
+    showToast('Date To was cleared — it cannot be earlier than Date From.', 'warning');
+  }
+});
+
 document.getElementById('report-refresh').addEventListener('click', () => {
   const section  = document.getElementById('report-section').value;
   const user     = document.getElementById('report-user').value;
@@ -976,6 +1202,13 @@ document.getElementById('report-refresh').addEventListener('click', () => {
   const urgency  = document.getElementById('report-urgency').value;
   const dateFrom = document.getElementById('report-date-from').value;
   const dateTo   = document.getElementById('report-date-to').value;
+  const msgEl    = document.getElementById('reporting-message');
+
+  // Guard: Date To must not be before Date From
+  if (dateFrom && dateTo && dateTo < dateFrom) {
+    showToast('Date To cannot be earlier than Date From. Please correct the date range.', 'error');
+    return;
+  }
 
   let url = '/reports/summary?';
   if (section  !== 'all') url += `department=${encodeURIComponent(section)}&`;
@@ -987,12 +1220,7 @@ document.getElementById('report-refresh').addEventListener('click', () => {
 
   fetch(url)
     .then(r => { if (r.status === 401) { handleResponse(r); return null; } return r.json(); })
-    .then(data => {
-      if (data) {
-        renderReport(data);
-        document.getElementById('export-report-pdf').classList.remove('hidden');
-      }
-    });
+    .then(data => { if (data) renderReport(data); });
 });
 
 document.getElementById('report-clear').addEventListener('click', () => {
@@ -1003,13 +1231,13 @@ document.getElementById('report-clear').addEventListener('click', () => {
   document.getElementById('report-date-from').value = '';
   document.getElementById('report-date-to').value   = '';
   document.getElementById('reporting-content').classList.add('hidden');
-  document.getElementById('export-report-pdf').classList.add('hidden');
   lastReportData = null;
 });
 
 function renderReport(data) {
   lastReportData = data;
   document.getElementById('reporting-content').classList.remove('hidden');
+  document.getElementById('export-report-pdf').classList.remove('hidden');
 
   document.getElementById('reporting-summary').innerHTML = `
     <div class="summary-card"><h3>Total Tasks</h3><p>${data.total}</p></div>
@@ -1021,44 +1249,37 @@ function renderReport(data) {
   const tableHtml = `
     <h3 class="form-section-title" style="margin-top:0;">Task Details</h3>
     <div class="table-container" style="overflow-x:auto;">
-      <table style="min-width:900px;">
+      <table style="min-width:780px;">
         <thead>
           <tr>
             <th>Task</th>
-            <th>Urgency</th>
+            <th>Assigned To</th>
             <th>Assigned On</th>
-            <th>Assignment Progress</th>
             <th>Completed On</th>
             <th>Time Taken</th>
-            <th>Last Update</th>
-            <th>Action</th>
+            <th>View</th>
           </tr>
         </thead>
         <tbody>
           ${data.rows.map(row => {
-            const progressBadges = (row.assignmentBreakdown || []).map(a => {
-              const icon  = STATUS_ICON[a.status] || '📋';
-              const color = STATUS_COLOR[a.status] || '#64748b';
-              return `<span style="display:inline-block; font-size:0.7rem; padding:2px 6px; border-radius:10px; background:${color}18; color:${color}; border:1px solid ${color}33; margin:1px; white-space:nowrap;">${icon} ${a.userName.split(' ')[0]}</span>`;
-            }).join('');
-
-            const partialNote = row.isPartial
-              ? `<div style="font-size:0.7rem; color:#7c3aed; margin-top:3px; font-weight:600;">Partial: ${row.completionPercent}% done</div>`
-              : '';
-
+            const completedOn = row.completedOn
+              ? new Date(row.completedOn).toLocaleDateString('en-IN')
+              : '<span style="color:#d97706;font-weight:600;">Pending</span>';
+            const timeTaken = row.isFullyCompleted ? row.timeTaken : 'N/A';
+            const assignedTo = row.assignedTo || 'Unassigned';
             return `
               <tr>
                 <td>
                   <div style="font-weight:600; font-size:0.85rem;">${row.title}</div>
-                  <div style="font-size:0.72rem; color:#666; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${row.description}</div>
+                  <div style="font-size:0.72rem; color:#666;">${row.departmentLabel || ''} ${row.urgency ? '· ' + row.urgency : ''}</div>
                 </td>
-                <td style="font-size:0.8rem;">${row.urgency || 'N/A'}</td>
-                <td style="font-size:0.8rem;">${new Date(row.assignedOn).toLocaleDateString()}</td>
-                <td>${progressBadges}${partialNote}</td>
-                <td style="font-size:0.8rem;">${row.completedOn ? new Date(row.completedOn).toLocaleDateString() : '—'}</td>
-                <td style="font-weight:600; color:var(--primary-color); font-size:0.8rem;">${row.timeTaken}</td>
-                <td style="font-size:0.75rem; max-width:140px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${row.lastBrief}</td>
-                <td><button class="action-btn edit-btn" onclick="viewTask('${row.id}', 'view')" style="font-size:0.7rem; padding:4px 8px;">View</button></td>
+                <td style="font-size:0.8rem; max-width:160px;">
+                  ${assignedTo.split(',').map(n => `<span style="display:inline-block; background:var(--primary-color)18; color:var(--primary-color); border:1px solid var(--primary-color)33; border-radius:10px; padding:1px 7px; margin:1px 2px; font-size:0.72rem; font-weight:600; white-space:nowrap;">${n.trim()}</span>`).join('')}
+                </td>
+                <td style="font-size:0.8rem;">${new Date(row.assignedOn).toLocaleDateString('en-IN')}</td>
+                <td style="font-size:0.8rem;">${completedOn}</td>
+                <td style="font-weight:600; color:var(--primary-color); font-size:0.8rem;">${timeTaken}</td>
+                <td><button class="action-btn edit-btn" onclick="viewTask('${row.id}', 'view', true)" style="font-size:0.7rem; padding:4px 8px;">View</button></td>
               </tr>`;
           }).join('')}
         </tbody>
@@ -1080,23 +1301,21 @@ document.getElementById('export-report-pdf').addEventListener('click', () => {
   doc.text(`Total: ${lastReportData.total}  |  Pending: ${lastReportData.pending}  |  In Progress: ${lastReportData.inProgress || 0}  |  Partially Done: ${lastReportData.partiallyCompleted || 0}  |  Fully Done: ${lastReportData.fullyCompleted || 0}`, 14, 38);
 
   const rows = lastReportData.rows.map(r => [
-    r.title,
-    r.urgency || 'N/A',
-    new Date(r.assignedOn).toLocaleDateString(),
-    (r.assignmentBreakdown || []).map(a => `${a.userName}: ${a.status}`).join('\n') || r.assignedTo,
-    r.completedOn ? new Date(r.completedOn).toLocaleDateString() : 'N/A',
-    r.timeTaken,
-    r.lastBrief
+    r.title + (r.departmentLabel ? `\n${r.departmentLabel}` : '') + (r.urgency ? ` · ${r.urgency}` : ''),
+    r.assignedTo || 'Unassigned',
+    new Date(r.assignedOn).toLocaleDateString('en-IN'),
+    r.completedOn ? new Date(r.completedOn).toLocaleDateString('en-IN') : 'Pending',
+    r.isFullyCompleted ? r.timeTaken : 'N/A'
   ]);
 
   doc.autoTable({
     startY: 46,
-    head: [['Task', 'Urgency', 'Assigned On', 'Assignment Progress', 'Completed On', 'Time Taken', 'Last Update']],
+    head: [['Task', 'Assigned To', 'Assigned On', 'Completed On', 'Time Taken']],
     body: rows,
     theme: 'striped',
-    headStyles: { fillColor: [139, 69, 19] },
-    styles: { fontSize: 8, cellPadding: 3 },
-    columnStyles: { 3: { cellWidth: 40 } }
+    headStyles: { fillColor: [10, 31, 68] },
+    styles: { fontSize: 9, cellPadding: 3 },
+    columnStyles: { 0: { cellWidth: 65 }, 1: { cellWidth: 45 } }
   });
   doc.save(`edesk_report_${Date.now()}.pdf`);
 });
@@ -1190,4 +1409,62 @@ function appendChat(text, sender) {
   div.innerHTML = `<p>${html}</p>`;
   chatbotMessages.appendChild(div);
   chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+}
+
+// ── Live Clock ────────────────────────────────────────────────
+(function startClock() {
+  const dateEl = document.getElementById('gov-date');
+  const timeEl = document.getElementById('gov-time');
+  function tick() {
+    const now = new Date();
+    if (dateEl) dateEl.textContent = now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
+    if (timeEl) timeEl.textContent = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+
+// ── Dashboard Auto-Polling ────────────────────────────────────
+let _pollTimer = null;
+const POLL_INTERVAL = 30_000; // 30 seconds
+
+function startDashboardPolling() {
+  if (_pollTimer) return;
+  _pollTimer = setInterval(silentRefresh, POLL_INTERVAL);
+}
+
+function stopDashboardPolling() {
+  clearInterval(_pollTimer);
+  _pollTimer = null;
+}
+
+function silentRefresh() {
+  if (!currentUser) return;
+  fetch('/tasks')
+    .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+    .then(fresh => {
+      const prevTotal     = allTasks.length;
+      const prevCompleted = allTasks.filter(t => t.status === 'Completed').length;
+      const newCompleted  = fresh.filter(t => t.status === 'Completed').length;
+      const changed       = fresh.length !== prevTotal || newCompleted !== prevCompleted;
+
+      allTasks = fresh;
+      renderDashboard();
+      markLiveUpdated(changed);
+    })
+    .catch(() => {}); // silent — don't disturb the user on network blips
+}
+
+function markLiveUpdated(changed) {
+  const indicator = document.getElementById('live-indicator');
+  const updEl     = document.getElementById('live-updated');
+  if (!indicator) return;
+
+  const now = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+  if (updEl) updEl.textContent = `· ${now}`;
+
+  if (changed) {
+    indicator.classList.add('live-flash');
+    setTimeout(() => indicator.classList.remove('live-flash'), 2500);
+  }
 }
