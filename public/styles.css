@@ -549,6 +549,19 @@ body {
   color: var(--text-primary);
 }
 
+.field-error {
+  color: #dc2626;
+  font-size: 0.72rem;
+  margin-top: 4px;
+  display: block;
+  min-height: 16px;
+}
+
+input.input-invalid, select.input-invalid {
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12) !important;
+}
+
 .input-with-icon {
   position: relative;
   display: flex;

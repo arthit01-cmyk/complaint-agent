@@ -113,7 +113,8 @@ router.put('/users/:key', requireAdmin, (req, res) => {
     const user = updateUser(req.params.key, req.body);
     return res.json(user);
   } catch (error) {
-    return res.status(400).json({ error: error.message });
+    const status = error.message.includes('primary admin') ? 403 : 400;
+    return res.status(status).json({ error: error.message });
   }
 });
 
@@ -122,7 +123,8 @@ router.delete('/users/:key', requireAdmin, (req, res) => {
     const user = deleteUser(req.params.key);
     return res.json({ deleted: user.key });
   } catch (error) {
-    return res.status(400).json({ error: error.message });
+    const status = error.message.includes('primary admin') ? 403 : 400;
+    return res.status(status).json({ error: error.message });
   }
 });
 

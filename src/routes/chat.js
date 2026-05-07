@@ -214,22 +214,31 @@ function fetchSnapshot(user) {
   }
 
   // ── Full per-user task list (admin only) ────────────────────────────────
-  // Gives the LLM a direct per-person view so it can answer "what's pending with X"
+  // Includes overall task status + assignee count so the model can say
+  // "Sundar finished his part but the task is still pending (2 assignees)"
   const allUserTasks = isAdmin
     ? db.prepare(`
-        SELECT ta.user_name, t.title, ta.status AS assignee_status
+        SELECT ta.user_name,
+               t.title,
+               ta.status                                            AS assignee_status,
+               t.status                                             AS task_status,
+               (SELECT COUNT(*) FROM task_assignments WHERE task_id = t.id) AS total_assignees
         FROM task_assignments ta
         JOIN tasks t ON t.id = ta.task_id
         ORDER BY ta.user_name, ta.status, t.title`).all()
     : [];
 
-  // Build a map: userName → { pending: [...], completed: [...] }
+  // Build a map: userName → { pending, part_done (own done, task still open), completed }
   const userTaskMap = {};
   for (const row of allUserTasks) {
-    if (!userTaskMap[row.user_name]) userTaskMap[row.user_name] = { pending: [], completed: [] };
-    const isPending = ['Assigned', 'In Progress', 'Pending Review'].includes(row.assignee_status);
-    if (isPending) {
+    if (!userTaskMap[row.user_name]) userTaskMap[row.user_name] = { pending: [], part_done: [], completed: [] };
+    const myDone      = !['Assigned', 'In Progress', 'Pending Review'].includes(row.assignee_status);
+    const taskStillOpen = ['Assigned', 'In Progress', 'Pending Review'].includes(row.task_status);
+    if (!myDone) {
       userTaskMap[row.user_name].pending.push(`"${row.title}" (${row.assignee_status})`);
+    } else if (taskStillOpen) {
+      // Person finished their part but the overall task is still pending (other assignees remain)
+      userTaskMap[row.user_name].part_done.push(`"${row.title}" (assigned to ${row.total_assignees} people, task still ${row.task_status})`);
     } else {
       userTaskMap[row.user_name].completed.push(`"${row.title}"`);
     }
@@ -299,12 +308,43 @@ function buildSystemPrompt(user, snap) {
       }).join('\n')
     : 'No user assignment data available.';
 
-  // Per-user detailed task list (admin only) — critical for "pending with X" queries
+  // Per-user detailed task list (admin only) — critical for "pending with X" queries.
+  // Written as explicit labelled blocks so a small model cannot mix up two people
+  // who share the same task name.
   const perUserTaskText = Object.keys(userTaskMap).length
     ? Object.entries(userTaskMap).map(([name, data]) => {
-        const pendingList  = data.pending.length  ? data.pending.join(', ')  : 'None';
-        const completedList = data.completed.length ? data.completed.join(', ') : 'None';
-        return `${name}: Pending — ${pendingList} | Completed — ${completedList}`;
+        const lines = [`[${name}]`];
+        if (data.pending.length) {
+          lines.push(`  PENDING (action needed from ${name.split(' ')[0]}):`);
+          data.pending.forEach(t => lines.push(`    - ${t}`));
+        } else {
+          lines.push(`  PENDING: none — ${name.split(' ')[0]} has no outstanding work.`);
+        }
+        if (data.part_done.length) {
+          lines.push(`  COMPLETED OWN PART (task still open, others pending):`);
+          data.part_done.forEach(t => lines.push(`    - ${t}`));
+        }
+        if (data.completed.length) {
+          lines.push(`  FULLY COMPLETED:`);
+          data.completed.forEach(t => lines.push(`    - ${t}`));
+        }
+        return lines.join('\n');
+      }).join('\n\n')
+    : 'No data available.';
+
+  // Pre-computed one-liner per person — the model reads this first for "pending with X" queries.
+  // No reasoning required; just relay the fact.
+  const pendingByPerson = Object.keys(userTaskMap).length
+    ? Object.entries(userTaskMap).map(([name, data]) => {
+        if (data.pending.length) {
+          const tasks = data.pending.map(t => `"${t.replace(/^"|"$/g, '')}"`).join(', ');
+          return `${name}: ${data.pending.length} pending — ${tasks}`;
+        }
+        if (data.part_done.length) {
+          const tasks = data.part_done.map(t => `"${t.replace(/^"|"$/g, '')}"`).join(', ');
+          return `${name}: 0 pending (finished own part of ${tasks} — others still in progress)`;
+        }
+        return `${name}: 0 pending`;
       }).join('\n')
     : 'No data available.';
 
@@ -318,27 +358,29 @@ Your job is to answer questions about the task data provided below in a clear, c
 
 OVERALL SUMMARY:
 ${summaryText}
-
+${isAdmin ? `\nPENDING TASKS BY PERSON (AUTHORITATIVE — use this for any question about a specific person's pending work):\n${pendingByPerson}` : ''}
 TASKS COMPLETED TODAY:
 ${doneTodayText}
 
-PENDING TASKS (most urgent first):
+PENDING TASKS — OVERALL (most urgent first):
 ${pendingText}
 
 RECENTLY COMPLETED TASKS:
 ${completedText}
-${isAdmin ? `\nDEPARTMENT-WISE BREAKDOWN:\n${deptText}\n\nUSER-WISE BREAKDOWN (counts):\n${userText}\n\nPER-USER TASK DETAILS (use this to answer "what is pending with X" or "X's tasks"):\n${perUserTaskText}` : ''}
+${isAdmin ? `\nDEPARTMENT-WISE BREAKDOWN:\n${deptText}\n\nUSER-WISE BREAKDOWN (counts):\n${userText}\n\nPER-USER TASK DETAILS (full breakdown):\n${perUserTaskText}` : ''}
 --- END OF DATA ---
 
 HOW TO RESPOND:
-- Use the data above to answer questions accurately. Do not make up any figures or task names.
-- Write in plain, friendly English. No SQL, no code, no JSON — just natural sentences.
-- Use numbered or bullet lists when listing multiple items.
-- A task can have multiple assignees. The "Overall Status" reflects the combined state. If a task shows "In Progress" it means at least one assignee hasn't finished yet — use the "Assignees" detail to explain individual progress (e.g. "Deepak has completed his part, but Test User's portion is still Assigned").
-- "Pending Review" is a stage between In Progress and Completed. Treat it as still-pending when asked about open work.
-- If a question is unclear or incomplete, politely ask the user to clarify. For example: "Could you clarify what you mean by that? Are you asking about pending tasks, completed tasks, or something else?"
-- If someone asks something unrelated to tasks (weather, general knowledge, coding help, etc.), gently say: "I'm here to help with task management queries only. You can ask me things like how many tasks are pending, which tasks are urgent, or a department summary."
-- If you don't have enough data to answer, say so honestly and suggest what the user could ask instead.`;
+- Keep answers short and direct. 1–4 sentences or a short bullet list is enough.
+- Use the data above only. Do not make up task names or figures.
+- Write in plain English. No SQL, no code, no JSON.
+- RULE: When asked about pending tasks for a specific person, look up their name in "PENDING TASKS BY PERSON" above. That section is pre-computed and authoritative. Read the exact line for that person and relay it. Do not derive the answer from any other section.
+- If a person's line says "0 pending (finished own part of X)", reply: "[Name] has no pending tasks. They completed their part of [X]; others are still working on it."
+- If a person's line says "N pending — [task]", reply: "[Name] has [N] pending task(s): [task]."
+- Do NOT say "None" as a bullet point. Use a sentence instead.
+- "Pending Review" counts as still-pending work.
+- If the question is unclear, ask the user to clarify in one short sentence.
+- If the question is unrelated to tasks, say: "I can only help with task management queries."`;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

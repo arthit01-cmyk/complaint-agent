@@ -14,7 +14,7 @@ function normalizeKey(value) {
 
 // Returns users WITHOUT password (safe for API responses)
 function getUsers() {
-  return db.prepare('SELECT key, name, designation, email, contact, role, department FROM users ORDER BY name ASC').all();
+  return db.prepare('SELECT key, name, designation, email, contact, role, is_primary, department FROM users ORDER BY is_primary DESC, name ASC').all();
 }
 
 // Returns full user row INCLUDING password (for internal auth only)
@@ -56,12 +56,13 @@ function addUser(userData) {
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `).run(key, name.trim(), designation.trim(), email.trim(), contact.trim(), role, hashed, department || null);
 
-  return { key, name: name.trim(), designation: designation.trim(), email: email.trim(), contact: contact.trim(), role, department: department || null };
+  return { key, name: name.trim(), designation: designation.trim(), email: email.trim(), contact: contact.trim(), role, is_primary: 0, department: department || null };
 }
 
 function updateUser(oldKey, updates) {
   const existing = getUserByKey(oldKey);
   if (!existing) throw new Error('User not found.');
+  if (existing.is_primary) throw new Error('The primary admin account cannot be edited.');
 
   const name        = updates.name        ? updates.name.trim()        : existing.name;
   const designation = updates.designation ? updates.designation.trim() : existing.designation;
@@ -91,12 +92,13 @@ function updateUser(oldKey, updates) {
     WHERE key = ?
   `).run(newKey, name, designation, email, contact, role, password, department, existing.key);
 
-  return { key: newKey, name, designation, email, contact, role, department };
+  return { key: newKey, name, designation, email, contact, role, is_primary: 0, department };
 }
 
 function deleteUser(key) {
   const existing = getUserByKey(key);
   if (!existing) throw new Error('User not found.');
+  if (existing.is_primary) throw new Error('The primary admin account cannot be deleted.');
   db.prepare('DELETE FROM users WHERE key = ?').run(existing.key);
   return existing;
 }

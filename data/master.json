@@ -138,6 +138,7 @@
       "email": "admin@workdesk.com",
       "contact": "1234567890",
       "role": "admin",
+      "is_primary": true,
       "password": "$2b$10$lN/yHxPghwBt65YzKAtsp.LQKCIQ2k0A.Kv266hkHSJy2nE/opmHO",
       "department": null
     },

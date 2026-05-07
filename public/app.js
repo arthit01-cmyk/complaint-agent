@@ -376,19 +376,23 @@ function loadUsers() {
       masterUsers.forEach(user => {
         const item = document.createElement('div');
         item.className = 'master-item';
+        const actions = user.is_primary
+          ? `<span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:12px;background:#1e40af;color:#fff;font-size:0.7rem;font-weight:600;letter-spacing:0.05em;">
+               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+               Primary Admin
+             </span>`
+          : `<button class="action-btn edit-btn" onclick="editUser('${user.key}')" title="Edit">
+               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+             </button>
+             <button class="action-btn delete-btn" onclick="deleteUser('${user.key}')" title="Delete">
+               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+             </button>`;
         item.innerHTML = `
           <div class="item-info">
             <span class="item-name">${user.name}</span>
             <span class="item-details">${user.designation} | ${user.role} | ${user.department || 'No Dept'} | ${user.email}</span>
           </div>
-          <div class="item-actions">
-            <button class="action-btn edit-btn" onclick="editUser('${user.key}')" title="Edit">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-            </button>
-            <button class="action-btn delete-btn" onclick="deleteUser('${user.key}')" title="Delete">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-            </button>
-          </div>`;
+          <div class="item-actions">${actions}</div>`;
         userList.appendChild(item);
       });
     });
@@ -994,30 +998,104 @@ userNameInput.addEventListener('input', () => {
   }
 });
 
+// Clear inline error as soon as the user starts correcting a field
+[
+  [userNameInput,        'err-user-name'],
+  [userUsernameInput,    'err-user-username'],
+  [userDesignationInput, 'err-user-designation'],
+  [userEmailInput,       'err-user-email'],
+  [userContactInput,     'err-user-contact'],
+  [userRoleSelect,       'err-user-role'],
+  [userDepartmentSelect, 'err-user-department'],
+  [userPasswordInput,    'err-user-password'],
+].forEach(([el, errId]) => {
+  el.addEventListener('input',  () => { const e = document.getElementById(errId); if(e) e.textContent=''; el.classList.remove('input-invalid'); });
+  el.addEventListener('change', () => { const e = document.getElementById(errId); if(e) e.textContent=''; el.classList.remove('input-invalid'); });
+});
+
+// ── User form validation ─────────────────────────────────────
+function validateUserForm(isEdit) {
+  let valid = true;
+
+  function markField(inputEl, errId, msg) {
+    const errEl = document.getElementById(errId);
+    if (errEl) errEl.textContent = msg;
+    if (msg) {
+      inputEl.classList.add('input-invalid');
+      valid = false;
+    } else {
+      inputEl.classList.remove('input-invalid');
+    }
+  }
+
+  const name        = userNameInput.value.trim();
+  const username    = userUsernameInput.value.trim();
+  const designation = userDesignationInput.value.trim();
+  const email       = userEmailInput.value.trim();
+  const contact     = userContactInput.value.trim().replace(/[\s\-\(\)]/g, '');
+  const role        = userRoleSelect.value;
+  const department  = userDepartmentSelect.value;
+  const password    = userPasswordInput.value.trim();
+
+  markField(userNameInput,        'err-user-name',        !name ? 'Full name is required.' : '');
+  markField(userDesignationInput, 'err-user-designation', !designation ? 'Designation is required.' : '');
+  markField(userEmailInput,       'err-user-email',
+    !email ? 'Email address is required.' :
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? 'Enter a valid email address.' : '');
+  markField(userContactInput,     'err-user-contact',
+    !contact ? 'Contact number is required.' :
+    !/^\d{7,15}$/.test(contact) ? 'Enter 7–15 digits (numbers only).' : '');
+  markField(userRoleSelect,       'err-user-role',       !role ? 'Please select a role.' : '');
+  markField(userDepartmentSelect, 'err-user-department', !department ? 'Please select a department.' : '');
+
+  if (!isEdit) {
+    markField(userUsernameInput, 'err-user-username',
+      !username ? 'Username is required.' :
+      !/^[a-z0-9\-]+$/.test(username) ? 'Use lowercase letters, numbers and hyphens only.' : '');
+    markField(userPasswordInput, 'err-user-password', !password ? 'Password is required for new users.' : '');
+  } else {
+    // Username locked in edit mode — clear its error
+    const errU = document.getElementById('err-user-username');
+    if (errU) errU.textContent = '';
+    userUsernameInput.classList.remove('input-invalid');
+    // Password optional in edit mode — clear its error
+    const errP = document.getElementById('err-user-password');
+    if (errP) errP.textContent = '';
+    userPasswordInput.classList.remove('input-invalid');
+  }
+
+  return valid;
+}
+
+function clearUserFormErrors() {
+  ['err-user-name','err-user-username','err-user-designation','err-user-email',
+   'err-user-contact','err-user-role','err-user-department','err-user-password'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = '';
+  });
+  [userNameInput, userUsernameInput, userDesignationInput, userEmailInput,
+   userContactInput, userRoleSelect, userDepartmentSelect, userPasswordInput].forEach(el => {
+    if (el) el.classList.remove('input-invalid');
+  });
+}
+
 // ── Master CRUD ──────────────────────────────────────────────
 userForm.addEventListener('submit', async e => {
   e.preventDefault();
 
   const isEdit = !!editingUserKey;
+  if (!validateUserForm(isEdit)) return;
 
-  // In add mode, password is required; in edit mode it's optional
   const password = userPasswordInput.value.trim();
-  if (!isEdit && !password) {
-    setMessage('Password is required when creating a new user.', false, manageUserMessage);
-    userPasswordInput.focus();
-    return;
-  }
-
   const userData = {
     name:        userNameInput.value.trim(),
-    username:    userUsernameInput.value.trim(),   // explicit login ID
+    username:    userUsernameInput.value.trim(),
     designation: userDesignationInput.value.trim(),
     email:       userEmailInput.value.trim(),
     contact:     userContactInput.value.trim(),
     role:        userRoleSelect.value,
     department:  userDepartmentSelect.value || null
   };
-  // Only include password if provided (edit) or always (add)
   if (password) userData.password = password;
 
   const method = isEdit ? 'PUT' : 'POST';
@@ -1100,7 +1178,15 @@ function editUser(key) {
 function deleteUser(key) {
   if (!confirm('Delete this user?')) return;
   fetch(`/masters/users/${key}`, { method: 'DELETE' })
-    .then(r => r.ok ? (loadUsers(), setMessage('User deleted', true, manageUserMessage)) : r.json().then(e => setMessage(e.error, false, manageUserMessage)))
+    .then(r => {
+      if (r.ok) {
+        cancelUserEditMode();
+        loadUsers();
+        setMessage('User deleted successfully.', true, manageUserMessage);
+      } else {
+        r.json().then(e => setMessage(e.error, false, manageUserMessage));
+      }
+    })
     .catch(() => setMessage('Error deleting user', false, manageUserMessage));
 }
 
@@ -1137,16 +1223,21 @@ function deleteUrgency(label) {
 function cancelUserEditMode() {
   userForm.reset();
   editingUserKey = null;
-  // Restore username field to editable add-mode state
+  // Reset username to editable add-mode state
   userUsernameInput.value            = '';
   userUsernameInput.readOnly         = false;
   userUsernameInput.style.background = '';
   if (usernameHint) usernameHint.textContent = '';
-  // Restore password field to required add-mode state
+  // Reset role select to blank placeholder
+  userRoleSelect.value = '';
+  // Reset department select to blank placeholder
+  userDepartmentSelect.value = '';
+  // Reset password to add-mode (required)
   userPasswordInput.value = '';
-  userPasswordInput.setAttribute('required', 'required');
   if (userPasswordLabel) userPasswordLabel.textContent = 'Password';
   if (userPasswordHint)  userPasswordHint.textContent  = '';
+  // Clear all inline validation errors
+  clearUserFormErrors();
   document.getElementById('user-form-title').textContent = 'Add New User';
   document.getElementById('user-submit-btn').textContent = 'Add User';
   document.getElementById('cancel-user-edit').classList.add('hidden');
