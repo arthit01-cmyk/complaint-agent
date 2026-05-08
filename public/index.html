@@ -420,10 +420,11 @@
         <div id="manage-dept-message" class="message hidden"></div>
         <div class="glass-card" style="margin-bottom: 24px;">
           <h3 id="dept-form-title" class="form-section-title">Add New Department</h3>
-          <form id="department-form">
+          <form id="department-form" novalidate>
             <div class="field-row">
               <label for="department-name">Department Name</label>
-              <input id="department-name" type="text" required placeholder="Enter department name" />
+              <input id="department-name" type="text" placeholder="Enter department name" />
+              <span class="field-error" id="err-dept-name"></span>
             </div>
             <div class="form-actions">
               <button type="submit" class="primary-btn" id="dept-submit-btn">Add Department</button>
@@ -443,10 +444,11 @@
         <div id="manage-urgency-message" class="message hidden"></div>
         <div class="glass-card" style="margin-bottom: 24px;">
           <h3 id="urgency-form-title" class="form-section-title">Add New Urgency Level</h3>
-          <form id="urgency-form">
+          <form id="urgency-form" novalidate>
             <div class="field-row">
               <label for="urgency-label">Urgency Label</label>
-              <input id="urgency-label" type="text" required placeholder="e.g. Urgent, Routine, FYI" />
+              <input id="urgency-label" type="text" placeholder="e.g. Urgent, Routine, FYI" />
+              <span class="field-error" id="err-urgency-label"></span>
             </div>
             <div class="form-actions">
               <button type="submit" class="primary-btn" id="urgency-submit-btn">Add Urgency Level</button>

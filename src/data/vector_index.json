@@ -2,7 +2,7 @@
   "documents": [
     {
       "id": "69bff75e-114b-48a5-983e-4edd86639424",
-      "text": "Estimate for school renovation Detail estimates as mentioned in the attached letter with proper documentation needs to be prepared before 10.05.2026 Revenue In Progress Deepak Rajak Sundar Singh",
+      "text": "Estimate for school renovation Detail estimates as mentioned in the attached letter with proper documentation needs to be prepared before 10.05.2026 Revenue Completed Deepak Rajak Sundar Singh",
       "metadata": {
         "type": "task",
         "id": "69bff75e-114b-48a5-983e-4edd86639424"
@@ -26,7 +26,7 @@
         "prepared": 0.4054651081081644,
         "before": 0.4054651081081644,
         "revenue": 0.4054651081081644,
-        "progress": 0,
+        "completed": 0,
         "deepak": 0,
         "rajak": 0,
         "sundar": 0.4054651081081644,
@@ -42,6 +42,7 @@
       },
       "vector": {
         "the": 0,
+        "completed": 0,
         "compassionate": 0.4054651081081644,
         "appointment": 0.4054651081081644,
         "need": 0.4054651081081644,
@@ -56,7 +57,6 @@
         "report": 0.4054651081081644,
         "general": 0.4054651081081644,
         "administration": 0.4054651081081644,
-        "completed": 0.4054651081081644,
         "abhishek": 0.4054651081081644,
         "majumder": 0.4054651081081644
       }
@@ -69,7 +69,6 @@
         "id": "fba65155-a4d8-40e6-93ff-f4889e7087cf"
       },
       "vector": {
-        "progress": 0,
         "deepak": 0,
         "rajak": 0,
         "road": 0.4054651081081644,
@@ -80,6 +79,7 @@
         "near": 0.4054651081081644,
         "bridge": 0.4054651081081644,
         "water": 0.4054651081081644,
+        "progress": 0.4054651081081644,
         "test": 0.4054651081081644,
         "user": 0.4054651081081644
       }
@@ -104,7 +104,7 @@
     "prepared": 0.4054651081081644,
     "before": 0.4054651081081644,
     "revenue": 0.4054651081081644,
-    "progress": 0,
+    "completed": 0,
     "deepak": 0,
     "rajak": 0,
     "sundar": 0.4054651081081644,
@@ -123,7 +123,6 @@
     "report": 0.4054651081081644,
     "general": 0.4054651081081644,
     "administration": 0.4054651081081644,
-    "completed": 0.4054651081081644,
     "abhishek": 0.4054651081081644,
     "majumder": 0.4054651081081644,
     "road": 0.4054651081081644,
@@ -134,6 +133,7 @@
     "near": 0.4054651081081644,
     "bridge": 0.4054651081081644,
     "water": 0.4054651081081644,
+    "progress": 0.4054651081081644,
     "test": 0.4054651081081644,
     "user": 0.4054651081081644
   },
@@ -156,7 +156,7 @@
     "before",
     "2026",
     "revenue",
-    "progress",
+    "completed",
     "deepak",
     "rajak",
     "sundar",
@@ -175,7 +175,6 @@
     "report",
     "general",
     "administration",
-    "completed",
     "abhishek",
     "majumder",
     "road",
@@ -186,6 +185,7 @@
     "near",
     "bridge",
     "water",
+    "progress",
     "test",
     "user"
   ]

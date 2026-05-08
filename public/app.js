@@ -1000,6 +1000,8 @@ userNameInput.addEventListener('input', () => {
 
 // Clear inline error as soon as the user starts correcting a field
 [
+  [departmentNameInput,  'err-dept-name'],
+  [urgencyLabelInput,    'err-urgency-label'],
   [userNameInput,        'err-user-name'],
   [userUsernameInput,    'err-user-username'],
   [userDesignationInput, 'err-user-designation'],
@@ -1111,10 +1113,20 @@ userForm.addEventListener('submit', async e => {
 
 departmentForm.addEventListener('submit', async e => {
   e.preventDefault();
+  const name = departmentNameInput.value.trim();
+  const errEl = document.getElementById('err-dept-name');
+  if (!name) {
+    if (errEl) errEl.textContent = 'Department name is required.';
+    departmentNameInput.classList.add('input-invalid');
+    departmentNameInput.focus();
+    return;
+  }
+  if (errEl) errEl.textContent = '';
+  departmentNameInput.classList.remove('input-invalid');
   const method = editingDeptName ? 'PUT' : 'POST';
   const url    = editingDeptName ? `/masters/departments/${encodeURIComponent(editingDeptName)}` : '/masters/departments';
   try {
-    const r = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: departmentNameInput.value }) });
+    const r = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name }) });
     if (await handleResponse(r, editingDeptName ? 'Department updated' : 'Department added', manageDeptMessage)) {
       cancelDeptEditMode();
       loadDepartments();
@@ -1124,10 +1136,20 @@ departmentForm.addEventListener('submit', async e => {
 
 urgencyForm.addEventListener('submit', async e => {
   e.preventDefault();
+  const label = urgencyLabelInput.value.trim();
+  const errEl = document.getElementById('err-urgency-label');
+  if (!label) {
+    if (errEl) errEl.textContent = 'Urgency label is required.';
+    urgencyLabelInput.classList.add('input-invalid');
+    urgencyLabelInput.focus();
+    return;
+  }
+  if (errEl) errEl.textContent = '';
+  urgencyLabelInput.classList.remove('input-invalid');
   const method = editingUrgencyLabel ? 'PUT' : 'POST';
   const url    = editingUrgencyLabel ? `/masters/urgencies/${encodeURIComponent(editingUrgencyLabel)}` : '/masters/urgencies';
   try {
-    const r = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ label: urgencyLabelInput.value }) });
+    const r = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ label }) });
     if (await handleResponse(r, editingUrgencyLabel ? 'Urgency updated' : 'Urgency added', manageUrgencyMessage)) {
       cancelUrgencyEditMode();
       loadUrgencies();
@@ -1247,6 +1269,9 @@ function cancelUserEditMode() {
 function cancelDeptEditMode() {
   departmentForm.reset();
   editingDeptName = null;
+  const errEl = document.getElementById('err-dept-name');
+  if (errEl) errEl.textContent = '';
+  departmentNameInput.classList.remove('input-invalid');
   document.getElementById('dept-form-title').textContent = 'Add New Department';
   document.getElementById('dept-submit-btn').textContent = 'Add Department';
   document.getElementById('cancel-dept-edit').classList.add('hidden');
@@ -1256,6 +1281,9 @@ function cancelDeptEditMode() {
 function cancelUrgencyEditMode() {
   urgencyForm.reset();
   editingUrgencyLabel = null;
+  const errEl = document.getElementById('err-urgency-label');
+  if (errEl) errEl.textContent = '';
+  urgencyLabelInput.classList.remove('input-invalid');
   document.getElementById('urgency-form-title').textContent = 'Add New Urgency Level';
   document.getElementById('urgency-submit-btn').textContent = 'Add Urgency Level';
   document.getElementById('cancel-urgency-edit').classList.add('hidden');
